@@ -1,0 +1,4 @@
+date,region,value,note
+2026-10-01,West,42,"normal row
+2026-10-02,West,45,"unterminated quoted note
+2026-10-03,West,47,following row should not disappear

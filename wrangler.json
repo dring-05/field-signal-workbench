@@ -1,0 +1,5 @@
+{
+  "name": "field-signal-workbench",
+  "compatibility_date": "2026-10-12",
+  "assets": { "directory": "./public" }
+}

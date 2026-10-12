@@ -1,0 +1,5 @@
+period,region,visits,comment
+2026-09-01,"Washington, DC",1200,"Opening; midday count"
+2026-09-02,"Washington, DC",1250,"Source note: ""sample"" value"
+2026-09-03,"Washington, DC",1275,"line one
+line two"

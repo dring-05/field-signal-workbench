@@ -1,0 +1,5 @@
+date,region,amount,format_note
+2026-09-01,North,"1,234.50",US thousands and decimal
+2026-09-02,North,"1.234,50",European thousands and decimal
+2026-09-03,North,"($1,245.75)",Parenthesized negative currency
+2026-09-04,North,"12.5%",Percent value
