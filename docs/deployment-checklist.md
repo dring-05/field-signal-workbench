@@ -2,24 +2,21 @@
 
 This checklist is for the separate `field-signal-workbench` project only. Keep it separate from the existing research-tools repository and site. Do not change, reconnect, or deploy the research-tools project as part of this workflow.
 
-The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. A public, empty GitHub repository named `dring-05/field-signal-workbench` has been created. No commit or push has been made yet. The bundled GitHub CLI reports an invalid saved token; Cloudflare authentication has not been verified. The site and existing open-access-research-tools repo remain separate.
+The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. A public GitHub repository named `dring-05/field-signal-workbench` has been created. Local commit `0d9b0b84370910fc8eb3736d8de28074a52dbf63` is ready to push. The bundled GitHub CLI reports an invalid saved token; Cloudflare authentication has not been verified. The site and existing open-access-research-tools repo remain separate.
 
-## 1. Create a dedicated GitHub repository
+## 1. Dedicated GitHub repository
 
 The dedicated public repository is `https://github.com/dring-05/field-signal-workbench`. It is empty and separate from `open-access-research-tools`.
 
-## 2. Initialize and push only this project
+## 2. Push only this project
 
 Run these commands from the project directory, replacing the URL with the one copied from the new repository:
 
 ```sh
 cd "/Users/dillonring/Documents/Codex/2026-09-29/s/outputs/field-signal-workbench"
-git init -b main
-git add .gitignore README.md wrangler.json public docs tests
+git remote -v
 git status --short
 git diff --cached --stat
-git commit -m "Create Field Signals workbench"
-git remote add origin https://github.com/OWNER/field-signal-workbench.git
 git push -u origin main
 ```
 
