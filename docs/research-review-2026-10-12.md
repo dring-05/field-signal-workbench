@@ -58,3 +58,14 @@ Five sources widen industry-level and operating coverage:
 TSA checkpoint data were held because the provider page returned 403 during the review and current observations could not be confirmed. No source was added from that lead.
 
 The library now has 30 source cards across the existing 14 groups, covering all 11 broad equity sectors plus hardware and semiconductor niches. This remains a selective starting set, not equally deep industry coverage.
+
+## Other market filing systems, 12 October 2026
+
+Expanded the separate Other markets page from four to eight public-company filing systems. The page now includes India NSE financial results, UK Companies House, Canada's SEDAR+, and Australia's ASX announcements alongside the US SEC, South Korea OpenDART, China exchange/CNINFO filings, and Japan EDINET/JPX.
+
+- NSE's results page exposes filing periods, broadcast timestamps, and CSV downloads. Its disclaimer says issuer-submitted information is displayed without exchange verification of adequacy or accuracy.
+- Companies House provides public UK company records and filings. Its API requires an API key, and accounts are not normalized into a complete public-equity facts feed. Small-company exemptions and filing formats affect comparability.
+- SEDAR+ marks documents with public, private, or private non-public access levels. The directory links its public filing portal and does not assume every document is public.
+- ASX publishes issuer announcements and financial reports. The page is event-driven and attachment-heavy, rather than a normalized company-facts API.
+
+These additions are filing sources, not monthly operating-data replacements for Taiwan's revenue feed. The page keeps each market's cadence, access, and coverage limit beside its link. Reviewed against provider pages on 12 October 2026.
