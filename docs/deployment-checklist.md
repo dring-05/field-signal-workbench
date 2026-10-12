@@ -2,7 +2,7 @@
 
 This checklist is for the separate `field-signal-workbench` project only. Keep it separate from the existing research-tools repository and site. Do not change, reconnect, or deploy the research-tools project as part of this workflow.
 
-The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. A public GitHub repository named `dring-05/field-signal-workbench` has been created. Local commit `0d9b0b84370910fc8eb3736d8de28074a52dbf63` is ready to push. The bundled GitHub CLI reports an invalid saved token; Cloudflare authentication has not been verified. The site and existing open-access-research-tools repo remain separate.
+The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. A public GitHub repository named `dring-05/field-signal-workbench` has been created. Local commits are ready to push. GitHub CLI device sign-in is pending; Cloudflare account access is available, but no deployment has been configured. The site and existing open-access-research-tools repo remain separate.
 
 ## 1. Dedicated GitHub repository
 
@@ -16,7 +16,8 @@ Run these commands from the project directory, replacing the URL with the one co
 cd "/Users/dillonring/Documents/Codex/2026-09-29/s/outputs/field-signal-workbench"
 git remote -v
 git status --short
-git diff --cached --stat
+git log -1 --oneline
+git rev-parse HEAD
 git push -u origin main
 ```
 
