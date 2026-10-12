@@ -2,11 +2,11 @@
 
 This checklist is for the separate `field-signal-workbench` project only. Keep it separate from the existing research-tools repository and site. Do not change, reconnect, or deploy the research-tools project as part of this workflow.
 
-The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. A public GitHub repository named `dring-05/field-signal-workbench` has been created. Local commits are ready to push. GitHub CLI device sign-in is pending; Cloudflare account access is available, but no deployment has been configured. The site and existing open-access-research-tools repo remain separate.
+The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. The public repository and Cloudflare Worker are connected only to this project. As of 2026-10-12, commit `e884fcdb821c65f9a9d4d97ba9b2200549adb8a8` is on GitHub `main`, Cloudflare reports a successful build from that commit, and the public URL loads the Field Signals interface over HTTPS: `https://field-signal-workbench.dhring05.workers.dev/`. Future pushes to `main` should trigger Cloudflare Builds. The existing open-access-research-tools repo and Worker remain separate.
 
 ## 1. Dedicated GitHub repository
 
-The dedicated public repository is `https://github.com/dring-05/field-signal-workbench`. It is empty and separate from `open-access-research-tools`.
+The dedicated public repository is `https://github.com/dring-05/field-signal-workbench`, separate from `open-access-research-tools`.
 
 ## 2. Push only this project
 
@@ -50,7 +50,8 @@ For Git integration, verify the repository root and `wrangler.json` are selected
 4. Verify the deployed Git commit in Cloudflare matches the commit shown on GitHub, when using Git integration. For CLI deployment, confirm the successful deployment is for the expected Worker name and account.
 5. Keep the public URL and deployment status with the project notes. Do not claim publication until the URL loads successfully from the public internet.
 
-## Current blockers to resolve during setup
+## Current setup status
 
-- The local project has not yet been committed or pushed. GitHub CLI reports that the saved `dring-05` token is invalid, so sign in before pushing.
-- Cloudflare account access and the Worker deployment are unverified. Wrangler is not installed as a standalone command; `npx` is available if needed.
+- GitHub CLI is signed in to `dring-05`; the remote `main` SHA matches the local commit above.
+- Cloudflare Git integration points to `dring-05/field-signal-workbench`, root directory `/`, and deploy command `npx wrangler deploy`.
+- Cloudflare build `23e38f06` completed successfully from the `main` commit above. The public HTTPS page was opened and checked at the URL listed above.
