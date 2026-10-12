@@ -6,7 +6,7 @@ The source library has cards across all 11 broad equity sectors, with additional
 
 ## Run locally
 
-Open `public/index.html` in a browser. The question planner, notes, evidence receipts, and CSV imports run in the browser. They are saved only in that browser's local storage. They are not uploaded to this site and do not sync across devices.
+Open `public/index.html` in a browser. The question planner, followed-source list, notes, evidence receipts, project register, and CSV imports run in the browser. They are saved in that browser profile's local storage. They are not uploaded to this site and do not sync across devices. Anyone using the same browser profile can see them. Review exported JSON before sharing it.
 
 Deploy the static assets to a Cloudflare Worker with:
 
@@ -19,8 +19,8 @@ npx wrangler deploy
 - The source cards record when the provider page was checked, the latest observation or release visible, free-access limits, and reuse caveats.
 - Advertised update frequency is not proof that a source is current. For example, ComputePulse describes frequent polling, but its displayed timestamp was older than the review date. Its card flags that discrepancy.
 - GoHereBro reports IBEW open calls and local wage scales. It is not affiliated with IBEW. Calls are not proof of hiring at a named project, and the listed base scale is not take-home pay.
-- The messy-data importer expects a header row and long-format data with one date, one value, and optionally one category per row. It handles CSV, TSV, and semicolon-delimited text, exports normalized rows for the selected category, but does not reshape wide tables or identify preamble rows. Monthly and annual period labels keep their original precision. Review skipped, ragged, duplicate, and truncated row counts before using a chart.
-- Charts and source updates are not refreshed automatically. Imported files remain in the browser where they were opened. Review units, dates, sampling, and coverage before making a company-level inference.
+- The messy-data importer supports CSV, TSV, and semicolon-delimited text. Select a header row after title or notes, then map one date, one value, and optionally one category per row. It exports normalized rows for the selected category, but does not reshape wide tables or resolve duplicates. Monthly and annual period labels keep their original precision. Review skipped, ragged, duplicate, and truncated row counts before using a chart.
+- Followed signals and project records are a local watchlist. Values are entered by hand; charts and source updates are not refreshed automatically. Imported files remain in the browser where they were opened. Review units, dates, sampling, and coverage before making a company-level inference.
 - Sector cards are dated research leads. A provider page may change after its review date; the freshness note records the observation or cadence checked on that date.
 
 This project does not provide investment advice or an earnings estimate.
