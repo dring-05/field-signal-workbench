@@ -8,10 +8,20 @@
 - **#10, messy-data collection kit:** The importer now lets a user select a header row after title or note rows. The selected header row and number of skipped preamble rows are preserved in the saved import.
 - **#12, supply-chain and capacity map:** The capacity page now includes a local project and corridor register for manually linking a named project to public evidence, region, sponsor, stage, and reported timing.
 
+## Completed in the follow-up pass
+
+- **#1, question-to-measure planner:** Added a structured planner for the research question, measure, unit, geography, time window, expected direction, and falsifier. The original homepage planner remains available.
+- **#3 and #7, signal notebooks and mind-change tests:** Added multiple question notebooks with dated observations, evidence that supports or weakens the thesis, a source link, and a stated falsifier.
+- **#5 and #13, retail traffic and pricing:** Added manual series for retail-footfall observations and item-level prices or promotions. Public reference points identify what each source measures. Winter's Starbucks history is labeled as openings and closures, not visits.
+- **#8 and #15, peer divergence and signal validation:** Added pasted-series comparison with period alignment, missing and duplicate checks, growth gaps, correlations, and shifted correlations. The page flags small samples and false-alarm risk.
+- **#9 and #11, catalyst calendar and source-change watcher:** Added dated catalyst records and manual source-check snapshots. Neither uses automatic monitoring.
+- **#14, source-grounded AI prompt:** Added an editable prompt builder using only receipts pasted by the analyst. It asks the chosen model to separate reported observations from inference and disclose gaps. No AI request is sent by the site.
+- **Usability:** Added an Analyst tools navigation page with a jump list so the additional workflows do not require a long scroll.
+
 ## Limits to keep visible
 
-Followed-source observations and capacity records are manual and local to one browser profile. They do not sync to peers or update from provider pages. Anyone using the same browser profile can view the saved notes. The importer still expects long-format data, retains duplicate date/category rows, and does not infer joins between capacity sources. A project record is an analyst-maintained crosswalk, not a verified provider-to-provider match.
+Followed-source observations, catalyst records, source checks, retail observations, price logs, notebooks, plans, and capacity records are manual and local to one browser profile. They do not sync to peers or update from provider pages. Anyone using the same browser profile can view the saved notes. The importer still expects long-format data, retains duplicate date/category rows, and does not infer joins between capacity sources. A project record is an analyst-maintained crosswalk, not a verified provider-to-provider match. The divergence tool accepts pasted values and cannot normalize differing definitions or frequencies for the analyst.
 
 ## Verification
 
-`node --check public/app.js`, `tests/check-app-functions.mjs`, `tests/check-source-cards.mjs`, `tests/check-workflow-additions.mjs`, and `git diff --check` passed before visual review.
+All tests in `tests/*.mjs`, `node --check public/*.js`, and `git diff --check` passed before final browser review.
