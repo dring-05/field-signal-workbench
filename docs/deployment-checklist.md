@@ -2,7 +2,7 @@
 
 This checklist is for the separate `field-signal-workbench` project only. Keep it separate from the existing research-tools repository and site. Do not change, reconnect, or deploy the research-tools project as part of this workflow.
 
-The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. The public repository and Cloudflare Worker are connected only to this project. As of 2026-10-12, commit `e884fcdb821c65f9a9d4d97ba9b2200549adb8a8` is on GitHub `main`, Cloudflare reports a successful build from that commit, and the public URL loads the Field Signals interface over HTTPS: `https://field-signal-workbench.dhring05.workers.dev/`. Future pushes to `main` should trigger Cloudflare Builds. The existing open-access-research-tools repo and Worker remain separate.
+The current project has `wrangler.json` configured with Worker name `field-signal-workbench`, static assets in `./public`, and compatibility date `2026-10-12`. This folder is its own Git repository on `main`. The public repository and Cloudflare Worker are connected only to this project. As of 2026-10-12, commit `cae0b5a0fc868a1819488b21ea7b698cfe2d5a17` is on GitHub `main`. Cloudflare shows the build titled `Add research workflow tools for analysts` as Ready. The public URL loads the five Analyst tools panels over HTTPS: `https://field-signal-workbench.dhring05.workers.dev/#lab`. Future pushes to `main` should trigger Cloudflare Builds. The existing open-access-research-tools repo and Worker remain separate.
 
 ## 1. Dedicated GitHub repository
 
@@ -52,6 +52,6 @@ For Git integration, verify the repository root and `wrangler.json` are selected
 
 ## Current setup status
 
-- GitHub CLI is signed in to `dring-05`; the remote `main` SHA matches the local commit above.
+- GitHub CLI is signed in to `dring-05`; the remote `main` SHA matches local commit `cae0b5a0fc868a1819488b21ea7b698cfe2d5a17`.
 - Cloudflare Git integration points to `dring-05/field-signal-workbench`, root directory `/`, and deploy command `npx wrangler deploy`.
-- Cloudflare build `23e38f06` completed successfully from the `main` commit above. The public HTTPS page was opened and checked at the URL listed above.
+- Cloudflare build `ede8f463` completed with status Ready for `main`. The public HTTPS page was opened and checked at `/#lab`; all five new panels and jump navigation rendered.
