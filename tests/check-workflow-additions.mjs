@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
+const index = await readFile(new URL('../public/index.html', import.meta.url), 'utf8');
 const helpers = [
   app.match(/function tableRowsFromHeader\(allRows,headerIndex=0\)\{[^\n]*\}/)?.[0],
   app.match(/function createReceipt\(notes,url,savedAt=new Date\(\)\.toISOString\(\)\)\{[^\n]*\}/)?.[0],
@@ -39,4 +40,10 @@ assert.match(app, /function home\(\)[\s\S]*?trackedSignalList\(\)/, 'Overview sh
 assert.match(app, /data-track-url=/, 'Source cards should expose follow controls');
 assert.match(app, /id="capacity-project-form"/, 'Capacity page should include its project evidence register');
 assert.match(app, /id="header-row"/, 'Importer should let users select the header row');
-console.log('Workflow checks passed: selected import headers, structured source receipts, tracked signals, and capacity records.');
+const newModules = ['source-freshness.js', 'signal-event-studies.js', 'variant-perception.js', 'capacity-revenue-bridge.js'];
+for (const source of newModules) {
+  assert(index.includes(`<script src="${source}" defer></script>`), `${source} must load on the site`);
+  assert(index.indexOf(`<script src="${source}" defer></script>`) < index.indexOf('<script src="app.js" defer></script>'), `${source} must register before the app boots`);
+}
+assert.match(app, /Object\.entries\(window\.FieldSignalsModules\|\|\{\}\)/, 'Analyst Tools should discover each registered module');
+console.log('Workflow checks passed: import mapping, receipts, followed signals, capacity records, and four new analyst modules.');
