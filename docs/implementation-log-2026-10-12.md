@@ -18,6 +18,13 @@
 - **#14, source-grounded AI prompt:** Added an editable prompt builder using only receipts pasted by the analyst. It asks the chosen model to separate reported observations from inference and disclose gaps. No AI request is sent by the site.
 - **Usability:** Added an Analyst tools navigation page with a jump list so the additional workflows do not require a long scroll.
 
+## Taiwan feed and filing coverage follow-up
+
+- Expanded the published `SiteFeed` schema to 24 columns. It carries monthly revenue growth differences through third order and same-quarter year-over-year margin changes and differences when matched filings support them.
+- Corrected the monthly series history gate: the source already supplies YoY growth, so revenue differences require 2, 3, or 4 consecutive YoY observations for first, second, or third order. Quarterly margin third differences need eight consecutive statements to form four same-quarter YoY changes.
+- Added the Hong Kong and Brazil issuer filing systems to the Sheet and the separate Other markets page. The page says what is and is not comparable with Taiwan's monthly revenue series. Hong Kong's monthly return tracks securities capital, and Japanese monthly sales releases are voluntary and issuer-specific.
+- Added a manual AI name-change filing watch with five source-linked examples. It is labeled as a reviewed list, not an exhaustive or live feed, and treats filings as candidate leads rather than investment conclusions.
+
 ## Limits to keep visible
 
 Followed-source observations, catalyst records, source checks, retail observations, price logs, notebooks, plans, and capacity records are manual and local to one browser profile. They do not sync to peers or update from provider pages. Anyone using the same browser profile can view the saved notes. The importer still expects long-format data, retains duplicate date/category rows, and does not infer joins between capacity sources. A project record is an analyst-maintained crosswalk, not a verified provider-to-provider match. The divergence tool accepts pasted values and cannot normalize differing definitions or frequencies for the analyst.

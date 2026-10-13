@@ -12,16 +12,16 @@ const SIGNALS = {
 
 const RAW_HEADERS = ['Market', 'Data area', 'Endpoint', 'Company code', 'Company name', 'Report period', 'Retrieved at', 'Raw source record', 'Source URL', 'Record signature'];
 const LOG_HEADERS = ['Run time', 'Result', 'Monthly source period', 'Rows received', 'Rows added or revised', 'Raw records added or revised', 'Notes'];
+const FEED_HEADERS = ['Market', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL'];
 
 function setupTaiwanSignals() {
   const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
   ensureHeader_(book, SIGNALS.monthlySheet, ['Market', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue current month', 'Revenue prior month', 'Revenue year-ago month', 'MoM growth %', 'YoY growth %', 'YTD revenue', 'Prior-year YTD revenue', 'YTD growth %', 'Currency / unit', 'Source URL', 'Retrieved at', 'Source record']);
-  ensureHeader_(book, SIGNALS.feedSheet, ['Market', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'YoY change 1 month (pp)', 'YoY change 2 months (pp)', 'YoY change 3 months (pp)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin change YoY (pp)', 'Operating margin %', 'Operating margin change YoY (pp)', 'Latest filing date', 'Data status', 'Source URL']);
+  ensureHeader_(book, SIGNALS.feedSheet, FEED_HEADERS);
   ensureHeader_(book, SIGNALS.rawSheet, RAW_HEADERS);
   ensureHeader_(book, SIGNALS.logSheet, LOG_HEADERS);
   const triggers = ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'refreshTaiwanSignals');
-  triggers.forEach(t => ScriptApp.deleteTrigger(t));
-  ScriptApp.newTrigger('refreshTaiwanSignals').timeBased().everyDays(1).atHour(7).inTimezone('America/New_York').create();
+  if (!triggers.length) ScriptApp.newTrigger('refreshTaiwanSignals').timeBased().everyDays(1).atHour(7).inTimezone('America/New_York').create();
   writeLog_('Setup complete', '', 0, 0, 0, 'Daily refresh trigger set for about 07:00 America/New_York. Run refreshTaiwanSignals once to authorize and test the official sources.');
 }
 
@@ -34,16 +34,17 @@ function refreshTaiwanSignals() {
   const notes = [];
   try {
     const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
-    const monthlyRows = fetchMonthlyRows_();
-    received = monthlyRows.length;
-    const normalized = monthlyRows.map(normalizeMonthly_).filter(r => r.code && r.period);
+    const monthlyFeed = fetchMonthlyRows_();
+    received = monthlyFeed.records.length;
+    const normalized = monthlyFeed.records.map(record => normalizeMonthly_(record, monthlyFeed.url)).filter(r => r.code && r.period);
     if (!normalized.length) throw new Error('The monthly revenue feed returned no rows with a company code and report month.');
     reportMonth = normalized.reduce((max, r) => r.period > max ? r.period : max, '');
     monthlyAdded = appendMonthlyRevisions_(book.getSheetByName(SIGNALS.monthlySheet), normalized);
     rawAdded = appendRawStatementRevisions_(book, notes);
     rebuildSiteFeed_(book);
-    writeLog_('Success', reportMonth, received, monthlyAdded, rawAdded, notes.join(' '));
-    return {result: 'Success', reportMonth, received, monthlyAdded, rawAdded, runtimeSeconds: Math.round((new Date() - started) / 1000)};
+    const result = notes.length ? 'Partial success' : 'Success';
+    writeLog_(result, reportMonth, received, monthlyAdded, rawAdded, notes.join(' '));
+    return {result, reportMonth, received, monthlyAdded, rawAdded, runtimeSeconds: Math.round((new Date() - started) / 1000), notes};
   } catch (err) {
     notes.push(String(err && err.message || err));
     writeLog_('Failed', reportMonth, received, monthlyAdded, rawAdded, notes.join(' '));
@@ -53,9 +54,9 @@ function refreshTaiwanSignals() {
 
 function fetchMonthlyRows_() {
   try {
-    return fetchRecords_(SIGNALS.monthlyUrl);
+    return {records: fetchRecords_(SIGNALS.monthlyUrl), url: SIGNALS.monthlyUrl};
   } catch (firstError) {
-    return fetchRecords_(SIGNALS.monthlyCsvFallback);
+    return {records: fetchRecords_(SIGNALS.monthlyCsvFallback), url: SIGNALS.monthlyCsvFallback};
   }
 }
 
@@ -76,7 +77,7 @@ function appendRawStatementRevisions_(book, notes) {
       fetchRecords_(url).forEach(record => {
         const code = textField_(record, ['公司代號', '公司代碼', '公司編號', 'SecuritiesCompanyCode', '公司代碼(公司代號)']);
         const name = textField_(record, ['公司名稱', '公司簡稱', 'CompanyName', 'CompanyNameEnglish']);
-        const period = reportPeriod_(textField_(record, ['資料年月', '年月', '年度', '季別', '報告年度', 'ReportPeriod', 'Date']));
+        const period = item.area.indexOf('Quarterly') === 0 ? quarterPeriod_(record) : reportPeriod_(textField_(record, ['資料年月', '年月', '年度', '報告年度', 'ReportPeriod', 'Date']));
         const rawJson = JSON.stringify(record);
         const signature = [item.endpoint, code, period, rawJson].join('|');
         if (signatures.has(signature)) return;
@@ -100,7 +101,7 @@ function appendMonthlyRevisions_(sheet, rows) {
     const signature = r.code + '|' + r.period + '|' + rawJson;
     if (signatures.has(signature)) return;
     signatures.add(signature);
-    additions.push([SIGNALS.market, r.code, r.name, r.industry, r.period, r.current, r.prior, r.yearAgo, r.mom, r.yoy, r.ytd, r.priorYtd, r.ytdGrowth, 'As published', SIGNALS.monthlyUrl, new Date(), rawJson]);
+    additions.push([SIGNALS.market, r.code, r.name, r.industry, r.period, r.current, r.prior, r.yearAgo, r.mom, r.yoy, r.ytd, r.priorYtd, r.ytdGrowth, 'As published', r.sourceUrl, new Date(), rawJson]);
   });
   if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
   return additions.length;
@@ -123,26 +124,105 @@ function rebuildSiteFeed_(book) {
     if (!byCode.has(code)) byCode.set(code, []);
     byCode.get(code).push(row);
   });
+  const marginMap = marginSignalsMap_(book);
   const output = [];
-  byCode.forEach(history => {
+  byCode.forEach((history, code) => {
     history.sort((a, b) => a[4] < b[4] ? -1 : a[4] > b[4] ? 1 : 0);
     const current = history[history.length - 1];
     const periods = history.map(r => String(r[4]));
     const index = periods.length - 1;
     const y = history.map(r => number_(r[9]));
     const continuous = contiguousMonths_(periods, index);
-    const validY = i => typeof y[i] === 'number' && Number.isFinite(y[i]);
-    const d1 = continuous >= 14 && validY(index) && validY(index - 1) ? y[index] - y[index - 1] : '';
-    const d2 = continuous >= 15 && validY(index) && validY(index - 1) && validY(index - 2) ? y[index] - 2 * y[index - 1] + y[index - 2] : '';
-    const d3 = continuous >= 16 && validY(index) && validY(index - 1) && validY(index - 2) && validY(index - 3) ? y[index] - 3 * y[index - 1] + 3 * y[index - 2] - y[index - 3] : '';
-    const raw = parseJson_(current[16]);
-    const filingDate = textField_(raw, ['出表日期', '公告日期', '發布日期', '發布時間', '發佈時間']);
-    const status = d3 !== '' ? '3rd difference available; based on ' + continuous + ' consecutive monthly observations' : 'History: ' + continuous + ' consecutive month(s); 3rd difference needs 16 revenue months';
-    output.push([current[0], current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), d1, d2, d3, continuous, '', '', '', '', filingDate, status, current[14]]);
+    const diffs = finiteDifferencesAtEnd_(y, continuous);
+    const margin = marginMap.get(code) || emptyMarginSignals_();
+    const status = [
+      diffs.d3 !== '' ? 'Revenue Δ3 available' : 'Revenue Δ3 needs 4 consecutive monthly YoY observations',
+      margin.status
+    ].filter(Boolean).join('; ');
+    output.push([current[0], current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14]]);
   });
   output.sort((a, b) => (Number(b[7]) || -Infinity) - (Number(a[7]) || -Infinity));
-  if (feed.getLastRow() > 4) feed.getRange(5, 1, feed.getLastRow() - 4, 18).clearContent();
-  if (output.length) feed.getRange(5, 1, output.length, 18).setValues(output);
+  if (feed.getLastRow() > 4) feed.getRange(5, 1, feed.getLastRow() - 4, FEED_HEADERS.length).clearContent();
+  if (output.length) feed.getRange(5, 1, output.length, FEED_HEADERS.length).setValues(output);
+}
+
+function emptyMarginSignals_() {
+  return {gross: '', grossYoY: '', grossD1: '', grossD2: '', grossD3: '', operating: '', operatingYoY: '', operatingD1: '', operatingD2: '', operatingD3: '', statementDate: '', status: 'Quarterly margins need matched general-industry filings'};
+}
+
+function marginSignalsMap_(book) {
+  const result = new Map();
+  const raw = book.getSheetByName(SIGNALS.rawSheet);
+  if (!raw || raw.getLastRow() <= 4) return result;
+  const values = raw.getRange(5, 1, raw.getLastRow() - 4, RAW_HEADERS.length).getValues();
+  const byCompany = new Map();
+  values.forEach(row => {
+    if (String(row[2]) !== 't187ap06_X_ci') return;
+    const companyCode = String(row[3] || '').trim();
+    if (!companyCode) return;
+    const q = String(row[5] || '');
+    if (!/^\d{4}-Q[1-4]$/.test(q)) return;
+    const record = parseJson_(row[7]);
+    const revenue = numericField_(record, ['營業收入']);
+    const grossProfit = numericField_(record, ['營業毛利（毛損）淨額', '營業毛利（毛損）', '營業毛利淨額']);
+    const operatingIncome = numericField_(record, ['營業利益（損失）', '營業利益損失']);
+    if (!(revenue > 0)) return;
+    const key = quarterIndex_(q);
+    if (!byCompany.has(companyCode)) byCompany.set(companyCode, new Map());
+    byCompany.get(companyCode).set(key, {
+      key,
+      q,
+      gross: grossProfit === '' ? '' : grossProfit / revenue * 100,
+      operating: operatingIncome === '' ? '' : operatingIncome / revenue * 100,
+      date: textField_(record, ['出表日期', '公告日期', '發布日期', '發布時間', '發佈時間'])
+    });
+  });
+  byCompany.forEach((quarterMap, companyCode) => {
+    const series = [...quarterMap.values()].sort((a, b) => a.key - b.key);
+    if (!series.length) return;
+    const last = series[series.length - 1];
+    const gm = differencesForQuarterSeries_(series, yoyMarginSeries_(series, 'gross'));
+    const om = differencesForQuarterSeries_(series, yoyMarginSeries_(series, 'operating'));
+    result.set(companyCode, {
+      gross: last.gross, grossYoY: gm.yoy, grossD1: gm.d1, grossD2: gm.d2, grossD3: gm.d3,
+      operating: last.operating, operatingYoY: om.yoy, operatingD1: om.d1, operatingD2: om.d2, operatingD3: om.d3,
+      statementDate: last.date,
+      status: (last.gross === '' || last.operating === '') ? 'General-industry margin field missing; check statement rows' : (gm.d3 !== '' || om.d3 !== '' ? 'Margin Δ3 available on matched same-quarter YoY series' : 'Margin Δ3 needs 8 consecutive quarterly statements; reported-period basis can be YTD')
+    });
+  });
+  return result;
+}
+
+function yoyMarginSeries_(series, field) {
+  const map = new Map(series.map(x => [x.key, x[field]]));
+  return series.map(x => {
+    const prior = map.get(x.key - 4);
+    return typeof x[field] === 'number' && typeof prior === 'number' ? x[field] - prior : '';
+  });
+}
+
+function differencesForQuarterSeries_(series, yoy) {
+  const i = series.length - 1;
+  const contiguous = n => {
+    if (i - n + 1 < 0) return false;
+    for (let j = i - n + 1; j <= i; j++) {
+      if (j > i - n + 1 && series[j].key - series[j - 1].key !== 1) return false;
+      if (typeof yoy[j] !== 'number' || !Number.isFinite(yoy[j])) return false;
+    }
+    return true;
+  };
+  const valid = n => contiguous(n) && series[i].key - series[i - n + 1].key === n - 1;
+  const diffs = finiteDifferencesAtEnd_(yoy, Math.max(0, ...[2, 3, 4].filter(valid).map(n => n)));
+  return {yoy: yoy[i], d1: diffs.d1, d2: diffs.d2, d3: diffs.d3};
+}
+
+function finiteDifferencesAtEnd_(values, contiguousCount) {
+  const i = values.length - 1;
+  const valid = offset => typeof values[i - offset] === 'number' && Number.isFinite(values[i - offset]);
+  const d1 = contiguousCount >= 2 && valid(0) && valid(1) ? values[i] - values[i - 1] : '';
+  const d2 = contiguousCount >= 3 && valid(0) && valid(1) && valid(2) ? values[i] - 2 * values[i - 1] + values[i - 2] : '';
+  const d3 = contiguousCount >= 4 && valid(0) && valid(1) && valid(2) && valid(3) ? values[i] - 3 * values[i - 1] + 3 * values[i - 2] - values[i - 3] : '';
+  return {d1, d2, d3};
 }
 
 function contiguousMonths_(periods, index) {
@@ -154,7 +234,7 @@ function contiguousMonths_(periods, index) {
   return count;
 }
 
-function normalizeMonthly_(raw) {
+function normalizeMonthly_(raw, sourceUrl) {
   return {
     raw,
     code: textField_(raw, ['公司代號', '公司代碼', '公司編號', '證券代號']),
@@ -168,7 +248,8 @@ function normalizeMonthly_(raw) {
     yoy: numericField_(raw, ['營業收入-去年同月增減(%)', '去年同月增減(%)', 'yearoveryearchange']),
     ytd: numericField_(raw, ['累計營業收入-當月累計營收', '當月累計營收', 'year-to-daterevenue']),
     priorYtd: numericField_(raw, ['累計營業收入-去年累計營收', '去年累計營收', 'prioryearytdrevenue']),
-    ytdGrowth: numericField_(raw, ['累計營業收入-前期比較增減(%)', '前期比較增減(%)', 'ytdgrowth'])
+    ytdGrowth: numericField_(raw, ['累計營業收入-前期比較增減(%)', '前期比較增減(%)', 'ytdgrowth']),
+    sourceUrl: sourceUrl || SIGNALS.monthlyUrl
   };
 }
 
@@ -236,6 +317,22 @@ function reportPeriod_(value) {
   if (m) return String(Number(m[1]) + 1911) + '-' + m[2];
   m = s.match(/^(\d{4})[-/]?(\d{2})$/);
   return m ? m[1] + '-' + m[2] : s;
+}
+
+function quarterPeriod_(record) {
+  const yearText = textField_(record || {}, ['年度', '報告年度', 'FiscalYear', 'Year']);
+  const quarterText = textField_(record || {}, ['季別', '季度', 'Quarter', 'FiscalQuarter']);
+  const yearMatch = yearText.match(/\d{3,4}/);
+  const quarterMatch = quarterText.match(/[1-4]/);
+  if (!yearMatch || !quarterMatch) return '';
+  const yearNumber = Number(yearMatch[0]);
+  const year = yearNumber < 1911 ? yearNumber + 1911 : yearNumber;
+  return String(year) + '-Q' + quarterMatch[0];
+}
+
+function quarterIndex_(period) {
+  const match = String(period || '').match(/^(\d{4})-Q([1-4])$/);
+  return match ? Number(match[1]) * 4 + Number(match[2]) - 1 : NaN;
 }
 
 function monthDistance_(a, b) {

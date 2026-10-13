@@ -61,7 +61,7 @@ The library now has 30 source cards across the existing 14 groups, covering all 
 
 ## Other market filing systems, 12 October 2026
 
-Expanded the separate Other markets page from four to eight public-company filing systems. The page now includes India NSE financial results, UK Companies House, Canada's SEDAR+, and Australia's ASX announcements alongside the US SEC, South Korea OpenDART, China exchange/CNINFO filings, and Japan EDINET/JPX.
+Expanded the separate Other markets page from four to ten public-company filing systems. It includes the US SEC, South Korea OpenDART, China exchange/CNINFO filings, Japan EDINET/JPX, India NSE, UK Companies House, Canada's SEDAR+, Australia's ASX, Hong Kong HKEXnews, and Brazil CVM.
 
 - NSE's results page exposes filing periods, broadcast timestamps, and CSV downloads. Its disclaimer says issuer-submitted information is displayed without exchange verification of adequacy or accuracy.
 - Companies House provides public UK company records and filings. Its API requires an API key, and accounts are not normalized into a complete public-equity facts feed. Small-company exemptions and filing formats affect comparability.
@@ -69,3 +69,9 @@ Expanded the separate Other markets page from four to eight public-company filin
 - ASX publishes issuer announcements and financial reports. The page is event-driven and attachment-heavy, rather than a normalized company-facts API.
 
 These additions are filing sources, not monthly operating-data replacements for Taiwan's revenue feed. The page keeps each market's cadence, access, and coverage limit beside its link. Reviewed against provider pages on 12 October 2026.
+
+### Monthly revenue comparison
+
+The official rules reviewed identify Taiwan as a broad monthly company-revenue disclosure system for domestic primary-listed issuers. Article 36 requires the prior month's operating status to be reported by the 10th; the related rules define monthly operating status to include consolidated operating revenue. Special-scope rules create exceptions, so this is not literally every security traded in Taiwan. The open monthly revenue files provide issuer-level revenue, prior-month and prior-year comparisons, and cumulative totals, not a complete monthly income statement. Sources: [Taiwan Securities and Exchange Act, Article 36](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0400001), [Enforcement Rules, Article 5](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0400002), [scope exceptions](https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0400152), and [open monthly listed-company dataset](https://data.gov.tw/dataset/18420).
+
+No broad, cross-industry equivalent was verified in the other markets reviewed. Two useful near-matches can mislead: Hong Kong's monthly return covers issued securities and share-capital movements, not revenue ([HKEX Rule 13.25B](https://en-rules.hkex.com.hk/rulebook/1325b)); Japanese issuers may publish monthly sales voluntarily, but those updates are company-specific. South Korea and India have quarterly reporting requirements in the official sources reviewed ([KRX disclosure overview](https://global.krx.co.kr/contents/GLB/03/0305/0305030000/GLB0305030000.jsp), [SEBI Regulation 33](https://www.sebi.gov.in/sebi_data/attachdocs/dec-2025/1766551151465.pdf)). This is a bounded review, not an exhaustive survey of every exchange.
