@@ -40,3 +40,11 @@ Full verification: every `tests/check-*.mjs` passed, as did `node --check` for t
 - Re-ran the official exchange profile lookup: 2,556 of 2,587 issuer rows have an English company name or abbreviation, and all 2,587 have a Mandarin pronunciation lookup. The Website feed table had a header-name mismatch that hid the pronunciation link; the local app now reads the exact Sheet header.
 - Changed stale feed notes that described the workbook as an empty template. The page and CSV note now identify the observations as monthly reported data, not real time.
 - Formatted revenue and rate values for scanning, updated the issuer count after feed load, and fixed the checked-in monthly import helper so it no longer calls an optional fallback function that is absent from the repository.
+
+## Filing bridges and Taiwan margin match
+
+- Added an SEC CompanyFacts bridge to AI filing leads. Facts are filtered to what was public by the lead date, retain the original taxonomy, concept, period, unit, filing form and source link, and do not combine alternative revenue concepts. Gross and operating margins are shown only when period and unit match. Cash and debt are treated as period-end balances. Old leads are backfilled at a maximum of 20 per run. Missing facts remain unavailable.
+- Added official manual filing links and access notes for eight non-US markets. Only the SEC feed is automated. See [international issuer sources](international-issuer-watch-2026-10-13.md) and [SEC operating bridge rules](sec-operating-bridge-2026-10-13.md).
+- Fixed Taiwan margin attachment when the monthly company name differs from MOPS quarterly statements. Code-only matching is permitted only if the quarterly records contain a single distinct issuer identity for that code. A regression test covers the unique-code case.
+- Verified the private SiteFeed currently includes September 2026 and showed four consecutive monthly observations for sampled September rows. The public feed remains restricted, so the site has not been verified against this current Sheet data.
+- Checks: `node tests/check-ai-pivot-watch.mjs`, `node automation/sec-filing-screen.mjs --self-test`, `node tests/check-taiwan-signal-math.mjs`, `node tests/check-mops-monthly-backfill.mjs`, and `git diff --check`.

@@ -87,6 +87,26 @@
 
   const internationalSourceCard = item => `<article class="card card-pad"><span class="tag">${esc(item.market)}</span><h3 style="margin:8px 0 4px">${esc(item.source)}</h3><p>${esc(item.access)}</p><a href="${esc(item.url)}" target="_blank" rel="noreferrer">Open official source ↗</a></article>`;
 
+  const operatingBridge = item => {
+    const bridge = item.operatingBridge;
+    if (!bridge?.facts?.revenue) {
+      const status = item.operatingBridgeStatus === 'Retry pending'
+        ? 'The SEC facts request did not complete. The scheduled job will retry it.'
+        : 'No unambiguous standardized financial facts were available by this filing date.';
+      return `<p class="footnote">${status} Check the filing directly. Missing facts do not mean zero.</p>`;
+    }
+    const format = value => new Intl.NumberFormat(undefined, {maximumFractionDigits: 2}).format(value);
+    const metrics = [['Revenue', 'revenue'], ['Gross profit', 'grossProfit'], ['Operating income', 'operatingIncome'], ['Net income', 'netIncome'], ['Cash and equivalents', 'cash'], ['Current debt', 'currentDebt'], ['Long-term debt', 'longTermDebt']];
+    const rows = metrics.map(([label, key]) => {
+      const fact = bridge.facts[key];
+      if (!fact) return `<tr><th>${label}</th><td>Unavailable</td><td></td></tr>`;
+      const source = fact.sourceUrl ? `<a href="${esc(fact.sourceUrl)}" target="_blank" rel="noreferrer">${esc(fact.form)} filed ${esc(fact.filed)} ↗</a>` : `${esc(fact.form)} filed ${esc(fact.filed)}`;
+      return `<tr><th>${label}</th><td>${format(fact.value)} ${esc(fact.unit)}</td><td><span class="footnote">${esc(fact.taxonomy)}:${esc(fact.tag)} · ${source}</span></td></tr>`;
+    }).join('');
+    const margin = (label, value) => Number.isFinite(value) ? `<p><strong>${label}:</strong> ${format(value)}% <span class="footnote">same-period profit divided by revenue</span></p>` : '';
+    return `<details class="ai-operating-bridge"><summary>Reported operating metrics</summary><p class="footnote">SEC standardized entity-level facts available by ${esc(bridge.asOfDate)}. Income statement period: ${esc(bridge.periodStart)} to ${esc(bridge.periodEnd)} (${esc(bridge.durationDays)} days). Cash and debt are balances as of period end. Values are not annualized. Taxonomy, tag, filing date, and source are shown for each metric.</p><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Reported value</th><th>Source fact</th></tr></thead><tbody>${rows}</tbody></table></div>${margin('Gross margin', bridge.grossMarginPct)}${margin('Operating margin', bridge.operatingMarginPct)}<p class="footnote">This is a filing-linked snapshot, not a trend series. CompanyFacts omits custom concepts and segment-only facts, so unavailable items need manual filing review.</p></details>`;
+  };
+
   function leadCard(item) {
     const href = /^https:\/\//i.test(String(item.filingUrl || '')) ? item.filingUrl : '';
     const listing = [item.exchange, item.ticker].filter(Boolean).join(' · ');
@@ -96,7 +116,7 @@
     const nameReceipt = nameHistory?.oldName && nameHistory?.newName
       ? `<p><strong>SEC name history:</strong> ${esc(nameHistory.oldName)} → ${esc(nameHistory.newName)} · effective ${esc(nameHistory.effectiveDate)}${nameSource ? ` · <a href="${esc(nameSource)}" target="_blank" rel="noreferrer">SEC submissions record ↗</a>` : ''}</p>`
       : '';
-    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${nameReceipt}${item.evidence?.length ? `<details><summary>Matched filing text and nearby review cues</summary>${item.evidence.map(e => `<blockquote class="footnote">${esc(e.text)}${e.reviewCues?.length ? `<br><strong>Nearby wording to check:</strong> ${e.reviewCues.map(esc).join(', ')}. These are text matches, not verified operating facts.` : ''}</blockquote>`).join('')}</details>` : ''}<p class="footnote">AI-language matches are automated leads, not a verified pivot or investment conclusion. Legal-name transitions are cross-checked against SEC submissions history. Review the full filing and prior-period evidence.</p></article>`;
+    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${nameReceipt}${item.evidence?.length ? `<details><summary>Matched filing text and nearby review cues</summary>${item.evidence.map(e => `<blockquote class="footnote">${esc(e.text)}${e.reviewCues?.length ? `<br><strong>Nearby wording to check:</strong> ${e.reviewCues.map(esc).join(', ')}. These are text matches, not verified operating facts.` : ''}</blockquote>`).join('')}</details>` : ''}${operatingBridge(item)}<p class="footnote">AI-language matches are automated leads, not a verified pivot or investment conclusion. Legal-name transitions are cross-checked against SEC submissions history. Review the full filing and prior-period evidence.</p></article>`;
   }
 
   window.AIPivotWatch = {

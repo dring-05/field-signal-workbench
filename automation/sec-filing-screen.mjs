@@ -25,6 +25,32 @@ const OPERATIONAL_CONTEXT = /\b(?:customer|commercial|revenue|product|service|bu
 const RISK_HEADING = /\b(?:risk factors|risks related to|forward-looking statements|cautionary statement)\b/i;
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
 const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
+const OPERATING_FACTS = {
+  'us-gaap': {
+    revenue: ['RevenueFromContractWithCustomerExcludingAssessedTax', 'Revenues', 'SalesRevenueNet'],
+    grossProfit: ['GrossProfit'],
+    operatingIncome: ['OperatingIncomeLoss', 'OperatingIncomeLossContinuingOperations'],
+    netIncome: ['NetIncomeLoss'],
+  },
+  'ifrs-full': {
+    revenue: ['Revenue'],
+    grossProfit: ['GrossProfit'],
+    operatingIncome: ['OperatingProfitLoss'],
+    netIncome: ['ProfitLoss'],
+  },
+};
+const INSTANT_FACTS = {
+  'us-gaap': {
+    cash: ['CashAndCashEquivalentsAtCarryingValue'],
+    currentDebt: ['LongTermDebtCurrent', 'ShortTermBorrowings'],
+    longTermDebt: ['LongTermDebtNoncurrent'],
+  },
+  'ifrs-full': {
+    cash: ['CashAndCashEquivalents'],
+    currentDebt: ['BorrowingsCurrent'],
+    longTermDebt: ['BorrowingsNoncurrent'],
+  },
+};
 
 function insideRiskSection(text, index) {
   const headings = [...text.matchAll(RISK_SECTION_START)];
@@ -349,6 +375,88 @@ export function reviewCues(text) {
   return cues;
 }
 
+function companyFactRows(companyFacts, taxonomy, concepts, cutoffDate, periodType = 'duration') {
+  const namespace = companyFacts?.facts?.[taxonomy];
+  if (!namespace) return [];
+  const rows = [];
+  concepts.forEach((tag, tagPriority) => {
+    const fact = namespace[tag];
+    if (!fact?.units) return;
+    Object.entries(fact.units).forEach(([unit, entries]) => {
+      (Array.isArray(entries) ? entries : []).forEach(entry => {
+        if (entry.val === null || entry.val === undefined || String(entry.val).trim() === '' || !Number.isFinite(Number(entry.val)) || !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.end ?? '')) || !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.filed ?? '')) || entry.filed > cutoffDate || entry.end > cutoffDate) return;
+        const start = String(entry.start ?? '');
+        const durationDays = start ? (Date.parse(`${entry.end}T00:00:00Z`) - Date.parse(`${start}T00:00:00Z`)) / 86400000 + 1 : 0;
+        if (periodType === 'duration' && (!start || durationDays < 28 || durationDays > 400)) return;
+        if (periodType === 'instant' && start) return;
+        rows.push({taxonomy, tag, tagPriority, unit, value: Number(entry.val), start, end: entry.end, durationDays, filed: entry.filed, form: String(entry.form ?? ''), accession: String(entry.accn ?? '')});
+      });
+    });
+  });
+  return rows;
+}
+
+/** Build a filing-as-of bridge from standardized, entity-wide XBRL facts only. */
+export function operatingBridgeFromCompanyFacts(companyFacts, cutoffDate, cik) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(cutoffDate ?? ''))) return null;
+  const revenues = Object.entries(OPERATING_FACTS).flatMap(([taxonomy, concepts]) => companyFactRows(companyFacts, taxonomy, concepts.revenue, cutoffDate));
+  if (!revenues.length) return null;
+  revenues.sort((a, b) => b.end.localeCompare(a.end) || a.durationDays - b.durationDays || a.tagPriority - b.tagPriority || b.filed.localeCompare(a.filed));
+  const revenue = revenues[0];
+  // If the same revenue concept and period is presented in multiple currencies,
+  // use USD when reported. Otherwise withhold the bridge rather than guess.
+  const sameRevenueFacts = revenues.filter(x => x.taxonomy === revenue.taxonomy && x.tag === revenue.tag && x.start === revenue.start && x.end === revenue.end);
+  const units = [...new Set(sameRevenueFacts.map(x => x.unit))];
+  if (units.length > 1) {
+    if (units.includes('USD')) revenue.unit = 'USD';
+    else return null;
+  }
+  const matchingFact = (metric, concepts, periodType = 'duration') => {
+    const rows = companyFactRows(companyFacts, revenue.taxonomy, concepts, cutoffDate, periodType)
+      .filter(x => (periodType === 'instant' ? !x.start && x.end === revenue.end : x.start === revenue.start && x.end === revenue.end) && x.unit === revenue.unit)
+      .sort((a, b) => a.tagPriority - b.tagPriority || b.filed.localeCompare(a.filed));
+    if (!rows.length) return null;
+    const chosen = rows[0];
+    return {metric, value: chosen.value, taxonomy: chosen.taxonomy, tag: chosen.tag, unit: chosen.unit, periodStart: chosen.start, periodEnd: chosen.end, filed: chosen.filed, form: chosen.form, accession: chosen.accession, sourceUrl: factFilingUrl(cik, chosen.accession)};
+  };
+  const facts = {};
+  for (const [metric, concepts] of Object.entries(OPERATING_FACTS[revenue.taxonomy])) facts[metric] = matchingFact(metric, concepts);
+  for (const [metric, concepts] of Object.entries(INSTANT_FACTS[revenue.taxonomy] ?? {})) facts[metric] = matchingFact(metric, concepts, 'instant');
+  if (!facts.revenue) return null;
+  const margin = numerator => {
+    const item = facts[numerator];
+    return item && Number.isFinite(item.value) && facts.revenue.value !== 0
+      ? item.value / facts.revenue.value * 100
+      : null;
+  };
+  return {
+    asOfDate: cutoffDate,
+    periodStart: revenue.start,
+    periodEnd: revenue.end,
+    durationDays: revenue.durationDays,
+    unit: revenue.unit,
+    taxonomy: revenue.taxonomy,
+    grossMarginPct: margin('grossProfit'),
+    operatingMarginPct: margin('operatingIncome'),
+    facts,
+  };
+}
+
+function factFilingUrl(cik, accession) {
+  const normalized = String(accession ?? '').replaceAll('-', '');
+  if (!/^\d{10,}$/.test(normalized)) return '';
+  return `${SEC}/Archives/edgar/data/${Number(cik)}/${normalized}/${accession}.txt`;
+}
+
+async function operatingBridgeForCik(cik, cutoffDate, userAgent, cache) {
+  const padded = String(cik).replace(/^0+/, '').padStart(10, '0');
+  if (!cache.has(padded)) {
+    const response = await secFetch(`${DATA}/api/xbrl/companyfacts/CIK${padded}.json`, userAgent);
+    cache.set(padded, response.status === 200 ? JSON.parse(response.body) : null);
+  }
+  return operatingBridgeFromCompanyFacts(cache.get(padded), cutoffDate, cik);
+}
+
 async function previousSameForm(row, userAgent, cache) {
   const data = await submissionsForCik(row.cik, userAgent, cache);
   if (!data) return null;
@@ -392,6 +500,7 @@ async function scan(options) {
   const candidates = [];
   const checked = [...seen];
   const submissionsCache = new Map();
+  const companyFactsCache = new Map();
   const sorted = attachListedIssuer(
     [...filings.values()].filter(row => listedCiks.has(row.cik)),
     tickerRows,
@@ -436,6 +545,15 @@ async function scan(options) {
       aiLabel = aiDeltaLabel(aiHits, priorHits);
     }
     if (!nameLead && !aiLabel) continue;
+    let operatingBridge = null;
+    let operatingBridgeStatus = 'No standardized facts available by the filing date';
+    try {
+      operatingBridge = await operatingBridgeForCik(row.cik, row.filed, userAgent, companyFactsCache);
+      if (operatingBridge) operatingBridgeStatus = 'Available';
+    } catch (error) {
+      operatingBridgeStatus = 'Retry pending';
+      console.warn(`CompanyFacts bridge unavailable for ${row.cik}: ${error.message}`);
+    }
     candidates.push({
       cik: row.cik,
       company: row.company,
@@ -454,6 +572,8 @@ async function scan(options) {
       priorSameFormAiMentions: priorCount,
       currentAiMentions: aiHits.length,
       evidence: snippets(aiHits),
+      operatingBridge,
+      operatingBridgeStatus,
       reviewedByHuman: false,
     });
   }
@@ -478,6 +598,17 @@ async function scan(options) {
   const keepAfter = new Date(now);
   keepAfter.setUTCDate(keepAfter.getUTCDate() - 180);
   const leads = [...unique.values()].filter(item => item.filingDate >= dateString(keepAfter)).sort((a, b) => b.filingDate.localeCompare(a.filingDate)).slice(0, 1000);
+  // Gradually add filing-as-of bridges to saved leads from before this feature.
+  // Cap each daily run so old feed history does not create an unbounded SEC burst.
+  const pendingBridges = leads.filter(item => !Object.hasOwn(item, 'operatingBridge') || item.operatingBridgeStatus === 'Retry pending').slice(0, 20);
+  for (const item of pendingBridges) {
+    try {
+      item.operatingBridge = await operatingBridgeForCik(item.cik, item.filingDate, userAgent, companyFactsCache);
+      item.operatingBridgeStatus = item.operatingBridge ? 'Available' : 'No standardized facts available by the filing date';
+    } catch (error) {
+      console.warn(`CompanyFacts backfill unavailable for ${item.cik}: ${error.message}`);
+    }
+  }
   const checkedAccessions = [...new Set(checked)].slice(-15000);
   return {
     schemaVersion: 1,
