@@ -108,15 +108,22 @@
     const combined = [...current];
     const seen = new Set(current.map(entry => entry.id));
     const idMap = new Map();
+    const importedIds = new Set();
     for (const raw of imported) {
       if (!raw || typeof raw !== 'object') continue;
       const oldId = String(raw.id || '');
-      if (oldId) idMap.set(oldId, seen.has(oldId) ? id() : oldId);
+      if (oldId && !importedIds.has(oldId)) {
+        importedIds.add(oldId);
+        idMap.set(oldId, seen.has(oldId) ? id() : oldId);
+      }
     }
+    importedIds.clear();
     let added = 0;
     for (const raw of imported) {
       if (!raw || typeof raw !== 'object') continue;
       const oldId = String(raw.id || '');
+      if (oldId && importedIds.has(oldId)) continue;
+      if (oldId) importedIds.add(oldId);
       const item = { ...raw, id: idMap.get(oldId) || id(), predecessorId: idMap.get(String(raw.predecessorId || '')) || String(raw.predecessorId || '') };
       const normalized = normalizeEntry(item, combined);
       if (normalized.error) continue;

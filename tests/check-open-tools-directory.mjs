@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import { readFile, access } from 'node:fs/promises';
+const data=JSON.parse(await readFile(new URL('../public/open-tools-directory.json',import.meta.url),'utf8'));
+assert.equal(data.reviewDate,'2026-10-12');
+assert.equal(data.records.length,220);
+assert.equal(data.records.filter(x=>x['Starting list']==='Yes').length,76);
+const ids=data.records.map(x=>String(x.ID));assert.equal(new Set(ids).size,ids.length,'record IDs stay unique');
+for(const record of data.records){if(record['Preview image'])await access(new URL(`../public/open-tools-previews/${record['Preview image'].split('/').at(-1)}`,import.meta.url));}
+const context=vm.createContext({window:{},fetch:()=>Promise.reject(new Error('not used in render')),Date,Math,JSON,Map,Set});
+vm.runInContext(await readFile(new URL('../public/open-tools-directory.js',import.meta.url),'utf8'),context);
+const html=context.window.OpenToolsDirectory.render((k,t,d,s='')=>`<h1>${t}</h1><p>${d}</p><aside>${s}</aside>`);
+assert.match(html,/Curated starting list/);assert.match(html,/Technology niche/);assert.match(html,/dated page snapshots, not live site previews/);
+assert.match(html,/Search name, company, signal, access, cadence, sector, or niche/);
+const directoryUi=await readFile(new URL('../public/open-tools-directory.js',import.meta.url),'utf8');assert.match(directoryUi,/r\.Access,r\.Account,r\['Free scope'\],r\['Update cadence'\]/,'search should include access terms and cadence');assert.match(directoryUi,/Access, coverage, freshness, and notes/,'long access and evidence notes should be collapsed until requested');
+const index=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+assert.match(index,/<title>Dashboard<\/title>/);assert.match(index,/href="#industries" data-nav="industries">Open tools<\/a>/);assert.match(index,/value="industries">Open tools<\/option>/);
+assert.match(index,/href="#taiwan" data-nav="taiwan">Taiwan company data/);assert.match(index,/href="#ai-watch" data-nav="ai-watch">AI filing watch/);assert.match(index,/href="#paper-books" data-nav="paper-books">Paper books/);assert.match(index,/href="#importer" data-nav="importer">Data staging inbox/);assert.match(index,/href="#lab" data-nav="lab">Analyst tools/);assert.match(index,/href="#other-markets" data-nav="other-markets">Other market filings/);assert.match(index,/href="#notebook" data-nav="notebook">Saved research notes/);
+const app=await readFile(new URL('../public/app.js',import.meta.url),'utf8');assert.match(app,/p==='industries'\?window\.OpenToolsDirectory\.render\(header\)/);assert.match(app,/window\.OpenToolsDirectory\.attach\(root\)/);assert.match(app,/page==='capacity'\|\|page==='sources'\)return 'lab'/);assert.match(app,/page==='tracker'\)return 'notebook'/);
+console.log(`Open tools directory checks passed: ${data.records.length} copied records, ${ids.length} unique IDs, and all referenced snapshots present.`);

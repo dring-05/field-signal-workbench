@@ -41,6 +41,8 @@ const merged = importEntries(current, imported);
 assert.equal(merged.added,2);
 assert.notEqual(merged.entries[1].id, 'shared', 'imported collisions receive new ids');
 assert.equal(merged.entries.at(-1).predecessorId, merged.entries[1].id, 'internal references follow the remapped imported record');
+const duplicateIdBackup = importEntries([], [{...power,id:'duplicate'}, {...equipment,id:'duplicate',predecessorId:'duplicate'}]);
+assert.equal(duplicateIdBackup.added,1,'duplicate IDs in one backup do not overwrite the remapping or add an ambiguous second record');
 assert.equal(renderState([power]).includes('Do not add stage quantities'),true);
 assert.equal(renderState([power]).includes('No earlier stage linked'),false);
 

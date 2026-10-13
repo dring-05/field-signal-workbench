@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import { readFile } from 'node:fs/promises';
+const source=await readFile(new URL('../public/hardware-market-change-log.js',import.meta.url),'utf8');
+const context={window:{}};vm.runInNewContext(source,context);
+const api=context.window.FieldSignalsModules.hardwareMarketChangeLog;
+assert.equal(api.title,'Hardware market change log');
+assert.match(api.render(),/No provider feed or change detector is connected/);
+assert.match(api.render(),/data-hmcl-filter/);
+assert.match(source,/sort\(\(a,b\)=>String\(b\.eventDate[\s\S]{0,100}localeCompare\(String\(a\.eventDate/,'newest dated updates should appear first');
+console.log('Hardware market change log UI checks passed: dated snapshot labeling, niche filter, and module registration.');

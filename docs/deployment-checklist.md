@@ -45,8 +45,8 @@ For Git integration, verify the repository root and `wrangler.json` are selected
 ## 5. Verify the published result
 
 1. Wait for Cloudflare to report a successful deployment and copy the exact `workers.dev` URL shown for `field-signal-workbench`.
-2. Open that URL in a fresh browser tab. Confirm the page title and Field Signals interface load over HTTPS.
-3. Check the overview and primary navigation, then reload a non-root hash route to confirm the static app still loads.
+2. Open that URL in a fresh browser tab. Confirm the page title and Dashboard interface load over HTTPS.
+3. Check the open-tools landing page and primary navigation, then reload a non-root hash route to confirm the static app still loads.
 4. Verify the deployed Git commit in Cloudflare matches the commit shown on GitHub, when using Git integration. For CLI deployment, confirm the successful deployment is for the expected Worker name and account.
 5. Keep the public URL and deployment status with the project notes. Do not claim publication until the URL loads successfully from the public internet.
 

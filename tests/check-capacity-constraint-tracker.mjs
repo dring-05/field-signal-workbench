@@ -1,0 +1,55 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import vm from 'node:vm';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { STORAGE_KEY, TYPES, validDate, safeUrl, normalize, read, write, reviewFlag, ageDays, entriesWithGaps, importRecords, renderState } = require('../public/capacity-constraint-tracker.js');
+assert.equal(TYPES.length, 4);
+assert.equal(STORAGE_KEY, 'field-signals-capacity-constraints-v1');
+assert.equal(validDate('2026-02-28'), true);
+assert.equal(validDate('2026-02-30'), false);
+assert.equal(validDate('09/30/2026'), false);
+assert.equal(safeUrl('javascript:alert(1)'), '');
+
+const source = { id:'power-a', type:'power', subject:'North campus', geography:'Virginia', signal:'Utility interconnection queue', value:'125', unit:'MW', period:'Q3 2026', status:'Queued', sourceDate:'2026-09-30', checkedOn:'2026-10-01', nextCheck:'2026-10-15', confidence:'Medium', sourceName:'Utility planning report', sourceUrl:'https://example.org/queue', gap:'No confirmed energization date', caveat:'Projects are proposed, not committed.' };
+const first = normalize(source, []);
+assert.equal(first.error, undefined);
+assert.equal(first.value, 125);
+assert.equal(normalize({ ...source, sourceUrl:'data:text/html,x' }, []).error.includes('URL'), true);
+assert.match(normalize({ ...source, nextCheck:'2026-09-30' }, []).error, /cannot precede/);
+assert.match(normalize({ ...source, sourceDate:'2026-10-02' }, []).error, /cannot be after/);
+assert.match(normalize({ ...source, sourceDate:'2026-02-30' }, []).error, /valid source date/);
+assert.match(normalize({ ...source, value:'1,2,3' }, []).error, /thousands separators/);
+assert.match(normalize({ ...source, value:'30', unit:'' }, []).error, /unit/);
+assert.match(normalize({ ...source, value:'', unit:'MW' }, []).error, /Leave the unit blank/);
+assert.equal(reviewFlag(first,'2026-10-14'),'Scheduled');
+assert.equal(reviewFlag(first,'2026-10-15'),'Review due');
+assert.equal(ageDays(first,'2026-10-15'),15);
+assert.equal(entriesWithGaps([first])[0].gaps.length,0);
+const qualitative = normalize({ ...source, id:'qual', type:'labor', value:'', unit:'', period:'', gap:'' }, []);
+assert.equal(entriesWithGaps([qualitative])[0].gaps.includes('No numeric reading'),true);
+assert.equal(entriesWithGaps([qualitative])[0].gaps.includes('Source period not specified'),true);
+assert.equal(entriesWithGaps([qualitative])[0].gaps.includes('No named missing link or follow-up question'),true);
+
+const store = new Map();
+const storage = { getItem:key=>store.get(key)||null, setItem:(key,value)=>store.set(key,value) };
+assert.equal(write(storage,{ version:1, entries:[first] }),true);
+assert.deepEqual(read(storage).entries.map(item=>item.id),['power-a']);
+assert.deepEqual(read({ getItem:()=>'{bad' }).entries,[]);
+const equipment = normalize({ ...source, id:'equipment-a', type:'equipment', subject:'Utility North transformer', signal:'Lead time', value:'48', unit:'weeks', priorId:'power-a', relationship:'Same site named in procurement docket', sourceUrl:'https://example.org/order' }, [first]);
+const merged = importRecords([{ ...first, id:'power-a' }], [{ ...first, id:'power-a' }, { ...equipment, id:'equipment-a', priorId:'power-a' }]);
+assert.equal(merged.added,2);
+assert.notEqual(merged.entries[1].id,'power-a');
+assert.equal(merged.entries[2].priorId,merged.entries[1].id,'import preserves a link to the remapped imported record');
+assert.equal(renderState([first],'').includes('Manual review reminders, not live monitoring'),true);
+assert.equal(renderState([first],'').includes('confidence'),true);
+
+const moduleSource = await readFile(new URL('../public/capacity-constraint-tracker.js',import.meta.url),'utf8');
+const context = { window:{} };
+vm.runInNewContext(moduleSource, context, { timeout:1000 });
+const api = context.window.FieldSignalsModules.capacityConstraintTracker;
+assert.equal(api.title,'Capacity constraint tracker');
+assert.match(api.render(),/Equipment lead times/);
+assert.match(api.render(),/Skilled labor/);
+console.log('Capacity constraint tracker checks passed: date and numeric validation, manual evidence, review reminders, gap flags, local persistence, import ID remapping, and browser registration.');

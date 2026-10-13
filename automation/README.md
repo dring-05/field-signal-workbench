@@ -1,6 +1,6 @@
 # Taiwan public-issuer Sheets refresh
 
-`taiwan-sheets-importer.gs` is the Google Apps Script source for the native workbook linked from Field Signals. It keeps the Sheet as the data store and publishes only the curated `SiteFeed` tab to the website.
+`taiwan-sheets-importer.gs` is the Google Apps Script source for the native workbook linked from Dashboard. It keeps the Sheet as the data store and publishes only the curated `SiteFeed` tab to the website.
 
 ## What it imports
 
@@ -37,7 +37,10 @@ The ordinary importer still accumulates history from current official snapshots.
 2. Replace the starter contents of `Code.gs` with `taiwan-sheets-importer.gs`.
 3. Run `setupTaiwanSignals` once. Google will show the scopes required for the script to edit this Sheet, fetch the official public TWSE and MOPS feeds, and create a daily trigger under the authorizing account.
 4. Run `refreshTaiwanSignals` once and inspect `Import Log`, `Taiwan Monthly`, `Raw Statements`, `Margin Signals`, and `SiteFeed` for source periods, row counts, endpoint errors, quarter keys, standalone-quarter derivations, and margin coverage.
-5. Publish only the `SiteFeed` worksheet as CSV when the owner approves public access, then set the CSV URL in the website configuration.
+5. Publish only the `SiteFeed` worksheet as CSV when the owner approves public access. In the published link settings, select the `SiteFeed` tab and CSV format, then copy its public CSV URL.
+6. Set `window.FIELD_SIGNAL_TAIWAN_FEED_URL` in [`public/config.js`](../public/config.js) to that exact CSV URL. Commit and push the site change so the browser can fetch the public feed. Keep `Taiwan Monthly`, `Raw Statements`, `Margin Signals`, and `Import Log` private.
+
+The current local `config.js` intentionally has an empty URL. The website table remains empty until the importer has populated `SiteFeed`, the owner publishes that one tab, and the CSV URL is configured. The staged MOPS history downloader writes to a local output directory only; it does not import that history into the Sheet or publish it. Review the backfill limits above before treating the first three months as complete.
 
 The trigger checks the sources daily at about 07:00 America/New_York. The providers publish on their own schedules, so a daily check does not imply a daily data observation. `Import Log` records the actual source period and retrieval result. Partial statement-feed failures are logged as partial success; monthly revenue can still refresh if a statement endpoint is unavailable.
 
