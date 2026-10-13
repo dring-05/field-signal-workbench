@@ -23,5 +23,5 @@ for (const href of [
   'https://www.hkexnews.hk/listedco/listconews/sehk/2026/0515/2026051501223.pdf'
 ]) assert.ok(rendered.includes(href), `Missing primary filing link: ${href}`);
 assert.match(rendered, /Manual review · not a live feed/);
-assert.match(rendered, /not a short list/);
+assert.match(rendered, /or make a stock a short/);
 console.log('AI filing watch checks passed: route, international case coverage, SEC/HKEX filing links, and manual-review disclosure.');

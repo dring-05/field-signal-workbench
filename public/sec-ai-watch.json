@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": null,
+  "coverage": "SEC filers found in EDGAR daily indexes for Forms 8-K, 10-K, 10-Q, 6-K, and 20-F. Exchange-traded mapping is not yet applied; private reporting companies may appear and many non-US issuers are out of scope.",
+  "scanWindowStart": null,
+  "scanWindowEnd": null,
+  "sources": [
+    "https://www.sec.gov/Archives/edgar/daily-index/",
+    "https://data.sec.gov/submissions/"
+  ],
+  "leads": [],
+  "checkedAccessions": []
+}

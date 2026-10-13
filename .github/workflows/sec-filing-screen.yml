@@ -1,0 +1,42 @@
+name: SEC filing lead screen
+
+on:
+  schedule:
+    - cron: '17 15 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sec-filing-screen
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate scanner fixtures
+        run: node automation/sec-filing-screen.mjs --self-test
+      - name: Scan recent SEC filings
+        env:
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+          SEC_LOOKBACK_DAYS: '7'
+        run: node automation/sec-filing-screen.mjs --feed public/sec-ai-watch.json
+      - name: Publish public-source lead feed to the repository
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/sec-ai-watch.json
+          if git diff --cached --quiet; then
+            echo "No feed changes to commit."
+          else
+            git commit -m "Refresh SEC filing lead feed"
+            git push
+          fi

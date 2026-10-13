@@ -10,10 +10,14 @@ vm.runInNewContext(modules, context, { timeout: 1000 });
 const dateFunction = app.match(/function normalizedDate\(value,mode='auto'\)\{[\s\S]*?\n\}/)?.[0];
 const sourceFunction = app.match(/function sourcesForQuestion\(text\)\{[^\n]*\}/)?.[0];
 const numberFunction = app.match(/function numberValue\(value,mode='auto'\)\{[^\n]*\}/)?.[0];
+const escapeFunction = app.match(/const esc=s=>[^\n]*;/)?.[0];
+const paperSourceFunction = app.match(/function renderPaperSources\(query\)\{[^\n]*\}/)?.[0];
 const csvFunctions = app.match(/function csvCell\(value\)\{[^\n]*\}\nfunction cleanedSeriesCsv\(data,group\)\{[^\n]*\}/)?.[0];
 assert(dateFunction, 'Could not locate normalizedDate');
 assert(sourceFunction, 'Could not locate sourcesForQuestion');
 assert(numberFunction, 'Could not locate numberValue');
+assert(escapeFunction, 'Could not locate HTML escaping helper');
+assert(paperSourceFunction, 'Could not locate paper-book source finder');
 assert(csvFunctions, 'Could not locate cleaned CSV functions');
 vm.runInNewContext(`${dateFunction}\n${numberFunction}\n${sourceFunction}\n${csvFunctions}`, context, { timeout: 1000 });
 
@@ -65,7 +69,14 @@ for (const [question, expectedId] of expected) {
   assert(ids.includes(expectedId), `${question} did not match ${expectedId}`);
 }
 assert.equal(vm.runInNewContext('sourcesForQuestion("custom question without a sector keyword").length', context), 0);
+const resultsBox = { innerHTML: '' };
+context.document = { querySelector: selector => selector === '#paper-source-results' ? resultsBox : null };
+vm.runInNewContext(`${escapeFunction}\n${sourceFunction}\n${paperSourceFunction}\nrenderPaperSources("TSMC semiconductor wafer sales")`, context, { timeout: 1000 });
+assert.match(resultsBox.innerHTML, /TSMC monthly revenue/);
+assert.match(resultsBox.innerHTML, /Global semiconductor sales/);
+assert.match(resultsBox.innerHTML, /Candidate industry context/);
+assert.match(app, /The search runs in this browser\. It does not save or send your idea details\./);
 assert.match(app, /data-sector-target="\$\{esc\(sector\.id\)\}"/, 'Sector navigation links must target sections without changing the page route');
 assert.match(app, /document\.getElementById\(a\.dataset\.sectorTarget\)\?\.scrollIntoView/, 'Sector navigation must scroll to the selected section');
 assert.doesNotMatch(app, /document\.querySelector\(a\.getAttribute\('href'\)\)/, 'Sector filtering must not interpret section IDs as routes');
-console.log('App-function checks passed: date handling and sector source routing.');
+console.log('App-function checks passed: date handling, source routing, and paper-book source suggestions.');

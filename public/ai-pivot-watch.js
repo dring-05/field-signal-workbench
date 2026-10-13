@@ -72,9 +72,34 @@
   const linkList = links => links.map(([label, url]) => `<a href="${esc(url)}" target="_blank" rel="noreferrer">${esc(label)} ↗</a>`).join(' · ');
   const card = item => `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag">${esc(item.market)}</span><p class="footnote" style="margin:7px 0 0">${esc(item.event)}</p><h2 style="margin:5px 0 0;font-size:17px">${esc(item.name)}</h2></div></div><div class="ai-watch-grid"><div><h3>What changed</h3><p>${esc(item.change)}</p></div><div><h3>Operating-metric bridge</h3><p>${esc(item.bridge)}</p></div></div><p><strong>Read:</strong> ${esc(item.read)}</p><p class="footnote">${linkList(item.links)}</p></article>`;
 
+  function leadCard(item) {
+    const href = /^https:\/\//i.test(String(item.filingUrl || '')) ? item.filingUrl : '';
+    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${esc(item.form)} · ${esc(item.filingDate)} · CIK ${esc(item.cik)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(item.company)}</h2></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${item.evidence?.length ? `<details><summary>Matched filing text</summary>${item.evidence.map(e => `<blockquote class="footnote">${esc(e.text)}</blockquote>`).join('')}</details>` : ''}<p class="footnote">Automated match, not a verified name change or investment conclusion. Review the full filing and prior-period evidence.</p></article>`;
+  }
+
   window.AIPivotWatch = {
     render() {
-      return `<section class="page-head"><div><p class="eyebrow">FILING REVIEW · CHECKED 12 OCT 2026</p><h1>AI name and filing watch</h1><p class="sub">Company name changes and AI strategy claims, checked against filings and operating evidence.</p></div><span class="tag amber">Manual review · not a live feed</span></section><section class="card card-pad"><p>A name change or AI mention is a lead. The useful test is whether filings show customers, operating assets, recognized revenue, margins, cash needs, and dilution. These cases are source-linked examples, not a short list.</p><p class="footnote">Scope: US SEC filers and one HKEX example. SEC coverage includes foreign issuers that file with the SEC, not every international company. The review is not exhaustive or continuously refreshed.</p><div class="card-actions"><a class="btn" href="https://www.sec.gov/edgar/search/" target="_blank" rel="noreferrer">Search SEC filings ↗</a><a class="btn" href="https://www1.hkexnews.hk/search/titlesearch.xhtml" target="_blank" rel="noreferrer">Search HKEX announcements ↗</a><a class="btn" href="https://www.sec.gov/edgar/search/efts-faq.html" target="_blank" rel="noreferrer">How EDGAR full-text search works ↗</a></div></section><div class="industry-cards ai-watch-cases">${cases.map(card).join('')}</div><p class="footnote">Screen logic for the next automation pass: compare current and former names, detect new AI-related language in filings, then check source sector, commercial status, assets or contracts, revenue and gross profit, cash runway, capital raised, dilution, and auditor or going-concern language. A keyword match alone does not establish a pivot, deception, or a short thesis.</p>`;
+      return `<section class="page-head"><div><p class="eyebrow">SEC FILINGS · AUTOMATED FIRST PASS</p><h1>AI name and filing watch</h1><p class="sub">Recent filings with possible legal-name changes or new AI operating language.</p></div><span class="tag amber">Unreviewed leads</span></section><section class="card card-pad"><p>A filing match is a research lead. Confirm the event, compare prior filings, and look for operating evidence such as customers, revenue, margin, assets, funding needs, and dilution.</p><p class="footnote">The automated feed covers SEC filers, not a complete US or global listed-company universe. Private reporting entities can appear, and many international companies are outside SEC reporting.</p><div class="card-actions"><a class="btn" href="https://www.sec.gov/edgar/search/" target="_blank" rel="noreferrer">Search SEC filings ↗</a><a class="btn" href="https://www1.hkexnews.hk/search/titlesearch.xhtml" target="_blank" rel="noreferrer">Search HKEX announcements ↗</a><a class="btn" href="https://www.sec.gov/edgar/search/efts-faq.html" target="_blank" rel="noreferrer">EDGAR full-text search ↗</a></div></section><section id="sec-lead-feed" class="industry-cards ai-watch-cases" aria-live="polite"><p class="callout">Loading SEC feed…</p></section><section class="section"><div class="section-title"><div><h2>Reviewed examples</h2><p>Manual review · not a live feed. Filing-linked examples show how the operating bridge changes the read.</p></div></div><div class="industry-cards ai-watch-cases">${cases.map(card).join('')}</div></section><p class="footnote">A name change or rising AI mentions do not establish deception or make a stock a short. Check the primary filing, latest reported financials, and whether claimed capacity or customers are operating.</p>`;
+    },
+    async loadFeed() {
+      const target = document.querySelector('#sec-lead-feed');
+      if (!target) return;
+      try {
+        const response = await fetch('./sec-ai-watch.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Feed request returned ${response.status}`);
+        const data = await response.json();
+        if (!data.generatedAt) {
+          target.innerHTML = '<p class="callout">The SEC screen has not completed its first run. The scheduled job needs a contact email in the repository Actions variable SEC_USER_AGENT.</p>';
+          return;
+        }
+        const date = new Date(data.generatedAt);
+        const ageDays = (Date.now() - date.getTime()) / 86400000;
+        const status = `<div class="card card-pad"><p><strong>Last scan:</strong> ${esc(date.toLocaleString())} · window ${esc(data.scanWindowStart)} to ${esc(data.scanWindowEnd)} · ${Array.isArray(data.leads) ? data.leads.length : 0} retained leads</p><p class="footnote">${ageDays > 2 ? 'Feed may be stale. ' : ''}${esc(data.coverage || '')}</p></div>`;
+        const leads = Array.isArray(data.leads) ? data.leads : [];
+        target.innerHTML = status + (leads.length ? leads.map(leadCard).join('') : '<p class="empty-receipts">No matches in the completed scan window. This is a keyword screen, so it can miss events and does not establish that filings contain no AI activity.</p>');
+      } catch (error) {
+        target.innerHTML = `<p class="callout">Could not load the SEC feed: ${esc(error.message)}. The current manual examples remain available below.</p>`;
+      }
     }
   };
 })();
