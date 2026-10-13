@@ -25,7 +25,7 @@ jobs:
         run: node automation/sec-filing-screen.mjs --self-test
       - name: Scan recent SEC filings
         env:
-          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
           SEC_LOOKBACK_DAYS: '7'
         run: node automation/sec-filing-screen.mjs --feed public/sec-ai-watch.json
       - name: Publish public-source lead feed to the repository

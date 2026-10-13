@@ -4,22 +4,24 @@ import vm from 'node:vm';
 
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
 const modules = await readFile(new URL('../public/industry-modules.js', import.meta.url), 'utf8');
-const context = { window: {}, sources: [] };
+const context = { window: {}, sources: [], URL };
 vm.runInNewContext(modules, context, { timeout: 1000 });
 
 const dateFunction = app.match(/function normalizedDate\(value,mode='auto'\)\{[\s\S]*?\n\}/)?.[0];
-const sourceFunction = app.match(/function sourcesForQuestion\(text\)\{[^\n]*\}/)?.[0];
+const sourceFunction = app.match(/function sourcesForQuestion\(text\)\{[\s\S]*?\n\}/)?.[0];
 const numberFunction = app.match(/function numberValue\(value,mode='auto'\)\{[^\n]*\}/)?.[0];
 const escapeFunction = app.match(/const esc=s=>[^\n]*;/)?.[0];
 const paperSourceFunction = app.match(/function renderPaperSources\(query\)\{[^\n]*\}/)?.[0];
+const safeUrlFunction = app.match(/const safeUrl=value=>[^\n]*;/)?.[0];
 const csvFunctions = app.match(/function csvCell\(value\)\{[^\n]*\}\nfunction cleanedSeriesCsv\(data,group\)\{[^\n]*\}/)?.[0];
 assert(dateFunction, 'Could not locate normalizedDate');
 assert(sourceFunction, 'Could not locate sourcesForQuestion');
 assert(numberFunction, 'Could not locate numberValue');
 assert(escapeFunction, 'Could not locate HTML escaping helper');
 assert(paperSourceFunction, 'Could not locate paper-book source finder');
+assert(safeUrlFunction, 'Could not locate safe URL helper');
 assert(csvFunctions, 'Could not locate cleaned CSV functions');
-vm.runInNewContext(`${dateFunction}\n${numberFunction}\n${sourceFunction}\n${csvFunctions}`, context, { timeout: 1000 });
+vm.runInNewContext(`${dateFunction}\n${numberFunction}\n${safeUrlFunction}\n${sourceFunction}\n${csvFunctions}`, context, { timeout: 1000 });
 
 const date = (value, mode = 'auto') => vm.runInNewContext(`normalizedDate(${JSON.stringify(value)}, ${JSON.stringify(mode)})`, context);
 assert.equal(date('2026-09-30'), '2026-09-30');
@@ -68,14 +70,15 @@ for (const [question, expectedId] of expected) {
   const ids = vm.runInNewContext(`sourcesForQuestion(${JSON.stringify(question)}).map(x => x.id)`, context);
   assert(ids.includes(expectedId), `${question} did not match ${expectedId}`);
 }
-assert.equal(vm.runInNewContext('sourcesForQuestion("custom question without a sector keyword").length', context), 0);
+assert.equal(vm.runInNewContext('sourcesForQuestion("zzqx unknown issuer").length', context), 0);
+assert.equal(vm.runInNewContext('sourcesForQuestion("NVDA").length', context), 0, 'A ticker alone should not imply company coverage');
 const resultsBox = { innerHTML: '' };
 context.document = { querySelector: selector => selector === '#paper-source-results' ? resultsBox : null };
 vm.runInNewContext(`${escapeFunction}\n${sourceFunction}\n${paperSourceFunction}\nrenderPaperSources("TSMC semiconductor wafer sales")`, context, { timeout: 1000 });
 assert.match(resultsBox.innerHTML, /TSMC monthly revenue/);
 assert.match(resultsBox.innerHTML, /Global semiconductor sales/);
-assert.match(resultsBox.innerHTML, /Candidate industry context/);
-assert.match(app, /The search runs in this browser\. It does not save or send your idea details\./);
+assert.match(resultsBox.innerHTML, /not proof of coverage/);
+assert.match(app, /Search stays in this browser\. It does not save or send your terms\./);
 assert.match(app, /data-sector-target="\$\{esc\(sector\.id\)\}"/, 'Sector navigation links must target sections without changing the page route');
 assert.match(app, /document\.getElementById\(a\.dataset\.sectorTarget\)\?\.scrollIntoView/, 'Sector navigation must scroll to the selected section');
 assert.doesNotMatch(app, /document\.querySelector\(a\.getAttribute\('href'\)\)/, 'Sector filtering must not interpret section IDs as routes');

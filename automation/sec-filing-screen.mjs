@@ -8,6 +8,7 @@ import { resolve } from 'node:path';
 
 const SEC = 'https://www.sec.gov';
 const DATA = 'https://data.sec.gov';
+const TICKER_EXCHANGE_URL = `${SEC}/files/company_tickers_exchange.json`;
 const ELIGIBLE_FORMS = new Set(['8-K', '10-K', '10-Q', '6-K', '20-F']);
 const AI_PATTERNS = [
   /\bartificial intelligence\b/gi,
@@ -19,6 +20,21 @@ const AI_PATTERNS = [
 const NAME_CHANGE = /\b(?:changed|change)\s+(?:its\s+)?(?:corporate\s+)?name\s+(?:from\s+.{1,140}?\s+)?to\s+.{1,140}|\bname change\b|\bchange of name\b/gi;
 const OPERATIONAL_CONTEXT = /\b(?:customer|commercial|revenue|product|service|business|segment|launch|contract|facility|data cent(?:er|re)|compute|GPU|operations?|strategy|plan|license|licen[cs]e|acquisition|manufactur|deploy|capital|financ)\w*\b/i;
 const RISK_HEADING = /\b(?:risk factors|risks related to|forward-looking statements|cautionary statement)\b/i;
+const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
+const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
+
+function insideRiskSection(text, index) {
+  const headings = [...text.matchAll(RISK_SECTION_START)];
+  let current = null;
+  for (const heading of headings) {
+    if (heading.index > index) break;
+    current = heading;
+  }
+  if (!current) return false;
+  ITEM_SECTION_HEADING.lastIndex = current.index + current[0].length;
+  const next = ITEM_SECTION_HEADING.exec(text);
+  return !next || index < next.index;
+}
 
 export function plainText(html) {
   return String(html ?? '')
@@ -46,7 +62,7 @@ export function analyzeText(text) {
       const end = Math.min(normalized.length, match.index + match[0].length + 220);
       const context = normalized.slice(start, end);
       const before = normalized.slice(Math.max(0, match.index - 1200), match.index);
-      if (!OPERATIONAL_CONTEXT.test(context) || RISK_HEADING.test(before.slice(-500))) continue;
+      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500))) continue;
       hits.push({ term: match[0], context: context.trim() });
       if (hits.length >= 30) return hits;
     }
@@ -59,8 +75,44 @@ export function isNameChangeLead(text, form) {
   const normalized = String(text ?? '').replace(/\s+/g, ' ');
   const hasItem503 = /item\s+5\.03\b/i.test(normalized);
   NAME_CHANGE.lastIndex = 0;
-  const hasNameLanguage = NAME_CHANGE.test(normalized);
+  const positive = normalized
+    .replace(/\b(?:no|not|never|did not|does not|has not|will not|hasn't|didn't|doesn't|won't)\s+(?:change|changed|changing)\s+(?:its\s+)?(?:corporate\s+)?name\b/gi, ' ')
+    .replace(/\bno\s+(?:corporate\s+)?name\s+change\b/gi, ' ');
+  NAME_CHANGE.lastIndex = 0;
+  const hasNameLanguage = NAME_CHANGE.test(positive);
   return hasItem503 && hasNameLanguage;
+}
+
+export function parseTickerExchange(payload) {
+  const fields = Array.isArray(payload?.fields) ? payload.fields : [];
+  const data = Array.isArray(payload?.data) ? payload.data : [];
+  return data.flatMap(row => {
+    const record = Array.isArray(row)
+      ? Object.fromEntries(fields.map((field, index) => [field, row[index]]))
+      : row;
+    const cik = String(record?.cik ?? '').replace(/^0+/, '').padStart(10, '0');
+    const ticker = String(record?.ticker ?? '').trim();
+    if (!/^\d{10}$/.test(cik) || !ticker) return [];
+    return [{cik, name: String(record.name ?? '').trim(), ticker, exchange: String(record.exchange ?? '').trim()}];
+  });
+}
+
+export function attachListedIssuer(rows, tickerRows) {
+  const byCik = new Map();
+  for (const item of tickerRows) {
+    if (!byCik.has(item.cik)) byCik.set(item.cik, []);
+    byCik.get(item.cik).push(item);
+  }
+  return rows.flatMap(row => {
+    const matches = byCik.get(String(row.cik).padStart(10, '0'));
+    if (!matches?.length) return [];
+    return [{
+      ...row,
+      ticker: [...new Set(matches.map(item => item.ticker))].join(', '),
+      exchange: [...new Set(matches.map(item => item.exchange).filter(Boolean))].join(', '),
+      mappedCompany: matches[0].name,
+    }];
+  });
 }
 
 export function parseMasterIndex(text) {
@@ -177,6 +229,10 @@ async function scan(options) {
     throw new Error('Set SEC_USER_AGENT to an identifying name plus a real contact email, for example "Field Signals research your.name@example.com".');
   }
   const now = new Date();
+  const tickerResponse = await secFetch(TICKER_EXCHANGE_URL, userAgent);
+  if (tickerResponse.status !== 200) throw new Error('SEC ticker and exchange map could not be loaded');
+  const tickerRows = parseTickerExchange(JSON.parse(tickerResponse.body));
+  const listedCiks = new Set(tickerRows.map(item => item.cik));
   const seen = new Set(options.feed.checkedAccessions ?? []);
   const filings = new Map();
   for (let offset = options.lookbackDays; offset >= 0; offset--) {
@@ -194,15 +250,19 @@ async function scan(options) {
   const candidates = [];
   const checked = [...seen];
   const priorCache = new Map();
-  const sorted = [...filings.values()].sort((a, b) => a.filed.localeCompare(b.filed) || a.accession.localeCompare(b.accession));
+  const sorted = attachListedIssuer(
+    [...filings.values()].filter(row => listedCiks.has(row.cik)),
+    tickerRows,
+  ).sort((a, b) => a.filed.localeCompare(b.filed) || a.accession.localeCompare(b.accession));
   for (const row of sorted) {
     const primaryResponse = await secFetch(fullSubmissionUrl(row), userAgent);
-    checked.push(row.accession);
     if (primaryResponse.status === 404) continue;
+    checked.push(row.accession);
     const relevant = relevantDocuments(primaryResponse.body, row.form);
     const mainText = relevant.find(doc => doc.type === row.form)?.text ?? plainText(primaryResponse.body);
     const aiHits = relevant.flatMap(doc => analyzeText(doc.text).map(hit => ({ ...hit, documentType: doc.type })));
-    const nameLead = isNameChangeLead(mainText, row.form);
+    const nameEvidence = [mainText, ...relevant.filter(doc => doc.type !== row.form).map(doc => doc.text)].join(' ');
+    const nameLead = isNameChangeLead(nameEvidence, row.form);
     let priorCount = null;
     let aiLabel = '';
     if (aiHits.length) {
@@ -226,6 +286,9 @@ async function scan(options) {
     candidates.push({
       cik: row.cik,
       company: row.company,
+      mappedCompany: row.mappedCompany,
+      ticker: row.ticker,
+      exchange: row.exchange,
       form: row.form,
       filingDate: row.filed,
       accession: row.accession,
@@ -238,7 +301,22 @@ async function scan(options) {
       reviewedByHuman: false,
     });
   }
-  const unique = new Map([...(options.feed.leads ?? []), ...candidates].map(item => [item.accession, item]));
+  const mappedByCik = new Map();
+  for (const item of tickerRows) {
+    if (!mappedByCik.has(item.cik)) mappedByCik.set(item.cik, []);
+    mappedByCik.get(item.cik).push(item);
+  }
+  const retained = (options.feed.leads ?? []).map(item => {
+    const mapped = mappedByCik.get(String(item.cik ?? '').padStart(10, '0'));
+    if (!mapped?.length) return item;
+    return {
+      ...item,
+      ticker: item.ticker || [...new Set(mapped.map(row => row.ticker))].join(', '),
+      exchange: item.exchange || [...new Set(mapped.map(row => row.exchange).filter(Boolean))].join(', '),
+      mappedCompany: item.mappedCompany || mapped[0].name,
+    };
+  });
+  const unique = new Map([...retained, ...candidates].map(item => [item.accession, item]));
   const keepAfter = new Date(now);
   keepAfter.setUTCDate(keepAfter.getUTCDate() - 180);
   const leads = [...unique.values()].filter(item => item.filingDate >= dateString(keepAfter)).sort((a, b) => b.filingDate.localeCompare(a.filingDate)).slice(0, 1000);
@@ -246,10 +324,10 @@ async function scan(options) {
   return {
     schemaVersion: 1,
     generatedAt: now.toISOString(),
-    coverage: 'SEC filers found in EDGAR daily indexes for Forms 8-K, 10-K, 10-Q, 6-K, and 20-F. Exchange-traded mapping is not yet applied; private reporting companies may appear and many non-US issuers are out of scope.',
+    coverage: 'SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.',
     scanWindowStart: dateString(new Date(now.getTime() - options.lookbackDays * 86400000)),
     scanWindowEnd: dateString(now),
-    sources: ['https://www.sec.gov/Archives/edgar/daily-index/', 'https://data.sec.gov/submissions/'],
+    sources: ['https://www.sec.gov/Archives/edgar/daily-index/', 'https://data.sec.gov/submissions/', TICKER_EXCHANGE_URL],
     leads,
     checkedAccessions,
   };
@@ -261,9 +339,20 @@ export function selfTest() {
   if (parsed.length !== 1 || parsed[0].accession !== '000000010026000123') throw new Error('master index parser self-test failed');
   const text = plainText('<html><body>Item 5.03 Amendments. The Company changed its name from Old Co to New Co.</body></html>');
   if (!isNameChangeLead(text, '8-K') || isNameChangeLead(text, '10-Q')) throw new Error('name-change screen self-test failed');
+  if (isNameChangeLead('Item 5.03. There will be no name change.', '8-K')) throw new Error('negated name-change language self-test failed');
+  if (!isNameChangeLead('Item 5.03. See attached name change from Old Co to New Co.', '8-K')) throw new Error('exhibit name-change language self-test failed');
+  const mapping = parseTickerExchange({fields: ['cik', 'name', 'ticker', 'exchange'], data: [[123, 'Example Inc.', 'EXMP', 'Nasdaq']]});
+  const listed = attachListedIssuer(parsed, mapping);
+  if (listed.length !== 0) throw new Error('unmapped issuer filter self-test failed');
+  const mapped = attachListedIssuer([{...parsed[0], cik: '0000000123'}], mapping);
+  if (mapped.length !== 1 || mapped[0].ticker !== 'EXMP' || mapped[0].exchange !== 'Nasdaq') throw new Error('ticker/exchange enrichment self-test failed');
   const ai = analyzeText('The company plans to launch an artificial intelligence data center business for customers.');
   if (!ai.length) throw new Error('AI phrase screen self-test failed');
   if (analyzeText('Risk Factors: our artificial intelligence product may not succeed.').length) throw new Error('risk-section suppression self-test failed');
+  const longRisk = `Item 1A. Risk Factors. ${'Disclosure text without AI terms. '.repeat(80)} Our artificial intelligence data center business will serve customers.`;
+  if (analyzeText(longRisk).length) throw new Error('long risk-section suppression self-test failed');
+  const afterRisk = `${longRisk} Item 2. Properties. We launched an artificial intelligence data center for customers.`;
+  if (!analyzeText(afterRisk).length) throw new Error('risk-section boundary self-test failed');
   const docs = relevantDocuments('<DOCUMENT><TYPE>8-K\n<TEXT><p>Item 5.03</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-99.1\n<TEXT><p>AI business</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-101.SCH\n<TEXT>AI taxonomy</TEXT></DOCUMENT>', '8-K');
   if (docs.length !== 2 || docs[1].type !== 'EX-99.1') throw new Error('relevant document extraction self-test failed');
   if (aiDeltaLabel(ai, 0) !== 'AI language first detected versus prior same-form filing') throw new Error('AI delta self-test failed');

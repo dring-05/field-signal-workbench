@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
   "generatedAt": null,
-  "coverage": "SEC filers found in EDGAR daily indexes for Forms 8-K, 10-K, 10-Q, 6-K, and 20-F. Exchange-traded mapping is not yet applied; private reporting companies may appear and many non-US issuers are out of scope.",
+  "coverage": "Planned screen: SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says those associations may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.",
   "scanWindowStart": null,
   "scanWindowEnd": null,
   "sources": [
     "https://www.sec.gov/Archives/edgar/daily-index/",
-    "https://data.sec.gov/submissions/"
+    "https://data.sec.gov/submissions/",
+    "https://www.sec.gov/files/company_tickers_exchange.json"
   ],
   "leads": [],
   "checkedAccessions": []

@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body{font:13px/1.45 Arial,sans-serif;color:#17243a;margin:0;padding:16px;background:#f5f7fb}
+      h2{font-size:18px;margin:0 0 5px}p{color:#68768c;margin:4px 0 14px}
+      form{display:grid;gap:10px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+      label{display:grid;gap:4px;font-weight:600;font-size:12px;color:#40516a}
+      input,select,textarea{width:100%;box-sizing:border-box;padding:8px;border:1px solid #cfd9e6;border-radius:5px;background:#fff;font:13px Arial,sans-serif;color:#17243a}
+      textarea{min-height:70px;resize:vertical}.hint{font-size:11px;font-weight:400;color:#68768c}
+      button{border:0;border-radius:5px;background:#275bd7;color:white;padding:10px 12px;font-size:13px;font-weight:700;cursor:pointer}
+      button:disabled{opacity:.6;cursor:wait}#status{font-size:12px;white-space:pre-wrap;margin-top:10px}.ok{color:#19785b}.err{color:#a33}
+    </style>
+  </head>
+  <body>
+    <h2>Add a paper-book idea</h2>
+    <p>Saved to the private Ideas tab. Your entry stays editable there.</p>
+    <form id="idea-form">
+      <label>Company name<input name="company" required autocomplete="organization" placeholder="Company legal or common name"></label>
+      <div class="row">
+        <label>Ticker<input name="ticker" required autocapitalize="characters" placeholder="e.g. NVDA"></label>
+        <label>Exchange<input name="exchange" placeholder="e.g. Nasdaq"></label>
+      </div>
+      <div class="row">
+        <label>Book<select name="bookId" id="book-id"></select></label>
+        <label>Long or short<select name="side" required><option value="">Choose</option><option>Long</option><option>Short</option></select></label>
+      </div>
+      <div class="row">
+        <label>Target size (% of NAV)<input name="sizePct" type="number" min="0" step="0.1" value="1" required><span class="hint">Enter 1 for 1% of NAV.</span></label>
+        <label>Conviction<select name="conviction" required><option value="">Choose</option><option value="1">1, low</option><option value="2">2</option><option value="3">3, medium</option><option value="4">4</option><option value="5">5, high</option></select></label>
+      </div>
+      <div class="row">
+        <label>Sector<input name="sector" placeholder="e.g. Information Technology"></label>
+        <label>Industry or niche<input name="niche" placeholder="e.g. memory, wafer equipment"></label>
+      </div>
+      <label>Short thesis summary<textarea name="thesis" required placeholder="What is the market missing, and what could change?"></textarea></label>
+      <label>Operating signal to track<input name="operatingSignal" placeholder="Metric, source, geography, cadence"></label>
+      <label>Operating metric to financial bridge<textarea name="bridge" placeholder="How could the signal affect a company KPI and then financials?"></textarea></label>
+      <label>What would change your mind?<textarea name="falsifier" placeholder="Specific evidence that would weaken the thesis"></textarea></label>
+      <label>Related research links<textarea name="relatedLinks" placeholder="Optional links, one per line"></textarea></label>
+      <button id="submit" type="submit">Save idea</button>
+    </form>
+    <div id="status" aria-live="polite"></div>
+    <script>
+      google.script.run.withSuccessHandler(function(items){
+        const select=document.getElementById('book-id');
+        (items||['MAIN']).forEach(function(id){const o=document.createElement('option');o.value=id;o.textContent=id;select.appendChild(o)});
+      }).getPaperBookIds();
+      document.getElementById('idea-form').addEventListener('submit',function(event){
+        event.preventDefault();
+        const form=event.currentTarget,button=document.getElementById('submit'),status=document.getElementById('status');
+        button.disabled=true;status.className='';status.textContent='Saving idea and creating its private records…';
+        const data=Object.fromEntries(new FormData(form).entries());
+        google.script.run.withSuccessHandler(function(result){
+          status.className='ok';
+          status.textContent='Saved '+result.ideaId+' on Ideas row '+result.rowNumber+'. '+result.valuationStatus+(result.materialsUrl?'\nPrivate materials folder: '+result.materialsUrl:result.materialsError?'\n'+result.materialsError:'\nNo per-idea folder was created. Add PAPER_MATERIALS_PARENT_FOLDER_ID in Apps Script settings to enable it.');
+          form.reset();document.getElementById('book-id').value=data.bookId||'MAIN';button.disabled=false;
+        }).withFailureHandler(function(error){status.className='err';status.textContent=error&&error.message?error.message:String(error);button.disabled=false}).createPaperBookIdea(data);
+      });
+    </script>
+  </body>
+</html>

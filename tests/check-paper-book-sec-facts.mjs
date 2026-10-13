@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
@@ -6,8 +7,20 @@ import path from 'node:path';
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
 const sec = require(path.join(here, '..', 'automation', 'paper-book-sec-facts.gs'));
+const ideaForm = await readFile(path.join(here, '..', 'automation', 'paper-book-idea-form.html'), 'utf8');
 assert.equal(sec.PAPER_SEC.headerRow, 5);
 assert.equal(sec.PAPER_SEC.firstDataRow, 6);
+assert.equal(sec.validIsoDay_('2026-10-12'), true);
+assert.equal(sec.validIsoDay_('2026-02-30'), false);
+assert.equal(sec.validIsoDay_('12/10/2026'), false);
+const submittedIdea = sec.validatePaperBookIdea_({company:'Example Corp',ticker:'exm',exchange:'Nasdaq',bookId:'MAIN',side:'Long',sizePct:'2.5',conviction:'4',thesis:'A short test thesis',sector:'Technology',niche:'Compute',operatingSignal:'GPU hours',bridge:'Capacity to revenue',falsifier:'Utilization falls'});
+assert.equal(submittedIdea.ticker, 'EXM');
+assert.equal(submittedIdea.size, 0.025, 'form percentage should become a decimal NAV weight');
+assert.equal(submittedIdea.conviction, 4);
+assert.throws(() => sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Neutral',sizePct:'1',conviction:'3',thesis:'test'}), /Choose Long or Short/);
+assert.throws(() => sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Short',sizePct:'1',conviction:'6',thesis:'test'}), /whole number from 1 to 5/);
+for (const field of ['company','ticker','sizePct','conviction','thesis','operatingSignal','bridge','falsifier','relatedLinks']) assert.match(ideaForm, new RegExp(`name="${field}"`));
+assert.match(ideaForm, /createPaperBookIdea\(data\)/);
 
 const tickerMap = sec.parseTickerMap_({
   fields: ['cik', 'name', 'ticker', 'exchange'],
@@ -151,6 +164,7 @@ assert.ok(writes.every(write => write.row === 6));
 assert.ok(!writes.some(write => [5, 6, 9, 11, 15, 16, 20, 24, 25].includes(write.col)), 'SEC refresh must leave manual price and formula columns unchanged');
 
 const createdRows = [];
+const seededFormulas = [];
 const formulaCols = new Set([9, 11, 15, 16, 21, 22, 23, 24, 25]);
 const blankValuationRows = Array.from({length: 2}, () => new Array(valuationHeaders.length).fill(''));
 const formulaPrefilledRows = blankValuationRows.map(() => valuationHeaders.map((_, index) => formulaCols.has(index + 1) ? '=1' : ''));
@@ -161,7 +175,7 @@ const mockValuation = {
     getDisplayValues: () => row === 5 ? [valuationHeaders] : blankValuationRows.slice(row - 6, row - 6 + numRows).map(values => values.slice(col - 1, col - 1 + numCols)),
     getFormulas: () => formulaPrefilledRows.slice(row - 6, row - 6 + numRows).map(values => values.slice(col - 1, col - 1 + numCols)),
     setValues: values => createdRows.push({row, values}),
-    setFormulaR1C1: () => {}
+    setFormulaR1C1: formula => seededFormulas.push({row, col, formula})
   })
 };
 const mockBook = {getSheetByName: name => name === 'Valuation Inputs' ? mockValuation : null};
@@ -171,6 +185,8 @@ assert.equal(linked.created, true);
 assert.equal(createdRows[0].values[0][0], 'VAL-IDEA-7');
 assert.equal(createdRows[0].values[0][1], 'IDEA-7');
 assert.equal(createdRows[0].values[0][2], 'NVDA / Nasdaq');
+assert(seededFormulas.some(x => x.col === 24 && x.formula.includes('financial|bank|insurance')), 'new valuation rows should get a sector metric prompt even when the template formula is missing');
+assert(seededFormulas.some(x => x.col === 25 && x.formula.includes('P / EBITDA') === false), 'new valuation rows should get a suggested multiple formula');
 
 const missing = sec.deriveSecFundamentals_({facts: {'us-gaap': {}}}, new Date('2026-03-01T00:00:00Z'));
 assert.equal(missing.ttmRevenue, '');

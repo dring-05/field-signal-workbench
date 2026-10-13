@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
+import { attachListedIssuer, isNameChangeLead, parseTickerExchange, selfTest } from '../automation/sec-filing-screen.mjs';
 
 const moduleSource = await readFile(new URL('../public/ai-pivot-watch.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
@@ -24,4 +25,19 @@ for (const href of [
 ]) assert.ok(rendered.includes(href), `Missing primary filing link: ${href}`);
 assert.match(rendered, /Manual review · not a live feed/);
 assert.match(rendered, /or make a stock a short/);
-console.log('AI filing watch checks passed: route, international case coverage, SEC/HKEX filing links, and manual-review disclosure.');
+assert.match(rendered, /company-ticker-exchange association file/);
+assert.match(moduleSource, /repository Actions secret SEC_USER_AGENT/);
+selfTest();
+assert.equal(isNameChangeLead('Item 5.03. The company changed its corporate name from Old Co to New Co.', '8-K'), true);
+assert.equal(isNameChangeLead('Item 5.03. No name change occurred.', '8-K'), false);
+const mapping = parseTickerExchange({fields: ['cik', 'name', 'ticker', 'exchange'], data: [[123, 'Example Inc.', 'EXMP', 'Nasdaq']]});
+const filings = [
+  {cik: '0000000123', company: 'Example Old Inc.', form: '8-K'},
+  {cik: '0000000456', company: 'Unmapped Private Co.', form: '8-K'}
+];
+const mappedFilings = attachListedIssuer(filings, mapping);
+assert.equal(mappedFilings.length, 1);
+assert.equal(mappedFilings[0].ticker, 'EXMP');
+assert.equal(mappedFilings[0].exchange, 'Nasdaq');
+assert.equal(mappedFilings[0].mappedCompany, 'Example Inc.');
+console.log('AI filing watch checks passed: SEC listed-issuer mapping, ticker display, name-change wording, international examples, filing links, and manual-review disclosure.');

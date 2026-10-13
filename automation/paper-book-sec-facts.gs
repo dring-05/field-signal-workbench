@@ -22,11 +22,143 @@ const PAPER_SEC = {
 
 function paperBookAddMenu_() {
   SpreadsheetApp.getUi().createMenu('Paper Book')
+    .addItem('Add an idea', 'showPaperBookIdeaForm')
+    .addItem('Mark selected idea Exited', 'markSelectedIdeaExited')
     .addItem('Create valuation row for selected idea', 'createSelectedIdeaValuationRow')
     .addItem('Refresh selected idea from SEC', 'refreshSelectedIdeaFromSec')
     .addSeparator()
     .addItem('Install idea-entry trigger', 'installPaperBookEditTrigger')
     .addToUi();
+}
+
+function showPaperBookIdeaForm() {
+  const html = HtmlService.createHtmlOutputFromFile('paper-book-idea-form')
+    .setTitle('Add a paper-book idea');
+  SpreadsheetApp.getUi().showSidebar(html);
+}
+
+function getPaperBookIds() {
+  const book = SpreadsheetApp.getActiveSpreadsheet();
+  const configuredId = PropertiesService.getScriptProperties().getProperty('PAPER_BOOK_SPREADSHEET_ID');
+  if (!book || !configuredId || book.getId() !== configuredId) throw new Error('Set PAPER_BOOK_SPREADSHEET_ID to this private workbook before adding ideas.');
+  return getBookIds_(book);
+}
+
+function validatePaperBookIdea_(form) {
+  const value = form || {};
+  const clean = key => String(value[key] || '').trim();
+  const company = clean('company');
+  const ticker = clean('ticker').toUpperCase();
+  const side = clean('side');
+  const bookId = clean('bookId') || 'MAIN';
+  const sizePct = Number(value.sizePct);
+  const conviction = Number(value.conviction);
+  if (!company) throw new Error('Enter the company name.');
+  if (!ticker) throw new Error('Enter the ticker.');
+  if (side !== 'Long' && side !== 'Short') throw new Error('Choose Long or Short.');
+  if (!Number.isFinite(sizePct) || sizePct < 0) throw new Error('Enter a target size of 0% or more.');
+  if (!Number.isInteger(conviction) || conviction < 1 || conviction > 5) throw new Error('Conviction must be a whole number from 1 to 5.');
+  if (!clean('thesis')) throw new Error('Add a short thesis summary.');
+  return {
+    bookId, company, ticker, exchange: clean('exchange'), sector: clean('sector'),
+    niche: clean('niche'), side, size: sizePct / 100, conviction,
+    thesis: clean('thesis'), operatingSignal: clean('operatingSignal'),
+    bridge: clean('bridge'), falsifier: clean('falsifier'),
+    relatedLinks: clean('relatedLinks')
+  };
+}
+
+function createPaperBookIdea(form) {
+  const idea = validatePaperBookIdea_(form);
+  const book = SpreadsheetApp.getActiveSpreadsheet();
+  const props = PropertiesService.getScriptProperties();
+  const configuredId = props.getProperty('PAPER_BOOK_SPREADSHEET_ID');
+  if (!book || !configuredId || book.getId() !== configuredId) throw new Error('Set PAPER_BOOK_SPREADSHEET_ID to this private workbook before adding ideas.');
+  const sheet = book.getSheetByName(PAPER_SEC.ideasSheet);
+  if (!sheet) throw new Error('Missing Ideas tab.');
+  const headers = headerMap_(sheet, PAPER_SEC.headerRow);
+  ['Book ID', 'Idea ID', 'Company name', 'Ticker', 'Exchange', 'Sector', 'Industry / niche', 'Side', 'Target size (% NAV)', 'Conviction (1–5)', 'Thesis summary', 'Status', 'Added date', 'Materials folder / file URL', 'Related research links', 'Valuation record ID', 'What changes my mind', 'Operating signal to track', 'Metric-to-financial bridge'].forEach(h => requireHeader_(headers, h));
+  const bookIds = getBookIds_(book);
+  if (bookIds.length && bookIds.indexOf(idea.bookId) < 0) throw new Error('Choose a Book ID listed on the Books tab.');
+  const ideaId = generateIdeaId_();
+  const rowNumber = findNextIdeaRow_(sheet);
+  copyIdeaRowFormat_(sheet, rowNumber);
+  const row = new Array(sheet.getLastColumn()).fill('');
+  const put = (header, value) => { if (headers[header]) row[headers[header] - 1] = value; };
+  put('Book ID', idea.bookId);
+  put('Idea ID', ideaId);
+  put('Company name', idea.company);
+  put('Ticker', idea.ticker);
+  put('Exchange', idea.exchange);
+  put('Sector', idea.sector);
+  put('Industry / niche', idea.niche);
+  put('Side', idea.side);
+  put('Target size (% NAV)', idea.size);
+  put('Conviction (1–5)', idea.conviction);
+  put('Thesis summary', idea.thesis);
+  put('Status', 'Idea');
+  put('Added date', new Date());
+  put('Related research links', idea.relatedLinks);
+  put('What changes my mind', idea.falsifier);
+  put('Operating signal to track', idea.operatingSignal);
+  put('Metric-to-financial bridge', idea.bridge);
+  put('Find source links', '=IF(C' + rowNumber + '="","",HYPERLINK("https://field-signal-workbench.dhring05.workers.dev/#paper-books?idea="&ENCODEURL(C' + rowNumber + '&" "&D' + rowNumber + '&" "&F' + rowNumber + '&" "&G' + rowNumber + '&" "&S' + rowNumber + '),"Suggest source links"))');
+
+  let materialsUrl = '';
+  let materialsError = '';
+  const parentId = props.getProperty('PAPER_MATERIALS_PARENT_FOLDER_ID');
+  if (parentId) {
+    try {
+      const parent = DriveApp.getFolderById(parentId);
+      const folder = parent.createFolder([idea.ticker, idea.company, ideaId].filter(Boolean).join(' ').slice(0, 90));
+      materialsUrl = folder.getUrl();
+      put('Materials folder / file URL', materialsUrl);
+    } catch (error) {
+      materialsError = 'Materials folder was not created: ' + String(error && error.message || error);
+    }
+  }
+  sheet.getRange(rowNumber, 1, 1, row.length).setValues([row]);
+  const valuationRow = findOrCreateValuationRow_(book, {ideaId, company: idea.company, ticker: idea.ticker, exchange: idea.exchange, sector: idea.sector});
+  let valuationStatus = 'Valuation row linked. Enter a dated quote and source to calculate market cap and price multiples.';
+  const userAgent = props.getProperty('SEC_USER_AGENT');
+  if (!userAgent || !/@/.test(userAgent)) {
+    writeFundamentalsStatus_(valuationRow.sheet, valuationRow.rowNumber, 'SEC refresh not run: set SEC_USER_AGENT with an identifying label and real contact email. Price remains manual.');
+    valuationStatus = 'Valuation row linked. SEC fundamentals need one-time setup; quote price remains manual.';
+  } else {
+    try {
+      const result = refreshIdeaFromSec_({ideaId, company: idea.company, ticker: idea.ticker, exchange: idea.exchange}, valuationRow, userAgent);
+      valuationStatus = 'Valuation row linked and SEC fundamentals refreshed. ' + result.result.missing.length + ' fields need review.';
+    } catch (error) {
+      writeFundamentalsStatus_(valuationRow.sheet, valuationRow.rowNumber, 'SEC refresh failed: ' + String(error && error.message || error));
+      valuationStatus = 'Idea saved. SEC refresh failed and is recorded on Valuation Inputs.';
+    }
+  }
+  if (materialsError) valuationStatus += ' ' + materialsError;
+  return {ideaId, rowNumber, materialsUrl, materialsError, valuationStatus};
+}
+
+function getBookIds_(book) {
+  const sheet = book.getSheetByName('Books');
+  if (!sheet || sheet.getLastRow() < PAPER_SEC.firstDataRow) return ['MAIN'];
+  return [...new Set(sheet.getRange(PAPER_SEC.firstDataRow, 1, sheet.getLastRow() - PAPER_SEC.firstDataRow + 1, 1).getDisplayValues().flat().map(x => String(x || '').trim()).filter(Boolean))];
+}
+
+function findNextIdeaRow_(sheet) {
+  const last = Math.max(sheet.getLastRow(), PAPER_SEC.firstDataRow);
+  const count = last - PAPER_SEC.firstDataRow + 1;
+  const values = sheet.getRange(PAPER_SEC.firstDataRow, 1, count, sheet.getLastColumn()).getDisplayValues();
+  const formulas = sheet.getRange(PAPER_SEC.firstDataRow, 1, count, sheet.getLastColumn()).getFormulas();
+  for (let i = 0; i < count; i++) if (!rowHasUserValues_(values[i], formulas[i])) return PAPER_SEC.firstDataRow + i;
+  return last + 1;
+}
+
+function copyIdeaRowFormat_(sheet, rowNumber) {
+  if (rowNumber === PAPER_SEC.firstDataRow) return;
+  const width = sheet.getLastColumn();
+  const template = sheet.getRange(PAPER_SEC.firstDataRow, 1, 1, width);
+  const target = sheet.getRange(rowNumber, 1, 1, width);
+  template.copyTo(target, {formatOnly: true});
+  target.setDataValidations(template.getDataValidations());
 }
 
 function installPaperBookEditTrigger() {
@@ -38,6 +170,34 @@ function installPaperBookEditTrigger() {
   const triggers = ScriptApp.getProjectTriggers().filter(trigger => trigger.getHandlerFunction() === 'paperBookOnEdit');
   if (!triggers.length) ScriptApp.newTrigger('paperBookOnEdit').forSpreadsheet(book).onEdit().create();
   SpreadsheetApp.getUi().alert('Idea-entry trigger installed. When an Ideas row has both an Idea ID and ticker, it creates a linked Valuation Inputs row once.');
+}
+
+function markSelectedIdeaExited() {
+  const book = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = book && book.getActiveSheet();
+  const rowNumber = book && book.getActiveRange() ? book.getActiveRange().getRow() : 0;
+  if (!sheet || sheet.getName() !== PAPER_SEC.ideasSheet || rowNumber < PAPER_SEC.firstDataRow) throw new Error('Select an idea row on Ideas first.');
+  const headers = headerMap_(sheet, PAPER_SEC.headerRow);
+  ['Idea ID', 'Company name', 'Status', 'Exit date'].forEach(h => requireHeader_(headers, h));
+  const values = sheet.getRange(rowNumber, 1, 1, sheet.getLastColumn()).getDisplayValues()[0];
+  const ideaId = valueForHeader_(values, headers, 'Idea ID');
+  const company = valueForHeader_(values, headers, 'Company name');
+  if (!ideaId || !company) throw new Error('Select a saved idea row with an Idea ID and company name.');
+  const ui = SpreadsheetApp.getUi();
+  const defaultDate = Utilities.formatDate(new Date(), book.getSpreadsheetTimeZone(), 'yyyy-MM-dd');
+  const answer = ui.prompt('Mark idea Exited', 'Enter the exit date as YYYY-MM-DD. The idea and trade history stay in the workbook. Add the closing fill separately in Transactions.', ui.ButtonSet.OK_CANCEL);
+  if (answer.getSelectedButton() !== ui.Button.OK) return;
+  const exitDate = String(answer.getResponseText() || defaultDate).trim();
+  if (!validIsoDay_(exitDate)) throw new Error('Use a valid date in YYYY-MM-DD format.');
+  sheet.getRange(rowNumber, headers.Status).setValue('Exited');
+  sheet.getRange(rowNumber, headers['Exit date']).setValue(new Date(exitDate + 'T12:00:00'));
+  book.toast(company + ' is marked Exited. The idea row and transaction history are still saved.', 'Paper Book', 8);
+}
+
+function validIsoDay_(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return false;
+  const date = new Date(value + 'T12:00:00Z');
+  return Number.isFinite(date.valueOf()) && date.toISOString().slice(0, 10) === value;
 }
 
 function paperBookOnEdit(event) {
@@ -266,7 +426,9 @@ function seedValuationFormulas_(sheet, rowNumber, headers) {
       'EV / EBITDA': '=IFERROR(IF(OR(RC[-1]="",RC[-2]="",RC[-2]=0),"",RC[-1]/RC[-2]),"")',
       'P / Sales': '=IFERROR(IF(OR(RC[-12]="",RC[-3]="",RC[-3]=0),"",RC[-12]/RC[-3]),"")',
       'P / Book': '=IFERROR(IF(OR(RC[-13]="",RC[-3]="",RC[-3]=0),"",RC[-13]/RC[-3]),"")',
-      'P / FFO': '=IFERROR(IF(OR(RC[-14]="",RC[-3]="",RC[-3]=0),"",RC[-14]/RC[-3]),"")'
+      'P / FFO': '=IFERROR(IF(OR(RC[-14]="",RC[-3]="",RC[-3]=0),"",RC[-14]/RC[-3]),"")',
+      'Suggested metric': '=IF(RC[-22]="","",IFERROR(IF(REGEXMATCH(LOWER(INDEX(Ideas!R6C6:R205C6,MATCH(RC[-22],Ideas!R6C2:R205C2,0))&" "&INDEX(Ideas!R6C7:R205C7,MATCH(RC[-22],Ideas!R6C2:R205C2,0))),"financial|bank|insurance"),"P / Book",IF(REGEXMATCH(LOWER(INDEX(Ideas!R6C6:R205C6,MATCH(RC[-22],Ideas!R6C2:R205C2,0))&" "&INDEX(Ideas!R6C7:R205C7,MATCH(RC[-22],Ideas!R6C2:R205C2,0))),"reit|real estate"),"P / FFO",IF(RC[-14]="","Enter TTM earnings",IF(AND(RC[-14]<=0,RC[-10]>0),"EV / EBITDA",IF(RC[-14]<=0,"P / Sales","P / E"))))),"Choose sector"))',
+      'Suggested multiple': '=IF(RC[-23]="","",IF(RC[-1]="Choose sector","Choose sector",IF(RC[-1]="P / Book",RC[-3],IF(RC[-1]="P / FFO",RC[-2],IF(RC[-1]="EV / EBITDA",RC[-9],IF(RC[-1]="P / Sales",RC[-4],IF(RC[-1]="Enter TTM earnings","Enter TTM earnings",RC[-14])))))))'
     };
     if (defaults[header]) sheet.getRange(rowNumber, col).setFormulaR1C1(defaults[header]);
   });
@@ -587,7 +749,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     parseTickerMap_, normalizeTicker_, sameExchange_, resolveTickerFromRows_,
     ttmSeries_, latestInstant_, latestDebt_, deriveSecFundamentals_, dedupeDurations_,
-    writeSecFields_, findOrCreateValuationRow_, paperBookOnEdit, PAPER_SEC
+    writeSecFields_, findOrCreateValuationRow_, paperBookOnEdit, validatePaperBookIdea_, validIsoDay_, PAPER_SEC
   };
 }
 
