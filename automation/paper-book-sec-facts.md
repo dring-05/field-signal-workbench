@@ -1,0 +1,28 @@
+# Paper Book SEC fundamentals helper
+
+paper-book-sec-facts.gs adds a custom Paper Book menu to the private workbook's bound Apps Script project. It creates a linked Valuation Inputs row when an idea has an Idea ID and ticker, and can refresh standardized reported fundamentals for a selected idea. It does not place trades, fetch prices, or publish private book data.
+
+## Setup
+
+1. Open the private Paper Book spreadsheet and choose Extensions, Apps Script. Add the contents of paper-book-sec-facts.gs as a new script file. Keep existing workbook code and triggers. This module defines paperBookAddMenu_ instead of claiming the project's onOpen name. If the project already has an onOpen handler, add paperBookAddMenu_(); inside it. If it has no onOpen handler, add a small onOpen function that calls paperBookAddMenu_();.
+2. In Apps Script Project Settings, Script Properties, set PAPER_BOOK_SPREADSHEET_ID to the private workbook ID. Set SEC_USER_AGENT to an identifying label and your real contact email. The email stays in Script Properties and is not in this source file. The SEC requests an identifying User-Agent for automated access and limits users to 10 requests per second. A submission refresh makes two sequential requests and caches the public ticker map for six hours.
+3. Save, reload the spreadsheet, then choose Paper Book, Install idea-entry trigger once. Review and approve Google's Apps Script authorization prompt. When Company name and Ticker are entered in an Ideas row, the installable edit trigger creates a stable Idea ID if its cell is blank, links a Valuation Inputs row, and refreshes SEC facts automatically when SEC_USER_AGENT is configured. It never replaces a nonblank Idea ID. If refresh fails, it leaves a message in Fundamentals source and period and shows a spreadsheet toast. If SEC_USER_AGENT is not configured, it still creates the linked row and shows a setup reminder.
+4. Select the idea row in Ideas or its row in Valuation Inputs, then choose Paper Book, Refresh selected idea from SEC. If Apps Script has not yet been authorized for external requests, approve the prompt. Read the alert for missing tags or a ticker/exchange mismatch.
+
+## Workbook behavior
+
+The workbook has headers on row 5 and records beginning on row 6. The helper matches the Ideas columns Idea ID, Company name, Ticker, Exchange, and Sector, and matches valuation rows by Idea ID. It requires the Valuation Inputs headers Valuation record ID, Idea ID, Ticker / exchange, Shares outstanding, Share-count date/source, TTM net income, Cash & equivalents, Total debt, TTM EBITDA, TTM revenue, Total equity, and Fundamentals source and period.
+
+When creating a new valuation row, it reuses an empty formula-prefilled row where available, ignoring formula-only cells when checking whether a row contains user data. It fills the record identifiers, copies row 6 formatting and validation when needed, and seeds formula columns from the first data row where possible. Missing formula templates are seeded for market capitalization, P/E, enterprise value, EV/EBITDA, P/S, P/B, and P/FFO. Formula outputs depend on their source inputs. In particular, the share price remains manual, so market capitalization and price-based multiples are blank until a price is entered. The SEC refresh writes only shares outstanding, share-count source/date, TTM net income, cash and equivalents, total debt, TTM EBITDA, TTM revenue, total equity, and the fundamentals provenance note. It leaves price, price source, valuation formulas, thesis, book size, conviction, and other user-maintained fields unchanged.
+
+## Source and calculation limits
+
+The helper resolves tickers through the SEC's public ticker and exchange file, then requests the official Company Facts JSON for that CIK. It uses standard US-GAAP facts where available. A TTM flow is the sum of four consecutive reported quarters. When a company reports cumulative year-to-date flows, it derives standalone quarters by subtracting the preceding cumulative period. Incomplete or discontinuous periods are left blank. EBITDA is reported operating income plus reported depreciation and amortization. Debt uses a non-overlapping complete current and noncurrent pair, or a total debt tag where available.
+
+SEC Company Facts does not provide market prices. It may lack sector-specific or issuer-extension concepts, including REIT FFO/AFFO, and standard facts do not cover every non-US listing or taxonomy. The helper does not synthesize those fields or assume a generic metric is appropriate for banks, insurers, REITs, or other sectors. A blank value with an explanation means the helper could not identify a sufficiently complete standardized fact series. Check the linked SEC filing and the stated tag, period, CIK, and share-count date before relying on a multiple.
+
+The SEC says Company Facts contains entity-wide facts using standard taxonomies, is updated as filings are disseminated, and does not support CORS. This helper calls SEC endpoints from Apps Script, not from the public site. References: [EDGAR API documentation](https://www.sec.gov/search-filings/edgar-application-programming-interfaces), [SEC ticker and exchange mapping](https://www.sec.gov/files/company_tickers_exchange.json), and [SEC fair-access guidance](https://www.sec.gov/developer).
+
+## Local test
+
+From the repository root, run node tests/check-paper-book-sec-facts.mjs. The fixture checks ticker mapping and ambiguity, direct quarterly and cumulative YTD TTM arithmetic, revisions, debt aggregation, missing tags, row-5 headers and row-6 records, reusing formula-only rows, and that the SEC refresh only writes the intended SEC-derived columns. It makes no network call and does not access the private spreadsheet.

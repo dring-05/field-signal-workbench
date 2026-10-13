@@ -6,11 +6,13 @@ const SIGNALS = {
   monthlySheet: 'Taiwan Monthly',
   feedSheet: 'SiteFeed',
   rawSheet: 'Raw Statements',
+  marginAuditSheet: 'Margin Signals',
   logSheet: 'Import Log',
   market: 'Taiwan public issuers'
 };
 
 const RAW_HEADERS = ['Market', 'Data area', 'Endpoint', 'Company code', 'Company name', 'Report period', 'Retrieved at', 'Raw source record', 'Source URL', 'Record signature'];
+const MARGIN_AUDIT_HEADERS = ['Market', 'Company code', 'Company name', 'Report period', 'Source endpoint', 'Retrieved at', 'Source URL', 'Source signature', 'Prior-quarter source signature', 'Calculation signature', 'Source basis', 'Revenue reported YTD', 'Gross profit reported YTD', 'Operating income reported YTD', 'Prior-quarter revenue YTD', 'Prior-quarter gross profit YTD', 'Prior-quarter operating income YTD', 'Revenue standalone quarter', 'Gross profit standalone quarter', 'Operating income standalone quarter', 'Gross margin %', 'Operating margin %', 'Gross margin YoY change (pp)', 'Operating margin YoY change (pp)', 'Calculation status', 'Raw source record'];
 const LOG_HEADERS = ['Run time', 'Result', 'Monthly source period', 'Rows received', 'Rows added or revised', 'Raw records added or revised', 'Notes'];
 const FEED_HEADERS = ['Market', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL'];
 
@@ -19,6 +21,7 @@ function setupTaiwanSignals() {
   ensureHeader_(book, SIGNALS.monthlySheet, ['Market', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue current month', 'Revenue prior month', 'Revenue year-ago month', 'MoM growth %', 'YoY growth %', 'YTD revenue', 'Prior-year YTD revenue', 'YTD growth %', 'Currency / unit', 'Source URL', 'Retrieved at', 'Source record']);
   ensureHeader_(book, SIGNALS.feedSheet, FEED_HEADERS);
   ensureHeader_(book, SIGNALS.rawSheet, RAW_HEADERS);
+  ensureHeader_(book, SIGNALS.marginAuditSheet, MARGIN_AUDIT_HEADERS);
   ensureHeader_(book, SIGNALS.logSheet, LOG_HEADERS);
   const triggers = ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'refreshTaiwanSignals');
   if (!triggers.length) ScriptApp.newTrigger('refreshTaiwanSignals').timeBased().everyDays(1).atHour(7).inTimezone('America/New_York').create();
@@ -135,6 +138,9 @@ function rebuildSiteFeed_(book) {
     const continuous = contiguousMonths_(periods, index);
     const diffs = finiteDifferencesAtEnd_(y, continuous);
     const margin = marginMap.get(code) || emptyMarginSignals_();
+    if (/金融|保險|證券|期貨|金控|financial|insurance|securities|bank/i.test(String(current[3] || ''))) {
+      margin.status = 'Generic gross and operating margins are not comparable for financial-sector issuers; use sector-specific indicators instead';
+    }
     const status = [
       diffs.d3 !== '' ? 'Revenue Δ3 available' : 'Revenue Δ3 needs 4 consecutive monthly YoY observations',
       margin.status
@@ -156,6 +162,7 @@ function marginSignalsMap_(book) {
   if (!raw || raw.getLastRow() <= 4) return result;
   const values = raw.getRange(5, 1, raw.getLastRow() - 4, RAW_HEADERS.length).getValues();
   const byCompany = new Map();
+  const latestByQuarter = new Map();
   values.forEach(row => {
     if (String(row[2]) !== 't187ap06_X_ci') return;
     const companyCode = String(row[3] || '').trim();
@@ -163,34 +170,118 @@ function marginSignalsMap_(book) {
     const q = String(row[5] || '');
     if (!/^\d{4}-Q[1-4]$/.test(q)) return;
     const record = parseJson_(row[7]);
-    const revenue = numericField_(record, ['營業收入']);
-    const grossProfit = numericField_(record, ['營業毛利（毛損）淨額', '營業毛利（毛損）', '營業毛利淨額']);
-    const operatingIncome = numericField_(record, ['營業利益（損失）', '營業利益損失']);
-    if (!(revenue > 0)) return;
     const key = quarterIndex_(q);
-    if (!byCompany.has(companyCode)) byCompany.set(companyCode, new Map());
-    byCompany.get(companyCode).set(key, {
-      key,
-      q,
-      gross: grossProfit === '' ? '' : grossProfit / revenue * 100,
-      operating: operatingIncome === '' ? '' : operatingIncome / revenue * 100,
-      date: textField_(record, ['出表日期', '公告日期', '發布日期', '發布時間', '發佈時間'])
+    if (!Number.isFinite(key)) return;
+    const id = companyCode + '|' + q;
+    const retrievedAt = row[6] instanceof Date ? row[6].getTime() : new Date(row[6]).getTime() || 0;
+    const prior = latestByQuarter.get(id);
+    if (prior && prior.retrievedAt > retrievedAt) return;
+    latestByQuarter.set(id, {
+      companyCode, q, key,
+      name: String(row[4] || ''),
+      record,
+      raw: String(row[7] || '{}'),
+      endpoint: String(row[2]),
+      sourceUrl: String(row[8] || ''),
+      signature: String(row[9] || ''),
+      retrievedAt,
+      retrievedAtValue: row[6]
     });
   });
+  latestByQuarter.forEach(item => {
+    if (!byCompany.has(item.companyCode)) byCompany.set(item.companyCode, new Map());
+    byCompany.get(item.companyCode).set(item.key, item);
+  });
+  const auditRows = [];
   byCompany.forEach((quarterMap, companyCode) => {
-    const series = [...quarterMap.values()].sort((a, b) => a.key - b.key);
+    const cumulative = [...quarterMap.values()].sort((a, b) => a.key - b.key);
+    const series = [];
+    let priorFiscalYear = '';
+    let priorCumulative = null;
+    cumulative.forEach(item => {
+      const revenueYtd = numericField_(item.record, ['營業收入', '營業收入淨額', '收入']);
+      const grossYtd = numericField_(item.record, ['營業毛利（毛損）淨額', '營業毛利（毛損）', '營業毛利淨額']);
+      const operatingYtd = numericField_(item.record, ['營業利益（損失）', '營業利益損失', '營業利益']);
+      const qMatch = item.q.match(/^(\d{4})-Q([1-4])$/);
+      const fiscalYear = qMatch ? qMatch[1] : '';
+      const qNumber = qMatch ? Number(qMatch[2]) : 0;
+      const sameYearPrior = fiscalYear === priorFiscalYear && priorCumulative && item.key - priorCumulative.key === 1;
+      const canDerive = qNumber === 1 || sameYearPrior;
+      const deriveFlow_ = (current, previous) => {
+        if (!canDerive || typeof current !== 'number' || !Number.isFinite(current)) return '';
+        if (qNumber === 1) return current;
+        return typeof previous === 'number' && Number.isFinite(previous) ? current - previous : '';
+      };
+      const revenue = deriveFlow_(revenueYtd, sameYearPrior ? priorCumulative.revenueYtd : '');
+      const grossProfit = deriveFlow_(grossYtd, sameYearPrior ? priorCumulative.grossYtd : '');
+      const operatingIncome = deriveFlow_(operatingYtd, sameYearPrior ? priorCumulative.operatingYtd : '');
+      const validDenominator = typeof revenue === 'number' && Number.isFinite(revenue) && revenue > 0;
+      const point = {
+        ...item,
+        revenueYtd, grossYtd, operatingYtd,
+        priorRevenueYtd: sameYearPrior ? priorCumulative.revenueYtd : '',
+        priorGrossYtd: sameYearPrior ? priorCumulative.grossYtd : '',
+        priorOperatingYtd: sameYearPrior ? priorCumulative.operatingYtd : '',
+        revenue, grossProfit, operatingIncome,
+        gross: validDenominator && typeof grossProfit === 'number' ? grossProfit / revenue * 100 : '',
+        operating: validDenominator && typeof operatingIncome === 'number' ? operatingIncome / revenue * 100 : '',
+        status: canDerive ? (validDenominator ? 'Standalone quarter derived from cumulative YTD statement values' : 'Standalone quarter derived, but revenue denominator is missing or nonpositive') : 'Standalone quarter unavailable: prior cumulative quarter is missing'
+      };
+      series.push(point);
+      priorFiscalYear = fiscalYear;
+      priorCumulative = {key: item.key, revenueYtd, grossYtd, operatingYtd};
+    });
+    const marginSeries = series.filter(x => x.gross !== '' || x.operating !== '');
+    marginSeries.forEach(item => {
+      const priorYear = marginSeries.find(x => x.key === item.key - 4);
+      item.grossYoY = priorYear && typeof item.gross === 'number' && typeof priorYear.gross === 'number' ? item.gross - priorYear.gross : '';
+      item.operatingYoY = priorYear && typeof item.operating === 'number' && typeof priorYear.operating === 'number' ? item.operating - priorYear.operating : '';
+    });
+    series.forEach(item => {
+      auditRows.push([
+        SIGNALS.market, companyCode, item.name, item.q, item.endpoint,
+        item.retrievedAtValue || '', item.sourceUrl, item.signature,
+        sameQuarterPriorSignature_(quarterMap, item),
+        ['MARGIN_YTD_DIFF_V1', item.signature, sameQuarterPriorSignature_(quarterMap, item)].join('|'),
+        'Cumulative YTD, verified against MOPS financial comparison notes',
+        item.revenueYtd, item.grossYtd, item.operatingYtd,
+        item.priorRevenueYtd, item.priorGrossYtd, item.priorOperatingYtd,
+        item.revenue, item.grossProfit, item.operatingIncome,
+        item.gross, item.operating, item.grossYoY, item.operatingYoY,
+        item.status, item.raw
+      ]);
+    });
     if (!series.length) return;
     const last = series[series.length - 1];
-    const gm = differencesForQuarterSeries_(series, yoyMarginSeries_(series, 'gross'));
-    const om = differencesForQuarterSeries_(series, yoyMarginSeries_(series, 'operating'));
+    const grossYoY = series.map(x => x.grossYoY);
+    const operatingYoY = series.map(x => x.operatingYoY);
+    const gm = differencesForQuarterSeries_(series, grossYoY);
+    const om = differencesForQuarterSeries_(series, operatingYoY);
     result.set(companyCode, {
-      gross: last.gross, grossYoY: gm.yoy, grossD1: gm.d1, grossD2: gm.d2, grossD3: gm.d3,
-      operating: last.operating, operatingYoY: om.yoy, operatingD1: om.d1, operatingD2: om.d2, operatingD3: om.d3,
-      statementDate: last.date,
-      status: (last.gross === '' || last.operating === '') ? 'General-industry margin field missing; check statement rows' : (gm.d3 !== '' || om.d3 !== '' ? 'Margin Δ3 available on matched same-quarter YoY series' : 'Margin Δ3 needs 8 consecutive quarterly statements; reported-period basis can be YTD')
+      gross: last.gross, grossYoY: last.grossYoY, grossD1: gm.d1, grossD2: gm.d2, grossD3: gm.d3,
+      operating: last.operating, operatingYoY: last.operatingYoY, operatingD1: om.d1, operatingD2: om.d2, operatingD3: om.d3,
+      statementDate: textField_(last.record, ['出表日期', '公告日期', '發布日期', '發布時間', '發佈時間']),
+      status: last.status + '; margin Δ1/Δ2/Δ3 require 6/7/8 consecutive standalone quarter margins and corresponding prior-year quarters'
     });
   });
+  appendMarginAudit_(book, auditRows);
   return result;
+}
+
+function appendMarginAudit_(book, rows) {
+  const sheet = book.getSheetByName(SIGNALS.marginAuditSheet) || ensureHeader_(book, SIGNALS.marginAuditSheet, MARGIN_AUDIT_HEADERS);
+  const existing = sheet.getLastRow() > 4 ? new Set(sheet.getRange(5, 10, sheet.getLastRow() - 4, 1).getDisplayValues().flat()) : new Set();
+  const additions = rows.filter(row => row[9] && !existing.has(String(row[9])));
+  if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, MARGIN_AUDIT_HEADERS.length).setValues(additions);
+}
+
+function sameQuarterPriorSignature_(quarterMap, item) {
+  const q = item.q.match(/^(\d{4})-Q([1-4])$/);
+  if (!q) return '';
+  const quarter = Number(q[2]);
+  if (quarter === 1) return '';
+  const previous = quarterMap.get(item.key - 1);
+  return previous ? previous.signature : '';
 }
 
 function yoyMarginSeries_(series, field) {
@@ -203,6 +294,7 @@ function yoyMarginSeries_(series, field) {
 
 function differencesForQuarterSeries_(series, yoy) {
   const i = series.length - 1;
+  if (i < 0) return {yoy: '', d1: '', d2: '', d3: ''};
   const contiguous = n => {
     if (i - n + 1 < 0) return false;
     for (let j = i - n + 1; j <= i; j++) {
