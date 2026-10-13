@@ -348,6 +348,12 @@ export function aiDeltaLabel(currentHits, priorHits) {
   return '';
 }
 
+/** A legal-name transition can describe an AI pivot, but cannot create a lead by itself. */
+export function aiPivotLeadType(legalNameChange, aiLabel) {
+  if (!aiLabel) return null;
+  return legalNameChange ? 'name-change-and-ai-language' : 'ai-language-change';
+}
+
 function snippets(hits, max = 3) {
   const seen = new Set();
   return hits.filter(hit => {
@@ -522,7 +528,6 @@ async function scan(options) {
     const legalNameChange = nameTextCorroborated
       ? legalNameChangeFromSubmissions(submissionData, row.filed, row.cik)
       : null;
-    const nameLead = Boolean(legalNameChange);
     let priorCount = null;
     let priorHits = null;
     let aiLabel = '';
@@ -544,7 +549,8 @@ async function scan(options) {
       }
       aiLabel = aiDeltaLabel(aiHits, priorHits);
     }
-    if (!nameLead && !aiLabel) continue;
+    const leadType = aiPivotLeadType(legalNameChange, aiLabel);
+    if (!leadType) continue;
     let operatingBridge = null;
     let operatingBridgeStatus = 'No standardized facts available by the filing date';
     try {
@@ -564,11 +570,11 @@ async function scan(options) {
       filingDate: row.filed,
       accession: row.accession,
       filingUrl: filingUrl(row.filename),
-      leadType: nameLead && aiLabel ? 'name-change-and-ai-language' : nameLead ? 'possible-name-change' : 'ai-language-change',
+      leadType,
       reviewStatus: 'automated lead; human review required',
-      label: [nameLead ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName} (history date ${legalNameChange.effectiveDate}); Form 8-K Item 5.03 name-change wording corroborates it. Review the filing.` : '', aiLabel].filter(Boolean).join(' '),
-      legalNameChange,
-      nameChangeTextCorroborated: nameLead,
+      label: [legalNameChange ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName} (history date ${legalNameChange.effectiveDate}); filing text also meets the AI-language screen. Review the filing.` : '', aiLabel].filter(Boolean).join(' '),
+      legalNameChange: legalNameChange || null,
+      nameChangeTextCorroborated: Boolean(legalNameChange),
       priorSameFormAiMentions: priorCount,
       currentAiMentions: aiHits.length,
       evidence: snippets(aiHits),

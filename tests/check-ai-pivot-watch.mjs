@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { analyzeText, aiDeltaLabel, attachListedIssuer, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, reviewCues, selfTest } from '../automation/sec-filing-screen.mjs';
+import { analyzeText, aiDeltaLabel, aiPivotLeadType, attachListedIssuer, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, reviewCues, selfTest } from '../automation/sec-filing-screen.mjs';
 
 const moduleSource = await readFile(new URL('../public/ai-pivot-watch.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
@@ -75,6 +75,15 @@ assert.deepEqual(verifiedNameChange, {
   sourceUrl: 'https://data.sec.gov/submissions/CIK0000000123.json'
 });
 assert.ok(isNameChangeLead('The issuer changed its name from Beta Manufacturing Inc. to Current AI Systems Inc.', '6-K') && verifiedNameChange, '6-K wording is only eligible when the SEC submissions history independently confirms the transition');
+const verifiedNonAiNameChange = legalNameChangeFromSubmissions({
+  name: 'Current Widgets Inc.',
+  formerNames: [{name: 'Beta Manufacturing Inc.', from: '2024-01-01', to: '2026-10-01'}]
+}, '2026-10-10', '123');
+assert.ok(verifiedNonAiNameChange, 'control case must contain a recent, independently verified legal name change');
+assert.equal(aiPivotLeadType(verifiedNonAiNameChange, ''), null, 'a verified non-AI legal rename cannot create an AI pivot lead on its own');
+assert.equal(aiPivotLeadType(verifiedNameChange, ''), null, 'even a rename to an AI-branded name requires an independent AI-language lead');
+assert.equal(aiPivotLeadType(verifiedNonAiNameChange, 'AI language first detected versus prior same-form filing'), 'name-change-and-ai-language', 'a rename can accompany a lead only when the filing independently meets the AI-language screen');
+assert.equal(aiPivotLeadType(null, 'New AI-business wording versus prior same-form filing'), 'ai-language-change', 'the AI-language screen remains sufficient when there is no verified name change');
 assert.equal(legalNameChangeFromSubmissions({name: 'Unrelated Current Inc.', formerNames: []}, '2026-10-10', '123'), null, '6-K text without a matching SEC name history cannot confirm a transition');
 assert.equal(legalNameChangeFromSubmissions(formerNamesFixture, '2026-07-01', '123'), null, 'stale SEC name transitions should not be assigned to a recent filing');
 assert.equal(legalNameChangeFromSubmissions(formerNamesFixture, '2026-11-15', '123')?.effectiveDate, '2026-10-01', 'a transition exactly 45 days before filing remains in scope');
