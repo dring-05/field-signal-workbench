@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import {mkdtemp, readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
-import {ATTRIBUTION, parseMonthlyReport, reportUrl, runBackfill} from '../automation/mops-monthly-backfill.mjs';
+import {ATTRIBUTION, backfillOptionsFromCli, parseMonthlyReport, reportUrl, runBackfill} from '../automation/mops-monthly-backfill.mjs';
+
+assert.deepEqual(backfillOptionsFromCli({from:'2026-07',to:'2026-09',out:'/tmp/history'}), {
+  from:'2026-07',to:'2026-09',outDir:'/tmp/history',markets:['sii','otc','rotc','pub'],issuerTypes:['0','1'],
+  maxRequests:8,delayMs:3000,retries:3,recheckCompleted:false
+}, 'CLI defaults must cover every MOPS report family and domestic/foreign issuer population');
 
 const fixture = await readFile(new URL('./fixtures/mops-monthly-sii-114-9.html', import.meta.url), 'utf8');
 const parsed = parseMonthlyReport(fixture, {reportMonth: '2025-09', market: 'sii', issuerType: '0'});
@@ -27,7 +32,12 @@ assert.equal(parseMonthlyReport(titleWithoutHeading, {reportMonth: '2025-09', ma
 assert.equal(reportUrl('otc', '2024-01', '1'), 'https://mopsov.twse.com.tw/nas/t21/otc/t21sc03_113_1_1.html');
 assert.throws(() => parseMonthlyReport(fixture, {reportMonth: '2025-08', market: 'sii', issuerType: '0'}), /does not match/);
 assert.throws(() => parseMonthlyReport('<html><title>上市公司114年9月份</title><table><tr><td>not a report</td></tr></table></html>', {reportMonth: '2025-09', market: 'sii', issuerType: '0'}), /No valid company rows/);
-assert.throws(() => reportUrl('rotc', '2025-09', '0'), /Unsupported market/);
+assert.equal(reportUrl('rotc', '2025-09', '0'), 'https://mopsov.twse.com.tw/nas/t21/rotc/t21sc03_114_9_0.html');
+assert.equal(reportUrl('pub', '2025-09', '1'), 'https://mopsov.twse.com.tw/nas/t21/pub/t21sc03_114_9_1.html');
+for (const [market, label] of [['otc', '上櫃公司'], ['rotc', '興櫃公司'], ['pub', '公開發行公司']]) {
+  const familyFixture = fixture.replaceAll('上市公司', label);
+  assert.equal(parseMonthlyReport(familyFixture, {reportMonth:'2025-09',market,issuerType:'0'}).records.length, 2, `${market} report family title and rows should parse`);
+}
 
 // Keep this isolated smoke output under the OS temp directory. The test does not
 // touch production Sheets or remove any generated files.

@@ -76,7 +76,12 @@
     const href = /^https:\/\//i.test(String(item.filingUrl || '')) ? item.filingUrl : '';
     const listing = [item.exchange, item.ticker].filter(Boolean).join(' · ');
     const displayName = item.mappedCompany || item.company;
-    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${item.evidence?.length ? `<details><summary>Matched filing text</summary>${item.evidence.map(e => `<blockquote class="footnote">${esc(e.text)}</blockquote>`).join('')}</details>` : ''}<p class="footnote">Automated match, not a verified name change or investment conclusion. Review the full filing and prior-period evidence.</p></article>`;
+    const nameHistory = item.legalNameChange;
+    const nameSource = /^https:\/\//i.test(String(nameHistory?.sourceUrl || '')) ? nameHistory.sourceUrl : '';
+    const nameReceipt = nameHistory?.oldName && nameHistory?.newName
+      ? `<p><strong>SEC name history:</strong> ${esc(nameHistory.oldName)} → ${esc(nameHistory.newName)} · effective ${esc(nameHistory.effectiveDate)}${nameSource ? ` · <a href="${esc(nameSource)}" target="_blank" rel="noreferrer">SEC submissions record ↗</a>` : ''}</p>`
+      : '';
+    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${nameReceipt}${item.evidence?.length ? `<details><summary>Matched filing text</summary>${item.evidence.map(e => `<blockquote class="footnote">${esc(e.text)}</blockquote>`).join('')}</details>` : ''}<p class="footnote">AI-language matches are automated leads, not a verified pivot or investment conclusion. Legal-name transitions are cross-checked against SEC submissions history. Review the full filing and prior-period evidence.</p></article>`;
   }
 
   window.AIPivotWatch = {

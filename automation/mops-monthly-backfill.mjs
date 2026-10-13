@@ -30,7 +30,8 @@ const MONTH_HEADERS = [
   ['notes', ['備註']]
 ];
 
-const MARKET_PATH = Object.freeze({sii: 'sii', otc: 'otc'});
+const MARKET_PATH = Object.freeze({sii: 'sii', otc: 'otc', rotc: 'rotc', pub: 'pub'});
+const MARKET_LABEL = Object.freeze({sii: /上市/, otc: /上櫃|櫃買/, rotc: /興櫃/, pub: /公開發行/});
 const ISSUER_TYPE = Object.freeze({0: 'domestic', 1: 'foreign'});
 
 function sha256(buffer) {
@@ -141,14 +142,14 @@ function validateTitle(html, reportMonth, market) {
   const relevantTag = titleTags.find(value => new RegExp(`(?:民國)?\\s*${year}\\s*年`).test(value));
   const sourcePreamble = html.split('本資料由各公司提供')[0];
   const visiblePreamble = normalizeText(sourcePreamble);
-  const titlePattern = /((?:上市公司|上櫃公司)\s*\d{2,3}\s*年\s*\d{1,2}\s*月份?[^。]{0,60}?營業收入統計表)/g;
+  const titlePattern = /((?:上市公司|上櫃公司|興櫃公司|公開發行公司)\s*\d{2,3}\s*年\s*\d{1,2}\s*月份?[^。]{0,60}?營業收入統計表)/g;
   const visibleTitles = [...visiblePreamble.matchAll(titlePattern)].map(m => m[1]);
   const title = relevantTag || visibleTitles.at(-1) || titleTags[0] || '';
   if (!title) throw new Error(`Could not find a MOPS report title containing the requested period ${reportMonth}.`);
   const hasYear = new RegExp(`(?:民國)?\\s*${year}\\s*年`).test(title);
   const hasMonth = new RegExp(`${month}\\s*月`).test(title);
   if (!hasYear || !hasMonth) throw new Error(`MOPS title period does not match ${reportMonth}: ${title}`);
-  const marketLabelPresent = market === 'sii' ? /上市/.test(title) : /上櫃|櫃買/.test(title);
+  const marketLabelPresent = MARKET_LABEL[market]?.test(title);
   if (!marketLabelPresent) throw new Error(`MOPS title does not identify the requested ${market} market: ${title}`);
   return title;
 }
@@ -244,6 +245,20 @@ function parseArgs(argv) {
   return options;
 }
 
+export function backfillOptionsFromCli(options) {
+  return {
+    from: options.from,
+    to: options.to,
+    outDir: options.out,
+    markets: options.markets ? options.markets.split(',') : ['sii', 'otc', 'rotc', 'pub'],
+    issuerTypes: options['issuer-types'] ? options['issuer-types'].split(',') : ['0', '1'],
+    maxRequests: options['max-requests'] ? Number(options['max-requests']) : 8,
+    delayMs: options['delay-ms'] ? Number(options['delay-ms']) : 3000,
+    retries: options.retries ? Number(options.retries) : 3,
+    recheckCompleted: Boolean(options['recheck-completed'])
+  };
+}
+
 function monthsBetween(from, to) {
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(from || '') || !/^\d{4}-(0[1-9]|1[0-2])$/.test(to || '')) {
     throw new Error('Both --from and --to are required in YYYY-MM format.');
@@ -324,7 +339,7 @@ async function fetchWithRetry(url, {retries, fetchImpl, onAttempt}) {
 }
 
 export async function runBackfill({
-  from, to, outDir, markets = ['sii', 'otc'], issuerTypes = ['0'], maxRequests = 8,
+  from, to, outDir, markets = ['sii', 'otc', 'rotc', 'pub'], issuerTypes = ['0', '1'], maxRequests = 8,
   delayMs = 3000, retries = 3, recheckCompleted = false,
   fetchImpl = globalThis.fetch, sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 }) {
@@ -403,8 +418,8 @@ export async function runBackfill({
 export const HELP = `Usage: node automation/mops-monthly-backfill.mjs --from YYYY-MM --to YYYY-MM --out PATH [options]
 
 Options:
-  --markets sii,otc          Official MOPS market routes, default both
-  --issuer-types 0,1         0 domestic, 1 foreign, default domestic only
+  --markets sii,otc,rotc,pub Official MOPS report families, default all four
+  --issuer-types 0,1         0 domestic, 1 foreign, default both populations
   --max-requests N           Per-run request cap, default 8, maximum 200
   --delay-ms N               Minimum serial delay between requests, default 3000
   --retries N                Bounded transient retries, default 3, maximum 5
@@ -420,17 +435,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) { console.log(HELP); return; }
   if (!options.from || !options.to || !options.out) throw new Error(HELP);
-  const result = await runBackfill({
-    from: options.from,
-    to: options.to,
-    outDir: options.out,
-    markets: options.markets ? options.markets.split(',') : ['sii', 'otc'],
-    issuerTypes: options['issuer-types'] ? options['issuer-types'].split(',') : ['0'],
-    maxRequests: options['max-requests'] ? Number(options['max-requests']) : 8,
-    delayMs: options['delay-ms'] ? Number(options['delay-ms']) : 3000,
-    retries: options.retries ? Number(options.retries) : 3,
-    recheckCompleted: Boolean(options['recheck-completed'])
-  });
+  const result = await runBackfill(backfillOptionsFromCli(options));
   console.log(JSON.stringify(result, null, 2));
 }
 

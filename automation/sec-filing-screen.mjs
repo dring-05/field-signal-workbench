@@ -63,11 +63,56 @@ export function analyzeText(text) {
       const context = normalized.slice(start, end);
       const before = normalized.slice(Math.max(0, match.index - 1200), match.index);
       if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500))) continue;
-      hits.push({ term: match[0], context: context.trim() });
+      hits.push({ term: match[0], context: context.trim(), sentence: sentenceAt(normalized, match.index, match[0].length) });
       if (hits.length >= 30) return hits;
     }
   }
   return hits;
+}
+
+function sentenceAt(text, index, length) {
+  const left = Math.max(text.lastIndexOf('.', index), text.lastIndexOf('!', index), text.lastIndexOf('?', index), text.lastIndexOf(';', index)) + 1;
+  const ends = ['.', '!', '?', ';'].map(mark => text.indexOf(mark, index + length)).filter(position => position >= 0);
+  const right = ends.length ? Math.min(...ends) : text.length;
+  return text.slice(left, right).trim();
+}
+
+const EVIDENCE_STOPWORDS = new Set([
+  'about', 'after', 'also', 'among', 'been', 'being', 'company', 'companies', 'could', 'during',
+  'each', 'from', 'have', 'into', 'more', 'most', 'other', 'over', 'their', 'there', 'these',
+  'they', 'this', 'those', 'through', 'under', 'upon', 'what', 'when', 'where', 'which', 'while',
+  'with', 'within', 'without', 'would', 'shall', 'should', 'will', 'than', 'then', 'were', 'your',
+  'artificial', 'intelligence', 'generative', 'plans', 'plan', 'planned', 'expects', 'expected',
+  'believes', 'believe', 'intends', 'intended', 'proposes', 'proposed', 'seeks', 'seek', 'may',
+  'might', 'must', 'can', 'continue', 'continues', 'continued', 'including', 'include', 'includes',
+  'following', 'related', 'based', 'using', 'used', 'currently', 'currently', 'new', 'business',
+]);
+
+function evidenceTokens(hit) {
+  return new Set(String(hit.sentence ?? hit.context ?? '').toLowerCase().match(/[a-z][a-z0-9-]{2,}/g)
+    ?.map(token => token.replaceAll('-', ''))
+    .filter(token => token.length >= 4 && !EVIDENCE_STOPWORDS.has(token)) ?? []);
+}
+
+/** Find a substantive new AI-business phrase, even when the total hit count is unchanged. */
+export function novelAiEvidence(currentHits, priorHits) {
+  if (!currentHits?.length || priorHits === null) return [];
+  if (!priorHits.length) return currentHits;
+  const prior = priorHits.map(evidenceTokens).filter(tokens => tokens.size >= 4);
+  return currentHits.filter(hit => {
+    const tokens = evidenceTokens(hit);
+    if (tokens.size < 4) return false;
+    let bestSimilarity = 0;
+    let mostNovel = tokens.size;
+    for (const previous of prior) {
+      const shared = [...tokens].filter(token => previous.has(token)).length;
+      const union = new Set([...tokens, ...previous]).size;
+      const similarity = union ? shared / union : 0;
+      if (similarity > bestSimilarity) bestSimilarity = similarity;
+      mostNovel = Math.min(mostNovel, tokens.size - shared);
+    }
+    return mostNovel >= 3 && bestSimilarity < 0.55;
+  });
 }
 
 export function isNameChangeLead(text, form) {
@@ -193,11 +238,65 @@ function entriesFromSubmissions(data, beforeAccession) {
   return result;
 }
 
-function aiDeltaLabel(currentHits, priorHits) {
+/**
+ * Resolve a recent legal-name transition from the SEC's CIK submissions
+ * history. `formerNames` is the source of the prior legal name and its
+ * effective date; the following historical name, or current `name`, supplies
+ * the new legal name. Filing language is only corroboration for this result.
+ */
+export function legalNameChangeFromSubmissions(data, filed, cik) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(filed ?? ''))) return null;
+  const currentName = String(data?.name ?? '').trim();
+  const formerNames = Array.isArray(data?.formerNames) ? data.formerNames : [];
+  const history = formerNames.flatMap(record => {
+    const name = String(record?.name ?? '').trim();
+    const from = String(record?.from ?? '').trim();
+    const to = String(record?.to ?? '').trim();
+    if (!name || !/^\d{4}-\d{2}-\d{2}$/.test(to)) return [];
+    return [{ name, from: /^\d{4}-\d{2}-\d{2}$/.test(from) ? from : '', to }];
+  }).sort((a, b) => (a.from || a.to).localeCompare(b.from || b.to) || a.to.localeCompare(b.to));
+  const filingTime = Date.parse(`${filed}T00:00:00Z`);
+  const nearby = history.map((record, index) => ({
+    ...record,
+    index,
+    distanceDays: Math.abs(Date.parse(`${record.to}T00:00:00Z`) - filingTime) / 86400000,
+  })).filter(record => record.distanceDays <= 45)
+    .sort((a, b) => a.distanceDays - b.distanceDays || b.to.localeCompare(a.to));
+  for (const prior of nearby) {
+    const nextHistoricalName = history.slice(prior.index + 1).find(record =>
+      record.name.toLocaleLowerCase() !== prior.name.toLocaleLowerCase()
+      && (!record.from || record.from >= prior.to));
+    const newName = String(nextHistoricalName?.name ?? currentName).trim();
+    if (!newName || newName.toLocaleLowerCase() === prior.name.toLocaleLowerCase()) continue;
+    const normalizedCik = String(cik ?? '').replace(/\D/g, '').padStart(10, '0');
+    if (!/^\d{10}$/.test(normalizedCik)) return null;
+    return {
+      oldName: prior.name,
+      newName,
+      effectiveDate: prior.to,
+      source: 'SEC submissions formerNames history and current name',
+      sourceUrl: submissionUrl(normalizedCik),
+    };
+  }
+  return null;
+}
+
+async function submissionsForCik(cik, userAgent, cache) {
+  const key = String(cik).padStart(10, '0');
+  if (cache.has(key)) return cache.get(key);
+  const response = await secFetch(submissionUrl(key), userAgent);
+  const data = response.status === 404 ? null : JSON.parse(response.body);
+  cache.set(key, data);
+  return data;
+}
+
+export function aiDeltaLabel(currentHits, priorHits) {
   if (!currentHits.length) return '';
   if (priorHits === null) return 'AI-language lead; prior filing comparison unavailable';
-  if (priorHits === 0) return 'AI language first detected versus prior same-form filing';
-  if (currentHits.length >= Math.max(3, priorHits * 2)) return `AI-language mentions increased (${priorHits} to ${currentHits.length}) versus prior same-form filing`;
+  if (priorHits.length === 0) return 'AI language first detected versus prior same-form filing';
+  const newPhrases = novelAiEvidence(currentHits, priorHits);
+  if (newPhrases.length) return `New AI-business wording versus prior same-form filing (${newPhrases.length} distinct phrase${newPhrases.length === 1 ? '' : 's'})`;
+  if (currentHits.length >= Math.max(3, priorHits.length * 2)) return `AI-language mentions increased (${priorHits.length} to ${currentHits.length}) versus prior same-form filing`;
   return '';
 }
 
@@ -212,14 +311,11 @@ function snippets(hits, max = 3) {
 }
 
 async function previousSameForm(row, userAgent, cache) {
-  if (cache.has(row.cik)) return cache.get(row.cik).find(item => item.form === row.form && item.filed < row.filed) ?? null;
-  const response = await secFetch(submissionUrl(row.cik), userAgent);
-  if (response.status === 404) { cache.set(row.cik, []); return null; }
-  const data = JSON.parse(response.body);
+  const data = await submissionsForCik(row.cik, userAgent, cache);
+  if (!data) return null;
   const items = entriesFromSubmissions(data, row.accession)
     .filter(item => item.filed < row.filed)
     .sort((a, b) => b.filed.localeCompare(a.filed));
-  cache.set(row.cik, items);
   return items.find(item => item.form === row.form) ?? null;
 }
 
@@ -249,7 +345,7 @@ async function scan(options) {
 
   const candidates = [];
   const checked = [...seen];
-  const priorCache = new Map();
+  const submissionsCache = new Map();
   const sorted = attachListedIssuer(
     [...filings.values()].filter(row => listedCiks.has(row.cik)),
     tickerRows,
@@ -262,25 +358,36 @@ async function scan(options) {
     const mainText = relevant.find(doc => doc.type === row.form)?.text ?? plainText(primaryResponse.body);
     const aiHits = relevant.flatMap(doc => analyzeText(doc.text).map(hit => ({ ...hit, documentType: doc.type })));
     const nameEvidence = [mainText, ...relevant.filter(doc => doc.type !== row.form).map(doc => doc.text)].join(' ');
-    const nameLead = isNameChangeLead(nameEvidence, row.form);
+    const nameTextCorroborated = isNameChangeLead(nameEvidence, row.form);
+    // Text alone never creates a name-change lead. Confirm both legal names
+    // and the date against the SEC's primary CIK submissions history first.
+    const submissionData = nameTextCorroborated
+      ? await submissionsForCik(row.cik, userAgent, submissionsCache)
+      : null;
+    const legalNameChange = nameTextCorroborated
+      ? legalNameChangeFromSubmissions(submissionData, row.filed, row.cik)
+      : null;
+    const nameLead = Boolean(legalNameChange);
     let priorCount = null;
+    let priorHits = null;
     let aiLabel = '';
     if (aiHits.length) {
       try {
-        const prior = await previousSameForm(row, userAgent, priorCache);
+        const prior = await previousSameForm(row, userAgent, submissionsCache);
         if (prior) {
           const priorUrl = `${SEC}/Archives/edgar/data/${Number(row.cik)}/${prior.accession.replaceAll('-', '')}/${prior.accession}.txt`;
           const priorResponse = await secFetch(priorUrl, userAgent);
           if (priorResponse.status !== 404) {
             const previousDocs = relevantDocuments(priorResponse.body, row.form);
             const priorText = previousDocs.length ? previousDocs.map(doc => doc.text).join(' ') : plainText(priorResponse.body);
-            priorCount = analyzeText(priorText).length;
+            priorHits = analyzeText(priorText);
+            priorCount = priorHits.length;
           }
         }
       } catch (error) {
         console.warn(`Prior filing comparison unavailable for ${row.cik}: ${error.message}`);
       }
-      aiLabel = aiDeltaLabel(aiHits, priorCount);
+      aiLabel = aiDeltaLabel(aiHits, priorHits);
     }
     if (!nameLead && !aiLabel) continue;
     candidates.push({
@@ -294,7 +401,9 @@ async function scan(options) {
       accession: row.accession,
       filingUrl: filingUrl(row.filename),
       leadType: nameLead && aiLabel ? 'name-change-and-ai-language' : nameLead ? 'possible-name-change' : 'ai-language-change',
-      label: [nameLead ? 'Possible legal name change: Form 8-K Item 5.03 plus name-change wording; review the filing.' : '', aiLabel].filter(Boolean).join(' '),
+      label: [nameLead ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName} (history date ${legalNameChange.effectiveDate}); Form 8-K Item 5.03 name-change wording corroborates it. Review the filing.` : '', aiLabel].filter(Boolean).join(' '),
+      legalNameChange,
+      nameChangeTextCorroborated: nameLead,
       priorSameFormAiMentions: priorCount,
       currentAiMentions: aiHits.length,
       evidence: snippets(aiHits),
@@ -355,7 +464,14 @@ export function selfTest() {
   if (!analyzeText(afterRisk).length) throw new Error('risk-section boundary self-test failed');
   const docs = relevantDocuments('<DOCUMENT><TYPE>8-K\n<TEXT><p>Item 5.03</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-99.1\n<TEXT><p>AI business</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-101.SCH\n<TEXT>AI taxonomy</TEXT></DOCUMENT>', '8-K');
   if (docs.length !== 2 || docs[1].type !== 'EX-99.1') throw new Error('relevant document extraction self-test failed');
-  if (aiDeltaLabel(ai, 0) !== 'AI language first detected versus prior same-form filing') throw new Error('AI delta self-test failed');
+  if (aiDeltaLabel(ai, []) !== 'AI language first detected versus prior same-form filing') throw new Error('AI delta self-test failed');
+  const priorBusiness = analyzeText('The issuer sells an artificial intelligence customer-support product for banks. AI-powered translation services are also sold to travelers.');
+  const currentBusiness = analyzeText('The issuer sells an artificial intelligence customer-support product for banks. AI-powered GPU data center capacity leasing for cloud customers will begin this year.');
+  if (priorBusiness.length !== currentBusiness.length) throw new Error('new-language fixture must keep keyword counts steady');
+  if (!novelAiEvidence(currentBusiness, priorBusiness).length || !aiDeltaLabel(currentBusiness, priorBusiness).startsWith('New AI-business wording')) throw new Error('new AI-business phrase self-test failed');
+  const nearDuplicate = analyzeText('The issuer expects AI-powered data center services for regional cloud customers to expand.');
+  const similarPrior = analyzeText('The issuer expects AI-powered data center services for regional cloud clients to expand.');
+  if (novelAiEvidence(nearDuplicate, similarPrior).length) throw new Error('near-duplicate AI wording false-positive self-test failed');
   return true;
 }
 

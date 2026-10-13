@@ -1,0 +1,11 @@
+{
+  "provenance": "Synthetic test prose shaped around common 8-K business-update and exhibit language. It is not copied from an issuer filing. The scenarios are anchored to the public SEC filings reviewed in docs/ai-pivot-watch-2026-10-12.md.",
+  "sourceFilings": [
+    "https://www.sec.gov/Archives/edgar/data/1711786/000121390026060075/ea029183701ex99-1.htm",
+    "https://www.sec.gov/Archives/edgar/data/2070542/000121390026105865/ea030737801ex99-1.htm"
+  ],
+  "prior": "Item 7.01. The company operates an artificial intelligence customer-support product for regional banks. AI-powered translation services are offered to travel businesses.",
+  "current": "Item 7.01. The company operates an artificial intelligence customer-support product for regional banks. AI-powered GPU data-center capacity leasing for cloud customers is planned to begin next year.",
+  "nearDuplicatePrior": "Item 7.01. The company expects AI-powered data-center services for regional cloud customers to expand next year.",
+  "nearDuplicateCurrent": "Item 7.01. The company expects AI-powered data-center services for regional cloud clients to expand next year."
+}

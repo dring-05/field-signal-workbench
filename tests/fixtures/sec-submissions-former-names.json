@@ -1,0 +1,10 @@
+{
+  "provenance": "Synthetic test values using the SEC submissions JSON formerNames shape: name, from, and to. Not copied from a filer record.",
+  "name": "Current AI Systems Inc.",
+  "formerNames": [
+    { "name": "Beta Manufacturing Inc.", "from": "2025-01-01", "to": "2026-10-01" },
+    { "name": "Oldest Holdings Inc.", "from": "2010-01-01", "to": "2018-06-30" },
+    { "name": "Alpha Industrial Group Inc.", "from": "2018-06-30", "to": "2025-01-01" },
+    { "name": "Undated Legacy Name Inc.", "from": "2000-01-01" }
+  ]
+}

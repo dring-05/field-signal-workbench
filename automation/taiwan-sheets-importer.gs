@@ -1,7 +1,10 @@
 const SIGNALS = {
   spreadsheetId: '1qNrg6QhGKBai0jOa6teL1WNsiCazZQQmRVA4Po5fuIY',
-  monthlyUrl: 'https://openapi.twse.com.tw/v1/opendata/t187ap05_P',
-  monthlyCsvFallback: 'https://mopsfin.twse.com.tw/opendata/t187ap05_P.csv',
+  monthlySources: [
+    {market: 'Listed (TWSE)', endpoint: 't187ap05_L', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_L.csv'},
+    {market: 'OTC (TPEx)', endpoint: 't187ap05_O', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_O.csv'},
+    {market: 'Publicly issued (MOPS)', endpoint: 't187ap05_P', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_P.csv'}
+  ],
   sourceBase: 'https://openapi.twse.com.tw/v1/opendata/',
   monthlySheet: 'Taiwan Monthly',
   feedSheet: 'SiteFeed',
@@ -12,9 +15,9 @@ const SIGNALS = {
 };
 
 const RAW_HEADERS = ['Market', 'Data area', 'Endpoint', 'Company code', 'Company name', 'Report period', 'Retrieved at', 'Raw source record', 'Source URL', 'Record signature'];
-const MARGIN_AUDIT_HEADERS = ['Market', 'Company code', 'Company name', 'Report period', 'Source endpoint', 'Retrieved at', 'Source URL', 'Source signature', 'Prior-quarter source signature', 'Calculation signature', 'Source basis', 'Revenue reported YTD', 'Gross profit reported YTD', 'Operating income reported YTD', 'Prior-quarter revenue YTD', 'Prior-quarter gross profit YTD', 'Prior-quarter operating income YTD', 'Revenue standalone quarter', 'Gross profit standalone quarter', 'Operating income standalone quarter', 'Gross margin %', 'Operating margin %', 'Gross margin YoY change (pp)', 'Operating margin YoY change (pp)', 'Calculation status', 'Raw source record'];
-const LOG_HEADERS = ['Run time', 'Result', 'Monthly source period', 'Rows received', 'Rows added or revised', 'Raw records added or revised', 'Notes'];
-const FEED_HEADERS = ['Market', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL'];
+const MARGIN_AUDIT_HEADERS = ['Market', 'Company code', 'Company name', 'Report period', 'Source endpoint', 'Retrieved at', 'Source URL', 'Source signature', 'Margin dependency signatures', 'Calculation signature', 'Source basis', 'Revenue reported YTD', 'Gross profit reported YTD', 'Operating income reported YTD', 'Prior-quarter revenue YTD', 'Prior-quarter gross profit YTD', 'Prior-quarter operating income YTD', 'Revenue standalone quarter', 'Gross profit standalone quarter', 'Operating income standalone quarter', 'Gross margin %', 'Operating margin %', 'Gross margin YoY change (pp)', 'Operating margin YoY change (pp)', 'Calculation status', 'Raw source record'];
+const LOG_HEADERS = ['Run time', 'Result', 'Monthly source period', 'Rows received', 'Rows added or revised', 'Raw records added or revised', 'Notes', 'Monthly feed status'];
+const FEED_HEADERS = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL'];
 
 function setupTaiwanSignals() {
   const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
@@ -35,32 +38,52 @@ function refreshTaiwanSignals() {
   let monthlyAdded = 0;
   let rawAdded = 0;
   const notes = [];
+  let sourceStatus = [];
   try {
     const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
     const monthlyFeed = fetchMonthlyRows_();
+    sourceStatus = monthlyFeed.sources.map(source => `${source.market}: ${source.status}, ${source.rows} rows${source.error ? ` (${source.error})` : ''}`);
+    monthlyFeed.sources.filter(source => source.status !== 'success').forEach(source => notes.push(`${source.market} monthly feed failed: ${source.error}`));
     received = monthlyFeed.records.length;
-    const normalized = monthlyFeed.records.map(record => normalizeMonthly_(record, monthlyFeed.url)).filter(r => r.code && r.period);
+    const normalized = monthlyFeed.records.map(item => normalizeMonthly_(item.record, item.url, item.market)).filter(r => r.code && r.period);
     if (!normalized.length) throw new Error('The monthly revenue feed returned no rows with a company code and report month.');
     reportMonth = normalized.reduce((max, r) => r.period > max ? r.period : max, '');
     monthlyAdded = appendMonthlyRevisions_(book.getSheetByName(SIGNALS.monthlySheet), normalized);
     rawAdded = appendRawStatementRevisions_(book, notes);
     rebuildSiteFeed_(book);
     const result = notes.length ? 'Partial success' : 'Success';
-    writeLog_(result, reportMonth, received, monthlyAdded, rawAdded, notes.join(' '));
+    writeLog_(result, reportMonth, received, monthlyAdded, rawAdded, notes.join(' '), sourceStatus.join('; '));
     return {result, reportMonth, received, monthlyAdded, rawAdded, runtimeSeconds: Math.round((new Date() - started) / 1000), notes};
   } catch (err) {
     notes.push(String(err && err.message || err));
-    writeLog_('Failed', reportMonth, received, monthlyAdded, rawAdded, notes.join(' '));
+    writeLog_('Failed', reportMonth, received, monthlyAdded, rawAdded, notes.join(' '), sourceStatus.join('; '));
     throw err;
   }
 }
 
 function fetchMonthlyRows_() {
-  try {
-    return {records: fetchRecords_(SIGNALS.monthlyUrl), url: SIGNALS.monthlyUrl};
-  } catch (firstError) {
-    return {records: fetchRecords_(SIGNALS.monthlyCsvFallback), url: SIGNALS.monthlyCsvFallback};
-  }
+  const sources = [];
+  const records = [];
+  SIGNALS.monthlySources.forEach(source => {
+    const apiUrl = SIGNALS.sourceBase + source.endpoint;
+    try {
+      const sourceRecords = fetchRecords_(apiUrl);
+      if (!sourceRecords.length) throw new Error('API returned no records');
+      records.push(...sourceRecords.map(record => ({record, market: source.market, url: apiUrl})));
+      sources.push({market: source.market, status: 'success', rows: sourceRecords.length, url: apiUrl, error: ''});
+    } catch (apiError) {
+      const fallbackUrl = source.csvUrl;
+      try {
+        const sourceRecords = fetchRecords_(fallbackUrl);
+        if (!sourceRecords.length) throw new Error('CSV returned no records');
+        records.push(...sourceRecords.map(record => ({record, market: source.market, url: fallbackUrl})));
+        sources.push({market: source.market, status: 'success', rows: sourceRecords.length, url: fallbackUrl, error: ''});
+      } catch (csvError) {
+        sources.push({market: source.market, status: 'failed', rows: 0, url: fallbackUrl, error: `API: ${String(apiError && apiError.message || apiError)}; CSV: ${String(csvError && csvError.message || csvError)}`});
+      }
+    }
+  });
+  return {records, sources};
 }
 
 function appendRawStatementRevisions_(book, notes) {
@@ -97,14 +120,23 @@ function appendRawStatementRevisions_(book, notes) {
 
 function appendMonthlyRevisions_(sheet, rows) {
   const existing = sheet.getLastRow() > 4 ? sheet.getRange(5, 1, sheet.getLastRow() - 4, 17).getValues() : [];
-  const signatures = new Set(existing.map(row => String(row[1]) + '|' + String(row[4]) + '|' + String(row[16])));
+  const signatures = new Set();
+  existing.forEach(row => {
+    const market = normalizeMonthlyMarket_(row[0]);
+    const code = String(row[1]);
+    const period = String(row[4]);
+    const raw = String(row[16]);
+    signatures.add(market + '|' + code + '|' + period + '|' + raw);
+    // Before source-market labels were added, the append-only signature omitted market.
+    if (String(row[0]).trim() === 'Taiwan public issuers') signatures.add(code + '|' + period + '|' + raw);
+  });
   const additions = [];
   rows.forEach(r => {
     const rawJson = JSON.stringify(r.raw);
-    const signature = r.code + '|' + r.period + '|' + rawJson;
+    const signature = normalizeMonthlyMarket_(r.market) + '|' + r.code + '|' + r.period + '|' + rawJson;
     if (signatures.has(signature)) return;
     signatures.add(signature);
-    additions.push([SIGNALS.market, r.code, r.name, r.industry, r.period, r.current, r.prior, r.yearAgo, r.mom, r.yoy, r.ytd, r.priorYtd, r.ytdGrowth, 'As published', r.sourceUrl, new Date(), rawJson]);
+    additions.push([r.market, r.code, r.name, r.industry, r.period, r.current, r.prior, r.yearAgo, r.mom, r.yoy, r.ytd, r.priorYtd, r.ytdGrowth, 'TWD thousands, as published', r.sourceUrl, new Date(), rawJson]);
   });
   if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
   return additions.length;
@@ -114,22 +146,45 @@ function rebuildSiteFeed_(book) {
   const monthly = book.getSheetByName(SIGNALS.monthlySheet);
   const feed = book.getSheetByName(SIGNALS.feedSheet);
   const values = monthly.getLastRow() > 4 ? monthly.getRange(5, 1, monthly.getLastRow() - 4, 17).getValues() : [];
+  // Keep the source partitions separate unless code and normalized company name
+  // agree. The public-issued feed overlaps listed markets, but a code alone is
+  // not a globally unique issuer ID across market partitions.
+  const namesByCode = new Map();
+  values.forEach(row => {
+    const code = String(row[1] || '').trim();
+    const name = normalizeIssuerName_(row[2]);
+    if (!code || !name) return;
+    if (!namesByCode.has(code)) namesByCode.set(code, new Set());
+    namesByCode.get(code).add(name);
+  });
   const latestByMonth = new Map();
   values.forEach(row => {
+    const normalizedRow = row.slice();
+    normalizedRow[0] = normalizeMonthlyMarket_(row[0]);
+    const market = String(normalizedRow[0] || '').trim();
     const code = String(row[1] || '').trim();
     const period = String(row[4] || '').trim();
     if (!code || !period) return;
-    latestByMonth.set(code + '|' + period, row);
+    const nameVariants = namesByCode.get(code) || new Set();
+    const mergeVerified = nameVariants.size === 1;
+    const issuerKey = 'TW|' + issuerIdentityKey_(code, row[2]);
+    const key = issuerKey + '|' + period;
+    const candidate = {row: normalizedRow, issuerKey, mergeVerified, priority: monthlyMarketPriority_(market), retrievedAt: new Date(row[15]).getTime() || 0};
+    const previous = latestByMonth.get(key);
+    if (!previous || candidate.priority < previous.priority || (candidate.priority === previous.priority && candidate.retrievedAt >= previous.retrievedAt)) {
+      latestByMonth.set(key, candidate);
+    }
   });
-  const byCode = new Map();
-  latestByMonth.forEach(row => {
+  const byIssuer = new Map();
+  latestByMonth.forEach(({row, issuerKey, mergeVerified}) => {
+    const market = String(row[0] || '');
     const code = String(row[1]);
-    if (!byCode.has(code)) byCode.set(code, []);
-    byCode.get(code).push(row);
+    if (!byIssuer.has(issuerKey)) byIssuer.set(issuerKey, {code, mergeVerified, rows: []});
+    byIssuer.get(issuerKey).rows.push(row);
   });
   const marginMap = marginSignalsMap_(book);
   const output = [];
-  byCode.forEach((history, code) => {
+  byIssuer.forEach(({code, mergeVerified, rows: history}, issuerKey) => {
     history.sort((a, b) => a[4] < b[4] ? -1 : a[4] > b[4] ? 1 : 0);
     const current = history[history.length - 1];
     const periods = history.map(r => String(r[4]));
@@ -137,23 +192,34 @@ function rebuildSiteFeed_(book) {
     const y = history.map(r => number_(r[9]));
     const continuous = contiguousMonths_(periods, index);
     const diffs = finiteDifferencesAtEnd_(y, continuous);
-    const margin = marginMap.get(code) || emptyMarginSignals_();
+    const margin = marginMap.get(issuerIdentityKey_(current[1], current[2])) || emptyMarginSignals_();
     if (/金融|保險|證券|期貨|金控|financial|insurance|securities|bank/i.test(String(current[3] || ''))) {
+      margin.gross = ''; margin.grossYoY = ''; margin.grossD1 = ''; margin.grossD2 = ''; margin.grossD3 = '';
+      margin.operating = ''; margin.operatingYoY = ''; margin.operatingD1 = ''; margin.operatingD2 = ''; margin.operatingD3 = '';
       margin.status = 'Generic gross and operating margins are not comparable for financial-sector issuers; use sector-specific indicators instead';
     }
     const status = [
       diffs.d3 !== '' ? 'Revenue Δ3 available' : 'Revenue Δ3 needs 4 consecutive monthly YoY observations',
+      mergeVerified ? '' : 'Issuer code appears with different names across sources or dates; histories are split until the issuer identity is verified',
+      margin.matched === false ? 'Quarterly issuer name did not match monthly feed; margin series left blank' : '',
       margin.status
     ].filter(Boolean).join('; ');
-    output.push([current[0], current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14]]);
+    output.push([current[0], issuerKey, current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14]]);
   });
   output.sort((a, b) => (Number(b[7]) || -Infinity) - (Number(a[7]) || -Infinity));
   if (feed.getLastRow() > 4) feed.getRange(5, 1, feed.getLastRow() - 4, FEED_HEADERS.length).clearContent();
   if (output.length) feed.getRange(5, 1, output.length, FEED_HEADERS.length).setValues(output);
 }
 
+function monthlyMarketPriority_(market) {
+  if (market === 'Listed (TWSE)') return 0;
+  if (market === 'OTC (TPEx)') return 1;
+  if (market === 'Publicly issued (MOPS)') return 2;
+  return 3;
+}
+
 function emptyMarginSignals_() {
-  return {gross: '', grossYoY: '', grossD1: '', grossD2: '', grossD3: '', operating: '', operatingYoY: '', operatingD1: '', operatingD2: '', operatingD3: '', statementDate: '', status: 'Quarterly margins need matched general-industry filings'};
+  return {gross: '', grossYoY: '', grossD1: '', grossD2: '', grossD3: '', operating: '', operatingYoY: '', operatingD1: '', operatingD2: '', operatingD3: '', statementDate: '', status: 'Quarterly margins need matched general-industry filings', matched: false};
 }
 
 function marginSignalsMap_(book) {
@@ -166,19 +232,21 @@ function marginSignalsMap_(book) {
   values.forEach(row => {
     if (String(row[2]) !== 't187ap06_X_ci') return;
     const companyCode = String(row[3] || '').trim();
-    if (!companyCode) return;
+    const companyName = String(row[4] || '').trim();
+    if (!companyCode || !companyName) return;
     const q = String(row[5] || '');
     if (!/^\d{4}-Q[1-4]$/.test(q)) return;
     const record = parseJson_(row[7]);
     const key = quarterIndex_(q);
     if (!Number.isFinite(key)) return;
-    const id = companyCode + '|' + q;
+    const companyKey = issuerIdentityKey_(companyCode, companyName);
+    const id = companyKey + '|' + q;
     const retrievedAt = row[6] instanceof Date ? row[6].getTime() : new Date(row[6]).getTime() || 0;
     const prior = latestByQuarter.get(id);
     if (prior && prior.retrievedAt > retrievedAt) return;
     latestByQuarter.set(id, {
-      companyCode, q, key,
-      name: String(row[4] || ''),
+      companyCode, companyKey, q, key,
+      name: companyName,
       record,
       raw: String(row[7] || '{}'),
       endpoint: String(row[2]),
@@ -189,11 +257,18 @@ function marginSignalsMap_(book) {
     });
   });
   latestByQuarter.forEach(item => {
-    if (!byCompany.has(item.companyCode)) byCompany.set(item.companyCode, new Map());
-    byCompany.get(item.companyCode).set(item.key, item);
+    if (!byCompany.has(item.companyKey)) byCompany.set(item.companyKey, new Map());
+    byCompany.get(item.companyKey).set(item.key, item);
+  });
+  const identitiesByCode = new Map();
+  byCompany.forEach((_, identity) => {
+    const code = identity.split('|')[0];
+    if (!identitiesByCode.has(code)) identitiesByCode.set(code, []);
+    identitiesByCode.get(code).push(identity);
   });
   const auditRows = [];
-  byCompany.forEach((quarterMap, companyCode) => {
+  byCompany.forEach((quarterMap, companyIdentity) => {
+    const companyCode = companyIdentity.split('|')[0];
     const cumulative = [...quarterMap.values()].sort((a, b) => a.key - b.key);
     const series = [];
     let priorFiscalYear = '';
@@ -241,8 +316,8 @@ function marginSignalsMap_(book) {
       auditRows.push([
         SIGNALS.market, companyCode, item.name, item.q, item.endpoint,
         item.retrievedAtValue || '', item.sourceUrl, item.signature,
-        sameQuarterPriorSignature_(quarterMap, item),
-        ['MARGIN_YTD_DIFF_V1', item.signature, sameQuarterPriorSignature_(quarterMap, item)].join('|'),
+        marginDependencySignatures_(quarterMap, item),
+        ['MARGIN_YTD_DIFF_V2', marginDependencySignatures_(quarterMap, item)].join('|'),
         'Cumulative YTD, verified against MOPS financial comparison notes',
         item.revenueYtd, item.grossYtd, item.operatingYtd,
         item.priorRevenueYtd, item.priorGrossYtd, item.priorOperatingYtd,
@@ -257,12 +332,17 @@ function marginSignalsMap_(book) {
     const operatingYoY = series.map(x => x.operatingYoY);
     const gm = differencesForQuarterSeries_(series, grossYoY);
     const om = differencesForQuarterSeries_(series, operatingYoY);
-    result.set(companyCode, {
+    const signals = {
       gross: last.gross, grossYoY: last.grossYoY, grossD1: gm.d1, grossD2: gm.d2, grossD3: gm.d3,
       operating: last.operating, operatingYoY: last.operatingYoY, operatingD1: om.d1, operatingD2: om.d2, operatingD3: om.d3,
       statementDate: textField_(last.record, ['出表日期', '公告日期', '發布日期', '發布時間', '發佈時間']),
-      status: last.status + '; margin Δ1/Δ2/Δ3 require 6/7/8 consecutive standalone quarter margins and corresponding prior-year quarters'
-    });
+      status: last.status + '; margin Δ1/Δ2/Δ3 require 6/7/8 consecutive standalone quarter margins and corresponding prior-year quarters',
+      matched: true
+    };
+    result.set(companyIdentity, signals);
+    const identities = identitiesByCode.get(companyCode) || [];
+    if (identities.length === 1) result.set(companyCode, signals);
+    else result.delete(companyCode);
   });
   appendMarginAudit_(book, auditRows);
   return result;
@@ -275,13 +355,21 @@ function appendMarginAudit_(book, rows) {
   if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, MARGIN_AUDIT_HEADERS.length).setValues(additions);
 }
 
-function sameQuarterPriorSignature_(quarterMap, item) {
-  const q = item.q.match(/^(\d{4})-Q([1-4])$/);
-  if (!q) return '';
-  const quarter = Number(q[2]);
-  if (quarter === 1) return '';
-  const previous = quarterMap.get(item.key - 1);
-  return previous ? previous.signature : '';
+function marginDependencySignatures_(quarterMap, item) {
+  const q = Number(item.q.slice(-1));
+  const offsets = q === 1 ? [0, 4] : [0, 1, 4, 5];
+  return offsets.map(offset => {
+    const dependency = quarterMap.get(item.key - offset);
+    return dependency ? `${item.key - offset}:${dependency.signature}` : `${item.key - offset}:missing`;
+  }).join('|');
+}
+
+function normalizeIssuerName_(value) {
+  return String(value || '').normalize('NFKC').toLocaleLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
+}
+
+function issuerIdentityKey_(companyCode, companyName) {
+  return String(companyCode || '').trim() + '|' + normalizeIssuerName_(companyName);
 }
 
 function yoyMarginSeries_(series, field) {
@@ -326,9 +414,10 @@ function contiguousMonths_(periods, index) {
   return count;
 }
 
-function normalizeMonthly_(raw, sourceUrl) {
+function normalizeMonthly_(raw, sourceUrl, sourceMarket) {
   return {
     raw,
+    market: normalizeMonthlyMarket_(sourceMarket || SIGNALS.market),
     code: textField_(raw, ['公司代號', '公司代碼', '公司編號', '證券代號']),
     name: textField_(raw, ['公司名稱', '公司簡稱']),
     industry: textField_(raw, ['產業別', '產業名稱']),
@@ -341,8 +430,13 @@ function normalizeMonthly_(raw, sourceUrl) {
     ytd: numericField_(raw, ['累計營業收入-當月累計營收', '當月累計營收', 'year-to-daterevenue']),
     priorYtd: numericField_(raw, ['累計營業收入-去年累計營收', '去年累計營收', 'prioryearytdrevenue']),
     ytdGrowth: numericField_(raw, ['累計營業收入-前期比較增減(%)', '前期比較增減(%)', 'ytdgrowth']),
-    sourceUrl: sourceUrl || SIGNALS.monthlyUrl
+    sourceUrl: sourceUrl || ''
   };
+}
+
+function normalizeMonthlyMarket_(market) {
+  const value = String(market || '').trim();
+  return value === 'Taiwan public issuers' ? 'Publicly issued (MOPS)' : value;
 }
 
 function fetchRecords_(url) {
@@ -373,12 +467,11 @@ function ensureHeader_(book, name, headers) {
   return sheet;
 }
 
-function writeLog_(result, period, received, monthlyAdded, rawAdded, notes) {
+function writeLog_(result, period, received, monthlyAdded, rawAdded, notes, monthlyStatus) {
   try {
     const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
-    const sheet = book.getSheetByName(SIGNALS.logSheet) || ensureHeader_(book, SIGNALS.logSheet, LOG_HEADERS);
-    if (sheet.getLastRow() < 4) ensureHeader_(book, SIGNALS.logSheet, LOG_HEADERS);
-    sheet.appendRow([new Date(), result, period, received, monthlyAdded, rawAdded, notes]);
+    const sheet = ensureHeader_(book, SIGNALS.logSheet, LOG_HEADERS);
+    sheet.appendRow([new Date(), result, period, received, monthlyAdded, rawAdded, notes, monthlyStatus || '']);
   } catch (ignored) {
     console.log('Could not write import log: ' + ignored);
   }

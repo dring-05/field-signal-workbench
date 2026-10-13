@@ -59,11 +59,25 @@ function validatePaperBookIdea_(form) {
   if (!Number.isFinite(sizePct) || sizePct < 0) throw new Error('Enter a target size of 0% or more.');
   if (!Number.isInteger(conviction) || conviction < 1 || conviction > 5) throw new Error('Conviction must be a whole number from 1 to 5.');
   if (!clean('thesis')) throw new Error('Add a short thesis summary.');
+  const quoteFieldsPresent = ['price', 'priceDate', 'priceSource', 'priceCurrency'].some(key => clean(key));
+  let quote = null;
+  if (quoteFieldsPresent) {
+    const price = Number(value.price);
+    const priceDate = clean('priceDate');
+    const priceSource = clean('priceSource');
+    const priceCurrency = clean('priceCurrency').toUpperCase();
+    if (!Number.isFinite(price) || price <= 0) throw new Error('Enter a positive share price, or leave all quote fields blank.');
+    if (!validIsoDay_(priceDate)) throw new Error('Enter the quote date as YYYY-MM-DD.');
+    if (!priceSource) throw new Error('Add the quote source so the valuation is traceable.');
+    if (!/^[A-Z]{3}$/.test(priceCurrency)) throw new Error('Enter a three-letter quote currency such as USD.');
+    if (priceCurrency !== 'USD') throw new Error('SEC fundamentals are stored in USD. Enter a USD share price or leave the quote blank.');
+    quote = {price, priceDate, priceSource, priceCurrency};
+  }
   return {
     bookId, company, ticker, exchange: clean('exchange'), sector: clean('sector'),
     niche: clean('niche'), side, size: sizePct / 100, conviction,
     thesis: clean('thesis'), operatingSignal: clean('operatingSignal'),
-    bridge: clean('bridge'), falsifier: clean('falsifier'),
+    bridge: clean('bridge'), falsifier: clean('falsifier'), quote,
     relatedLinks: clean('relatedLinks')
   };
 }
@@ -119,7 +133,11 @@ function createPaperBookIdea(form) {
   }
   sheet.getRange(rowNumber, 1, 1, row.length).setValues([row]);
   const valuationRow = findOrCreateValuationRow_(book, {ideaId, company: idea.company, ticker: idea.ticker, exchange: idea.exchange, sector: idea.sector});
-  let valuationStatus = 'Valuation row linked. Enter a dated quote and source to calculate market cap and price multiples.';
+  putIdeaValuationId_(sheet, headers, rowNumber, valuationRow);
+  if (idea.quote) writeManualQuoteInputs_(valuationRow, idea.quote);
+  let valuationStatus = idea.quote
+    ? 'Valuation row linked. Your dated quote was saved; market cap and supported multiples calculate from it and SEC fundamentals.'
+    : 'Valuation row linked. SEC fundamentals can refresh now; enter a dated quote and source to calculate market cap and price multiples.';
   const userAgent = props.getProperty('SEC_USER_AGENT');
   if (!userAgent || !/@/.test(userAgent)) {
     writeFundamentalsStatus_(valuationRow.sheet, valuationRow.rowNumber, 'SEC refresh not run: set SEC_USER_AGENT with an identifying label and real contact email. Price remains manual.');
@@ -135,6 +153,28 @@ function createPaperBookIdea(form) {
   }
   if (materialsError) valuationStatus += ' ' + materialsError;
   return {ideaId, rowNumber, materialsUrl, materialsError, valuationStatus};
+}
+
+function putIdeaValuationId_(ideasSheet, ideaHeaders, rowNumber, valuationRow) {
+  const ideaValuationIdColumn = ideaHeaders['Valuation record ID'];
+  const valuationHeaders = headerMap_(valuationRow.sheet, PAPER_SEC.headerRow);
+  const valuationId = valuationRow.sheet.getRange(valuationRow.rowNumber, valuationHeaders['Valuation record ID']).getDisplayValues()[0][0];
+  if (ideaValuationIdColumn && valuationId) ideasSheet.getRange(rowNumber, ideaValuationIdColumn).setValue(valuationId);
+}
+
+function writeManualQuoteInputs_(valuationRow, quote) {
+  const headers = headerMap_(valuationRow.sheet, PAPER_SEC.headerRow);
+  const fields = {
+    'As-of date': new Date(quote.priceDate + 'T12:00:00'),
+    'Price': quote.price,
+    'Price source': quote.priceSource,
+    'Input currency': quote.priceCurrency
+  };
+  Object.keys(fields).forEach(header => {
+    const column = headers[header];
+    if (!column) throw new Error('Valuation Inputs is missing expected quote field: ' + header);
+    valuationRow.sheet.getRange(valuationRow.rowNumber, column).setValue(fields[header]);
+  });
 }
 
 function getBookIds_(book) {
@@ -420,15 +460,15 @@ function seedValuationFormulas_(sheet, rowNumber, headers) {
       }
     }
     const defaults = {
-      'Market cap': '=IF(OR(RC[-4]="",RC[-2]=""),"",RC[-4]*RC[-2])',
-      'P/E TTM': '=IFERROR(IF(OR(RC[-2]="",RC[-1]="",RC[-1]=0),"",RC[-2]/RC[-1]),"")',
-      'Enterprise value': '=IF(RC[-6]="","",RC[-6]+N(RC[-2])-N(RC[-3]))',
-      'EV / EBITDA': '=IFERROR(IF(OR(RC[-1]="",RC[-2]="",RC[-2]=0),"",RC[-1]/RC[-2]),"")',
-      'P / Sales': '=IFERROR(IF(OR(RC[-12]="",RC[-3]="",RC[-3]=0),"",RC[-12]/RC[-3]),"")',
-      'P / Book': '=IFERROR(IF(OR(RC[-13]="",RC[-3]="",RC[-3]=0),"",RC[-13]/RC[-3]),"")',
-      'P / FFO': '=IFERROR(IF(OR(RC[-14]="",RC[-3]="",RC[-3]=0),"",RC[-14]/RC[-3]),"")',
+      'Market cap': '=IF(OR(RC[-4]="",RC[-2]="",RC[17]<>"USD"),"",RC[-4]*RC[-2])',
+      'P/E TTM': '=IF(RC[15]<>"USD","USD input required",IFERROR(IF(OR(RC[-2]="",RC[-1]="",RC[-1]<=0),"N/M",RC[-2]/RC[-1]),""))',
+      'Enterprise value': '=IF(OR(RC[-6]="",RC[11]<>"USD"),"",RC[-6]+N(RC[-2])-N(RC[-3]))',
+      'EV / EBITDA': '=IF(RC[10]<>"USD","USD input required",IFERROR(IF(OR(RC[-1]="",RC[-2]="",RC[-2]<=0),"N/M",RC[-1]/RC[-2]),""))',
+      'P / Sales': '=IF(RC[5]<>"USD","USD input required",IFERROR(IF(OR(RC[-12]="",RC[-3]="",RC[-3]<=0),"N/M",RC[-12]/RC[-3]),""))',
+      'P / Book': '=IF(RC[4]<>"USD","USD input required",IFERROR(IF(OR(RC[-13]="",RC[-3]="",RC[-3]<=0),"N/M",RC[-13]/RC[-3]),""))',
+      'P / FFO': '=IF(RC[3]<>"USD","USD input required",IFERROR(IF(OR(RC[-14]="",RC[-3]="",RC[-3]<=0),"N/M",RC[-14]/RC[-3]),""))',
       'Suggested metric': '=IF(RC[-22]="","",IFERROR(IF(REGEXMATCH(LOWER(INDEX(Ideas!R6C6:R205C6,MATCH(RC[-22],Ideas!R6C2:R205C2,0))&" "&INDEX(Ideas!R6C7:R205C7,MATCH(RC[-22],Ideas!R6C2:R205C2,0))),"financial|bank|insurance"),"P / Book",IF(REGEXMATCH(LOWER(INDEX(Ideas!R6C6:R205C6,MATCH(RC[-22],Ideas!R6C2:R205C2,0))&" "&INDEX(Ideas!R6C7:R205C7,MATCH(RC[-22],Ideas!R6C2:R205C2,0))),"reit|real estate"),"P / FFO",IF(RC[-14]="","Enter TTM earnings",IF(AND(RC[-14]<=0,RC[-10]>0),"EV / EBITDA",IF(RC[-14]<=0,"P / Sales","P / E"))))),"Choose sector"))',
-      'Suggested multiple': '=IF(RC[-23]="","",IF(RC[-1]="Choose sector","Choose sector",IF(RC[-1]="P / Book",RC[-3],IF(RC[-1]="P / FFO",RC[-2],IF(RC[-1]="EV / EBITDA",RC[-9],IF(RC[-1]="P / Sales",RC[-4],IF(RC[-1]="Enter TTM earnings","Enter TTM earnings",RC[-14])))))))'
+      'Suggested multiple': '=IF(RC[-23]="","",IF(RC[1]<>"USD","USD input required",IF(RC[-1]="Choose sector","Choose sector",IF(RC[-1]="P / Book",RC[-3],IF(RC[-1]="P / FFO",RC[-2],IF(RC[-1]="EV / EBITDA",RC[-9],IF(RC[-1]="P / Sales",RC[-4],IF(RC[-1]="Enter TTM earnings","Enter TTM earnings",RC[-14]))))))))'
     };
     if (defaults[header]) sheet.getRange(rowNumber, col).setFormulaR1C1(defaults[header]);
   });
@@ -702,8 +742,7 @@ function preferredUnit_(units) {
   const keys = Object.keys(units || {});
   if (keys.indexOf('USD') >= 0) return 'USD';
   if (keys.indexOf('shares') >= 0) return 'shares';
-  if (keys.indexOf('USD-per-share') >= 0) return 'USD-per-share';
-  return keys.length === 1 ? keys[0] : '';
+  return '';
 }
 
 function allowedForm_(form) {
@@ -749,7 +788,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     parseTickerMap_, normalizeTicker_, sameExchange_, resolveTickerFromRows_,
     ttmSeries_, latestInstant_, latestDebt_, deriveSecFundamentals_, dedupeDurations_,
-    writeSecFields_, findOrCreateValuationRow_, paperBookOnEdit, validatePaperBookIdea_, validIsoDay_, PAPER_SEC
+    writeSecFields_, writeManualQuoteInputs_, putIdeaValuationId_, findOrCreateValuationRow_, paperBookOnEdit, validatePaperBookIdea_, validIsoDay_, PAPER_SEC
   };
 }
 

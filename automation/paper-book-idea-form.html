@@ -31,6 +31,15 @@
         <label>Conviction<select name="conviction" required><option value="">Choose</option><option value="1">1, low</option><option value="2">2</option><option value="3">3, medium</option><option value="4">4</option><option value="5">5, high</option></select></label>
       </div>
       <div class="row">
+        <label>Current share price, optional<input name="price" type="number" min="0" step="any" placeholder="Leave blank if unknown"></label>
+        <label>Quote currency<select name="priceCurrency"><option value="">No quote</option><option value="USD">USD</option></select></label>
+      </div>
+      <div class="row">
+        <label>Quote date<input name="priceDate" type="date"></label>
+        <label>Quote source<input name="priceSource" placeholder="Broker, exchange close, or source URL"></label>
+      </div>
+      <p class="hint">A quote is optional. The form fetches SEC-reported fundamentals, but no free quote feed has been cleared for professional use. Price-based metrics calculate only from a dated USD quote and USD financials.</p>
+      <div class="row">
         <label>Sector<input name="sector" placeholder="e.g. Information Technology"></label>
         <label>Industry or niche<input name="niche" placeholder="e.g. memory, wafer equipment"></label>
       </div>

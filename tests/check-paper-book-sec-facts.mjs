@@ -17,10 +17,31 @@ const submittedIdea = sec.validatePaperBookIdea_({company:'Example Corp',ticker:
 assert.equal(submittedIdea.ticker, 'EXM');
 assert.equal(submittedIdea.size, 0.025, 'form percentage should become a decimal NAV weight');
 assert.equal(submittedIdea.conviction, 4);
+const quotedIdea = sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Long',sizePct:'1',conviction:'3',thesis:'Test',price:'125.50',priceDate:'2026-10-12',priceSource:'Broker close',priceCurrency:'usd'});
+assert.deepEqual(quotedIdea.quote, {price:125.5,priceDate:'2026-10-12',priceSource:'Broker close',priceCurrency:'USD'});
+assert.throws(() => sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Long',sizePct:'1',conviction:'3',thesis:'Test',price:'125.5',priceDate:'2026-10-12',priceSource:'Broker',priceCurrency:'TWD'}), /SEC fundamentals are stored in USD/);
+assert.throws(() => sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Long',sizePct:'1',conviction:'3',thesis:'Test',price:'125.5',priceDate:'2026-02-30',priceSource:'Broker',priceCurrency:'USD'}), /YYYY-MM-DD/);
+assert.throws(() => sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Long',sizePct:'1',conviction:'3',thesis:'Test',price:'125.5',priceDate:'2026-10-12',priceCurrency:'USD'}), /quote source/);
 assert.throws(() => sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Neutral',sizePct:'1',conviction:'3',thesis:'test'}), /Choose Long or Short/);
 assert.throws(() => sec.validatePaperBookIdea_({company:'Example Corp',ticker:'EXM',side:'Short',sizePct:'1',conviction:'6',thesis:'test'}), /whole number from 1 to 5/);
-for (const field of ['company','ticker','sizePct','conviction','thesis','operatingSignal','bridge','falsifier','relatedLinks']) assert.match(ideaForm, new RegExp(`name="${field}"`));
+for (const field of ['company','ticker','sizePct','conviction','price','priceDate','priceSource','priceCurrency','thesis','operatingSignal','bridge','falsifier','relatedLinks']) assert.match(ideaForm, new RegExp(`name="${field}"`));
 assert.match(ideaForm, /createPaperBookIdea\(data\)/);
+
+const writtenQuote = [];
+const quoteHeaderRow = ['Valuation record ID','Idea ID','Ticker / exchange','As-of date','Price','Price source','Shares outstanding','Share-count date/source','Market cap','TTM net income','P/E TTM','Cash & equivalents','Total debt','TTM EBITDA','Enterprise value','EV / EBITDA','Metric choice / exception','TTM revenue','Total equity','TTM FFO / AFFO','P / Sales','P / Book','P / FFO','Suggested metric','Suggested multiple','Input currency','Fundamentals source and period'];
+const quoteSheet = {getLastColumn:()=>quoteHeaderRow.length,getRange: (_row, col, _rows, cols) => ({getDisplayValues:()=>[quoteHeaderRow.slice(col-1,col-1+(cols||1))],setValue: value => writtenQuote.push([col, value])})};
+sec.writeManualQuoteInputs_({sheet:quoteSheet,rowNumber:8}, quotedIdea.quote);
+assert.equal(writtenQuote.length, 4, 'a supplied quote saves date, price, source, and currency');
+assert.equal(writtenQuote[1][1], 125.5);
+const writtenIdeaLink = [];
+const linkedValuationSheet = {getRange:(row,col,_rows,cols)=>({getDisplayValues:()=>row===5?[quoteHeaderRow.slice(col-1,col-1+cols)]:[['VAL-IDEA-ABC']]}),getLastColumn:()=>27};
+sec.putIdeaValuationId_(
+  {getRange:(row,col)=>({setValue:value=>writtenIdeaLink.push({row,col,value})})},
+  {'Valuation record ID':17},
+  9,
+  {sheet:linkedValuationSheet,rowNumber:8}
+);
+assert.equal(writtenIdeaLink.at(-1).value,'VAL-IDEA-ABC', 'Ideas can point back to the linked valuation record');
 
 const tickerMap = sec.parseTickerMap_({
   fields: ['cik', 'name', 'ticker', 'exchange'],
@@ -55,6 +76,7 @@ const cumulative = [
 ];
 assert.equal(sec.ttmSeries_({label: 'Revenue YTD', units: {USD: cumulative}}).value, 600);
 assert.equal(sec.ttmSeries_({label: 'Incomplete', units: {USD: cumulative.slice(0, 3)}}), null);
+assert.equal(sec.ttmSeries_({label: 'TWD-only', units: {TWD: quarterly}}), null, 'non-USD fundamentals must not be mixed with the USD price input');
 
 const revised = [...quarterly, point('2025-01-01', '2025-03-31', 110, '2025-08-01', '10-Q/A')];
 assert.equal(sec.ttmSeries_({units: {USD: revised}}).value, 610, 'latest reported revision for a period should win');
@@ -187,6 +209,8 @@ assert.equal(createdRows[0].values[0][1], 'IDEA-7');
 assert.equal(createdRows[0].values[0][2], 'NVDA / Nasdaq');
 assert(seededFormulas.some(x => x.col === 24 && x.formula.includes('financial|bank|insurance')), 'new valuation rows should get a sector metric prompt even when the template formula is missing');
 assert(seededFormulas.some(x => x.col === 25 && x.formula.includes('P / EBITDA') === false), 'new valuation rows should get a suggested multiple formula');
+assert(seededFormulas.some(x => x.col === 9 && x.formula.includes('RC[17]<>"USD"')), 'new market-cap formulas must require a USD quote');
+assert(seededFormulas.some(x => x.col === 11 && x.formula.includes('USD input required')), 'new multiples must flag non-USD inputs');
 
 const missing = sec.deriveSecFundamentals_({facts: {'us-gaap': {}}}, new Date('2026-03-01T00:00:00Z'));
 assert.equal(missing.ttmRevenue, '');
