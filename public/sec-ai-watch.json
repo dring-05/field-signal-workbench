@@ -1,14 +1,3877 @@
 {
   "schemaVersion": 1,
-  "generatedAt": null,
-  "coverage": "Planned screen: SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says those associations may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.",
-  "scanWindowStart": null,
-  "scanWindowEnd": null,
+  "generatedAt": "2026-10-13T13:14:39.681Z",
+  "coverage": "SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.",
+  "scanWindowStart": "2026-10-06",
+  "scanWindowEnd": "2026-10-13",
+  "unavailableIndexDays": [
+    "2026-10-10",
+    "2026-10-11",
+    "2026-10-12",
+    "2026-10-13"
+  ],
   "sources": [
     "https://www.sec.gov/Archives/edgar/daily-index/",
     "https://data.sec.gov/submissions/",
     "https://www.sec.gov/files/company_tickers_exchange.json"
   ],
-  "leads": [],
-  "checkedAccessions": []
+  "leads": [
+    {
+      "cik": "0000024090",
+      "company": "CITIZENS, INC.",
+      "mappedCompany": "CITIZENS, INC.",
+      "ticker": "CIA",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-09",
+      "accession": "0000024090-26-000045",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/24090/0000024090-26-000045.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "generative AI",
+          "text": "the use of AI • service levels, including 99.9% monthly availability with service credits • intellectual property ownership, under which the Company owns specified customer deliverables • restrictions on Bestow's use of generative AI in insurance decision-making • audit rights • mutual indemnities • limitations of liability Relationships . Other than the Bes",
+          "documentType": "8-K",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000723125",
+      "company": "MICRON TECHNOLOGY INC",
+      "mappedCompany": "MICRON TECHNOLOGY INC",
+      "ticker": "MU",
+      "exchange": "Nasdaq",
+      "form": "10-K",
+      "filingDate": "2026-10-09",
+      "accession": "0000723125-26-000023",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/723125/0000723125-26-000023.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (13 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 10,
+      "currentAiMentions": 18,
+      "evidence": [
+        {
+          "term": "AI infrastructure",
+          "text": "ur 256GB DDR5 registered dual in-line memory modules (“RDIMMs”), built on 1γ DRAM technology and advanced 3D die stacking. This module provides capacity, speed, and power efficiency, helping data center architects scale AI infrastructure more efficiently. We also began volume production of LPDDR5X in a small outline compression attached memory module form fa",
+          "documentType": "10-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI-enabled",
+          "text": "AI, as data is the foundation for training, retrieval, inference, and enabling exceptional user experiences at the edge. Our client SSDs deliver the speed, power efficiency, security features, and capacity required for AI-enabled PCs and workstations. In 2026, we successfully completed qualification with lead customers on our G9 Gen5 QLC-based NAND client SS",
+          "documentType": "10-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI-driven",
+          "text": "st reliability, and enhanced safety and security for next-generation vehicles. We reached automotive production readiness of our automotive 1γ LPDDR5 DRAM product that supports the increasing performance requirements of AI-driven applications in vehicles, with shipments delivered to key customers. Industrial : Growing adoption of IoT devices, automation, mac",
+          "documentType": "10-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001628808",
+      "company": "Profound Medical Corp.",
+      "mappedCompany": "Profound Medical Corp.",
+      "ticker": "PROF",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001171843-26-006559",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1628808/0001171843-26-006559.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "d prostate cancer centers on the complementary roles of Telix’s advanced prostate-specific membrane antigen (“PSMA”) targeting PET molecular imaging technologies, Gozellix ® and Illuccix ® 1 , and Profound’s MRI-guided, AI-powered, robotically-driven and incisionless TULSA-PRO ® platform across the prostate care continuum. Planned initiatives include partici",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording",
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002030522",
+      "company": "Marwynn Holdings, Inc.",
+      "mappedCompany": "Marwynn Holdings, Inc.",
+      "ticker": "MWYN",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001213900-26-108218",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2030522/0001213900-26-108218.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "AI services",
+          "text": "e computing services for OmniX platform workloads, including model training, fine-tuning, inference, model serving, data processing, and analytics. They also will evaluate joint development, deployment, and operation of AI services, including agent orchestration, quantitative and trading-strategy support, risk and margin analytics, fraud and market-abuse det",
+          "documentType": "8-K",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "AI services",
+          "text": "risk and margin analytics, fraud and market-abuse detection, prediction functions, customer-support automation, and RWA valuation and risk modeling. Potential work also includes data pipelines and governance, and use of AI services in investor education, suitability assessment, and compliance monitoring, subject to applicable law and the MOU’s data and confi",
+          "documentType": "8-K",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI services",
+          "text": "ction, but the MOU does not commit the Company to any investment, securities issuance, acquisition, or other transaction. The MOU designates the Company and its affiliates as OmniX’s preferred suppliers of computing and AI services required for the OmniX platform in the defined territory, and OmniX as the Company’s preferred provider of RWA securities tradin",
+          "documentType": "8-K",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002051985",
+      "company": "Iron Horse Acquisition II Corp.",
+      "mappedCompany": "Iron Horse Acquisition II Corp.",
+      "ticker": "IRHO, IRHOR, IRHOU",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001213900-26-108221",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2051985/0001213900-26-108221.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 15,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "nnection with its previously announced business combination (the “ Business Combination ”) with Electra Vehicles, Inc., a Delaware corporation (“ Electra ”). Electra is dedicated to enhancing battery performance through AI-powered battery intelligence, providing solutions for battery energy storage systems (BESS), data centers and AI infrastructure, electric",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "Inc., a Delaware corporation (“ Electra ”). Electra is dedicated to enhancing battery performance through AI-powered battery intelligence, providing solutions for battery energy storage systems (BESS), data centers and AI infrastructure, electric vehicles and fleets, robotics, drones and aerospace systems. Attached as Exhibit 99.1 to this Current Report on F",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "machine learning",
+          "text": "y Value Across All Deployments Impact Reduce Downtime and Predict Failures Extend Battery Life Enhance Safety and Reliability Simplify Compliance (Battery Passport) Maximize Revenue & Battery ROI ELECTRA AI combines AI, machine learning and physics-based modeling to continuously monitor, predict, and optimize battery performance in real time Key benefits Ada",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001998560",
+      "company": "Mint Inc Ltd",
+      "mappedCompany": "Mint Inc Ltd",
+      "ticker": "MIMI",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001213900-26-108237",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1998560/0001213900-26-108237.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 3,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "ion into an AI and Robotics-Focused Company October 9 2026 About Axonex AI Group Limited Axonex AI Group Limited (formerly Mint Incorporation Limited) (NASDAQ: AXNX) is a Hong Kong-based company strategically focused on artificial intelligence (AI) and robotics, and an established business interior design and fit-out works provider. Through its subsidiary, A",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001996192",
+      "company": "Quanome Technologies, Inc.",
+      "mappedCompany": "Quanome Technologies, Inc.",
+      "ticker": "QNME",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001213900-26-108295",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1996192/0001213900-26-108295.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 12,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "y”) today announced that XDT Infrastructure I, LLC (“XDT”), an indirect wholly-owned subsidiary of Quanome, has entered into a Master Services Agreement and initial Order with an enterprise customer to provide dedicated artificial intelligence capacity. Under the initial Order, XDT will provide the customer with dedicated computing capacity to run its AI app",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording",
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "h dedicated computing capacity to run its AI applications. This is known as AI inference: using trained AI models to process new information and generate outputs. Rather than purchasing and operating its own specialised AI infrastructure, the customer will access the service remotely while XDT manages the underlying systems and day-to-day operation. Demand f",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "AI computing",
+          "text": "d generate outputs. Rather than purchasing and operating its own specialised AI infrastructure, the customer will access the service remotely while XDT manages the underlying systems and day-to-day operation. Demand for AI computing capacity is growing as businesses integrate AI into their day-to-day operations. The U.S. Census Bureau Business Trends and Out",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001877971",
+      "company": "POMDOCTOR Ltd",
+      "mappedCompany": "POMDOCTOR Ltd",
+      "ticker": "POM",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001213900-26-108499",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1877971/0001213900-26-108499.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "ITED (Nasdaq: POM) is a digital healthcare company focused on advancing AI-enabled healthcare solutions and expanding predictive healthcare capabilities. The Company leverages physician resources, wearable technologies, artificial intelligence, healthcare payment networks and real-world healthcare data to support more personalized, continuous and data-driven",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001974044",
+      "company": "MoneyHero Ltd",
+      "mappedCompany": "MoneyHero Ltd",
+      "ticker": "MNY, MNYWW",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001213900-26-108507",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1974044/0001213900-26-108507.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 4,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "eparture of Chief Commercial Officer Amid A New Market-Based Team Structure Hong Kong/Singapore, October 9, 2026 (ET) – MoneyHero Limited (NASDAQ: MNY) (&ldquo;MoneyHero&rdquo; or the &ldquo;Company&rdquo;), the largest AI-powered personal finance aggregation and comparison platform and a digital insurance brokerage provider in Greater Southeast Asia, today ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "lders.&rdquo; The Board continues its search for a permanent Chief Executive Officer. The Company will provide further updates as appropriate. About MoneyHero Group MoneyHero Limited (NASDAQ: MNY) is a leading tech- and AI-powered personal finance aggregation and comparison platform that provides consumers with actionable insights to discover, compare, and c",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001742770",
+      "company": "Viomi Technology Co., Ltd",
+      "mappedCompany": "Viomi Technology Co., Ltd",
+      "ticker": "VIOT",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001493152-26-046415",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1742770/0001493152-26-046415.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI technology",
+          "text": "he Company would also like to thank Mr. Sun for his dedicated service and valuable contributions during his time on the Board. About Viomi Technology Viomi&rsquo;s mission is &ldquo;AI for Better water,&rdquo; utilizing AI technology to provide better drinking water solutions for households worldwide. As an industry-leading technology company in home water s",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI technology",
+          "text": "lutions for households worldwide. As an industry-leading technology company in home water solutions, Viomi has developed a distinctive &ldquo;Equipment + Consumables&rdquo; business model. By leveraging its expertise in AI technology, intelligent hardware and software development, the Company simplifies filter replacement and enhances water quality monitorin",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002047190",
+      "company": "TechCreate Group Ltd.",
+      "mappedCompany": "TechCreate Group Ltd.",
+      "ticker": "TCGLF",
+      "exchange": "OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001493152-26-046462",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2047190/0001493152-26-046462.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "ons, telecommunications, deposit insurance, and enterprises. TechCreate&rsquo;s offerings include real-time payment systems, digital banking platforms, API management, cybersecurity, and cloud computing. Its proprietary Artificial Intelligence Real-Time Engine (AI-RTE) is designed to enable fast, secure, and efficient payment processing. For more information",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001473334",
+      "company": "XMax Inc.",
+      "mappedCompany": "XMax Inc.",
+      "ticker": "XMAX",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001493152-26-046545",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1473334/0001493152-26-046545.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 10,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "aimed at AI data center power infrastructure LOS ANGELES, October 9, 2026 (GLOBE NEWSWIRE) &mdash; XMax Inc. (NASDAQ: XMAX) (&ldquo;XMax&rdquo; or the &ldquo;Company&rdquo;), a distributor of contemporary furniture and artificial intelligence software and platform-based service provider, today announced that it has entered into a definitive share purchase ag",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording",
+            "funding or dilution wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "Commerce, California, XMax Inc. (NASDAQ: XMAX), formerly known as Nova LifeStyle, Inc., is a diversified company engaged in the design, sourcing, and distribution of contemporary furniture, as well as the development of artificial intelligence technologies and applications. The Company operates through an established global network of suppliers, distributors",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "ce technologies and applications. The Company operates through an established global network of suppliers, distributors, and e-commerce channels, serving a broad customer base. In addition, the Company has expanded into artificial intelligence technologies, including AI software and platform-based services through its wholly owned subsidiaries XMax AI Inc. a",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002058584",
+      "company": "DarkIris Inc.",
+      "mappedCompany": "DarkIris Inc.",
+      "ticker": "DKI",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001493152-26-046619",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2058584/0001493152-26-046619.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 4,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "DarkIris Inc. DarkIris Inc. (Nasdaq: DKI) is an innovative, growth-oriented public company focused on AI-driven digital media and content production technologies. Through advanced production capabilities, including its artificial intelligence platform, aideptus.com, the Company aims to provide creators, studios, and developers with generative AI solutions de",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "generative AI",
+          "text": "gital media and content production technologies. Through advanced production capabilities, including its artificial intelligence platform, aideptus.com, the Company aims to provide creators, studios, and developers with generative AI solutions designed to streamline creative workflows and enhance digital content production experiences. For more information, ",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI-driven",
+          "text": "nlawful prior to the registration or qualification under the securities laws of any such state or jurisdiction. About DarkIris Inc. DarkIris Inc. (Nasdaq: DKI) is an innovative, growth-oriented public company focused on AI-driven digital media and content production technologies. Through advanced production capabilities, including its artificial intelligence",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001873454",
+      "company": "Ruanyun Edai Technology Inc.",
+      "mappedCompany": "Ruanyun Edai Technology Inc.",
+      "ticker": "RYET",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-09",
+      "accession": "0001731122-26-001334",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1873454/0001731122-26-001334.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "itten confirmation. The notice has no immediate effect on the listing or trading of the Company&rsquo;s ordinary shares on the Nasdaq Capital Market. About Ruanyun Edai Technology Inc. Ruanyun Edai Technology Inc. is an AI-driven education technology company focused on intelligent content recognition, automated assessment and next-generation learning systems",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-enabled",
+          "text": "dai Technology Inc. is an AI-driven education technology company focused on intelligent content recognition, automated assessment and next-generation learning systems. The Company has historically developed and provided AI-enabled teaching, learning and assessment solutions, including smart homework, smart examination and digital education services, and sinc",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001731348",
+      "company": "Tilray Brands, Inc.",
+      "mappedCompany": "Tilray Brands, Inc.",
+      "ticker": "TLRY",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001171843-26-006527",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1731348/0001171843-26-006527.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "ted opportunities in the U.S., including upon U.S. federal cannabis legalization or rescheduling and the Company’s ability to leverage its platform in connection therewith; the Company’s ability to successfully leverage artificial intelligence strategies; the Company’s anticipated investments and acquisitions, including in organic and strategic growth, partn",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001123134",
+      "company": "CHIPMOS TECHNOLOGIES INC",
+      "mappedCompany": "CHIPMOS TECHNOLOGIES INC",
+      "ticker": "IMOS",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001193125-26-417359",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1123134/0001193125-26-417359.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-related",
+          "text": "ed in this press release are based on the exchange rate of NT$31.85 to US$1.00 as of September 30, 2026. The Company noted its third quarter 2026 revenue represents a record high, with revenue growth driven by sustained AI-related demand outpacing available memory supply. While the Company continues to invest in footprint expansion, new capacity is being dep",
+          "documentType": "6-K",
+          "reviewCues": [
+            "financial-results wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001833769",
+      "company": "Hyperfine, Inc.",
+      "mappedCompany": "Hyperfine, Inc.",
+      "ticker": "HYPR",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001193125-26-417437",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1833769/0001193125-26-417437.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "ash Equivalents of Approximately $37.9 Million Guilford, CONN. – October 8, 2026 – Hyperfine, Inc. (Nasdaq: HYPR), the groundbreaking health technology company that has redefined brain imaging with the first FDA-cleared AI-powered portable MRI system for the brain—the Swoop &reg; system—today announced preliminary, unaudited revenue, net cash burn, and cash ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001920294",
+      "company": "REZOLVE AI PLC",
+      "mappedCompany": "REZOLVE AI PLC",
+      "ticker": "RZLV, RZLVW",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001193125-26-418075",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1920294/0001193125-26-418075.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (10 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 2,
+      "currentAiMentions": 11,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "This is the most exciting company I've ever been involved in, and this is the most exciting time that I've ever experienced in my life in technology. The transformation of what we're seeing with agentic technologies and artificial intelligence is breathtaking and transformative, not just for business, but for our lives. I'm very, very happy to be here runnin",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "machine learning",
+          "text": "ack you've earned to a whole host of different leading partners, based on your selections. This is where we measure the commercial outcome through actual transactions. Everything we do within the app is driven by AI and machine learning, strengthening segmentation, personalization, and measurement. But don't just take it from me. I think the great thing abou",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "us a fraction of what it took us to build it in the first place. That must be my mother calling me. It is obviously very serious. Our strategy starts with our mission. Rezolve AI is the infrastructure backbone powering AI-driven commerce for merchants, financial institutions, hyperscalers, and technology companies. We start with merchants, and the same infra",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001716770",
+      "company": "Wah Fu Education & Technology Group Ltd.",
+      "mappedCompany": "Wah Fu Education Group Ltd",
+      "ticker": "WAFU",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001213900-26-107820",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1716770/0001213900-26-107820.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "cutting-edge technologies to serve our core education business, but also marks that our technology segment has entered a phase of independent development. We are committed to deploying cutting-edge technologies such as artificial intelligence application technologies and digital platforms across the full education value chain. Taking this as a new starting p",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001375365",
+      "company": "Super Micro Computer, Inc.",
+      "mappedCompany": "Super Micro Computer, Inc.",
+      "ticker": "SMCI, SMCIP",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001375365-26-000023",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1375365/0001375365-26-000023.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 2,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "ld leadership roles over a 35-year career, including responsibility for technology strategy, architecture and engineering governance for global computing environments. His experience includes high-performance computing, artificial intelligence infrastructure and data center operations. Mr. Krishnapura will participate in the Company’s standard non-employee d",
+          "documentType": "8-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001673481",
+      "company": "Sports Entertainment Gaming Global Corp",
+      "mappedCompany": "Sports Entertainment Gaming Global Corp",
+      "ticker": "SEGG, LTRYW",
+      "exchange": "Nasdaq",
+      "form": "10-Q",
+      "filingDate": "2026-10-08",
+      "accession": "0001493152-26-046279",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1673481/0001493152-26-046279.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "legal requirements in the jurisdictions in which they operate. In addition, the Company’s businesses are subject to laws and regulations relating to advertising, consumer protection, data privacy, intellectual property, artificial intelligence, information security, e-commerce, employment, and other matters applicable to digital media and technology business",
+          "documentType": "10-Q",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000839923",
+      "company": "VODAFONE GROUP PUBLIC LTD CO",
+      "mappedCompany": "VODAFONE GROUP PUBLIC LTD CO",
+      "ticker": "VOD, VODPF",
+      "exchange": "Nasdaq, OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001654954-26-008837",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/839923/0001654954-26-008837.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "and outlook for VodafoneThree, including its network investment plans, cost and capital expenditure synergy targets and expected returns, and the development and commercialisation of new technology offerings, including artificial intelligence (AI), which are subject to risks and uncertainties because they relate to future events. All statements other than st",
+          "documentType": "6-K",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001708441",
+      "company": "Mynd.ai, Inc.",
+      "mappedCompany": "Mynd.ai, Inc.",
+      "ticker": "MYND",
+      "exchange": "NYSE",
+      "form": "6-K",
+      "filingDate": "2026-10-08",
+      "accession": "0001708441-26-000106",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1708441/0001708441-26-000106.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI computing",
+          "text": "s transformative moment in its evolution. My career has been focused on building and scaling global technology businesses. I see tremendous opportunities ahead for Mynd.ai to accelerate growth by harnessing the power of AI computing, expanding its global platform, and building new digital ecosystem partnerships. With a talented global team, a strong technolo",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001498148",
+      "company": "Artificial Intelligence Technology Solutions Inc.",
+      "mappedCompany": "Artificial Intelligence Technology Solutions Inc.",
+      "ticker": "AITX",
+      "exchange": "OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001062993-26-005208",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1498148/0001062993-26-005208.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 10,
+      "currentAiMentions": 10,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "revised financial accounting standards provided pursuant to Section 13(a) of the Exchange Act. ☐ When used in this Current Report on Form 8-K, unless otherwise indicated, the terms the \"Company,\" \"our,\" or \"we\" refer to Artificial Intelligence Technology Solutions Inc. and its subsidiaries. Item 8.01 Other Events On October 7, 2026, we will be issuing a pres",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "a Substantial Property Management Relationship Recurring Purchases of RIO Security Solutions Extend Customer Adoption, with Latest Order Adding Sight Lines to Help Deter Trespassers Detroit, Michigan, October 7, 2026 -- Artificial Intelligence Technology Solutions, Inc. (the \"Company\") ( OTCID:AITX ), a developer and operator of AI-driven security and produc",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "al order at a time. The Company invites prospective clients, channel partners, and industry participants to connect with its team to learn how RAD's solutions can support their security and operational objectives. About Artificial Intelligence Technology Solutions, Inc. (AITX) AITX is a developer and provider of artificial intelligence-based solutions that e",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001904501",
+      "company": "Zentek Ltd.",
+      "mappedCompany": "Zentek Ltd.",
+      "ticker": "ZTEKF",
+      "exchange": "OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001062993-26-005221",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1904501/0001062993-26-005221.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "EDF Energy and NRG PALLAS, which is presenting its graphite qualification work for Kairos Power and Terrestrial Energy. Nuclear Graphite Demand Nuclear power deployment is accelerating as electricity demand grows, with artificial intelligence and data centres among the drivers. The IAEA's 2025 projections estimate that global nuclear capacity could increase ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001144879",
+      "company": "Applied Digital Corp.",
+      "mappedCompany": "Applied Digital Corp.",
+      "ticker": "APLD",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001144879-26-000057",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1144879/0001144879-26-000057.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 5,
+      "currentAiMentions": 5,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "APLD) (\"Applied Digital\" or the \"Company\") , a U.S. based designer, developer, owner, and operator of large-scale, purpose-built data centers engineered to support high-performance computing (“HPC”) workloads, including artificial intelligence (“AI”), machine learning, and other accelerated-compute applications, reported financial results for the fiscal firs",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "rs: our ability to complete construction of our data center campuses as planned, including internationally; the lead time of customer acquisition and leasing decisions and related internal approval processes; changes to artificial intelligence and HPC infrastructure needs and their impact on future plans; costs related to the HPC operations and strategy; our",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "machine learning",
+          "text": "\"Company\") , a U.S. based designer, developer, owner, and operator of large-scale, purpose-built data centers engineered to support high-performance computing (“HPC”) workloads, including artificial intelligence (“AI”), machine learning, and other accelerated-compute applications, reported financial results for the fiscal first quarter ended August 31, 2026.",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001144879",
+      "company": "Applied Digital Corp.",
+      "mappedCompany": "Applied Digital Corp.",
+      "ticker": "APLD",
+      "exchange": "Nasdaq",
+      "form": "10-Q",
+      "filingDate": "2026-10-07",
+      "accession": "0001144879-26-000059",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1144879/0001144879-26-000059.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (2 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 8,
+      "currentAiMentions": 6,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "August 31, 2026 1. Business and Basis of Presentation Applied Digital Corporation (the “Company”) is a designer, builder, and operator of high-performance, sustainably engineered data centers and colocation services for artificial intelligence, cloud, networking, and blockchain workloads. The Company has two reportable segments. Financial information for eac",
+          "documentType": "10-Q",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "Revenue Revenue associated with ChronoScale is accounted for under ASC 606. ChronoScale, a VOE consolidated by the Company in accordance with ASC 810, provides managed cloud infrastructure services to customers, such as artificial intelligence and machine learning developers, to help develop their advanced products. Customers pay a fixed rate to ChronoScale ",
+          "documentType": "10-Q",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "million shares of the Company’s common stock as described in Note 14 - Warrants . The purpose of TopCo 2 is to design, build and operate high-performance, sustainably engineered data centers and colocation services for artificial intelligence, cloud, and networking workloads in North Dakota. TopCo 2 is a bankruptcy-remote legal entity with separate assets an",
+          "documentType": "10-Q",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002095096",
+      "company": "Einride AB",
+      "mappedCompany": "Einride AB",
+      "ticker": "ENRD, ENRDW",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001171843-26-006479",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2095096/0001171843-26-006479.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "out Einride Founded in Stockholm in 2016, Einride (Nasdaq: ENRD) is a technology leader driving the transition to sustainable, cost-efficient autonomous and electric freight operations. The Company's platform integrates AI-powered freight intelligence, proprietary autonomous technology, and one of the world's largest electric heavy-duty fleets. Einride serve",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001003935",
+      "company": "NICE Ltd.",
+      "mappedCompany": "NICE Ltd.",
+      "ticker": "NICE, NCSYF",
+      "exchange": "Nasdaq, OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001178913-26-004729",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1003935/0001178913-26-004729.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 10,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "announced that AOK PLUS is now live on NiCE Cognigy and CXone, making it one of the first customers to bring AI agents and member service operations together on NiCE&rsquo;s unified CX AI platform. The deployment unites AI-powered self-service, intelligent orchestration, workflows and employee expertise to support more than 5 million annual member interactio",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "AI-powered self-service, intelligent orchestration, workflows and employee expertise to support more than 5 million annual member interactions. AOK PLUS began its AI transformation with NiCE Cognigy in 2025, introducing AI-powered voice self-service to identify member needs and direct inquiries to the appropriate teams. With CXone, AOK PLUS is extending that",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "troducing AI-powered voice self-service to identify member needs and direct inquiries to the appropriate teams. With CXone, AOK PLUS is extending that intelligence across its broader member service operation, connecting AI-powered interactions with 2,400 employees and 120 skills that intelligently route inquiries based on employee competencies. Together, NiC",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001920294",
+      "company": "REZOLVE AI PLC",
+      "mappedCompany": "REZOLVE AI PLC",
+      "ticker": "RZLV, RZLVW",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001193125-26-416054",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1920294/0001193125-26-416054.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (14 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 2,
+      "currentAiMentions": 15,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "rk and five strategic priorities and our path to profitability; the integration and consolidation of acquired businesses and future acquisitions; any exercise of our share repurchase authority; the anticipated growth of AI-driven and agentic commerce, estimates of the value of agent-orchestrated commerce and total addressable market estimates; the developmen",
+          "documentType": "6-K",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "tners, and the non-performance, termination, non-renewal or material modification of agreements with them; customer demand, deployment timing and contract terms, including termination rights; whether the markets for our AI-powered commerce solutions, including agentic commerce, develop more slowly or differently than we expect; competition and rapid technolo",
+          "documentType": "6-K",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "This is the most exciting company I've ever been involved in, and this is the most exciting time that I've ever experienced in my life in technology. The transformation of what we're seeing with agentic technologies and artificial intelligence is breathtaking and transformative, not just for business, but for our lives. I'm very, very happy to be here runnin",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001932737",
+      "company": "ROBO.AI INC.",
+      "mappedCompany": "ROBO.AI INC.",
+      "ticker": "AIIO, AIIOW",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001213900-26-107360",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1932737/0001213900-26-107360.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 4,
+      "currentAiMentions": 5,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "tunities for long-term growth. About Robo.ai Inc. Robo.ai Inc. (Nasdaq: AIIO), headquartered in Dubai, United Arab Emirates, is a Nasdaq-listed technology group building intelligent infrastructure across four platforms: artificial intelligence; robotics and smart mobility; advanced manufacturing; and digital assets and capital. Its industrial group, Alif Hol",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "the Company develops AI software and visual data infrastructure. Quantum Core Capital (“QC Capital”), its AI-powered deep-tech holding and venture-building platform, incubates, invests in and operates businesses across artificial intelligence, robotics, digital infrastructure and the next-generation digital economy. Forward-Looking Statements This press rele",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-enabled",
+          "text": "-term projects with future capacity expansion. The proposed Alif Maritec is expected to be the first project to occupy Phase I. Its planned portfolio covers marine oil spill emergency response, land border security, and AI-enabled defense and intelligent monitoring for critical infrastructure. The proposed solutions would combine equipment, sensor data and A",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002024459",
+      "company": "Charlton Aria Acquisition Corp",
+      "mappedCompany": "Charlton Aria Acquisition Corp",
+      "ticker": "CHAR, CHARR, CHARU",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001213900-26-107409",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2024459/0001213900-26-107409.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "ion Agreement to Take Korea&rsquo;s Enterprise Quantum Computing and Quantum-Safe Security Company Public on Nasdaq KQC helps enterprises put quantum computing and post-quantum cryptography to work through Qubiteer, its AI-driven hybrid quantum platform, access to multiple quantum technologies, and quantum-safe security products Combined company, KQC Quantum",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "the work between hardware and industry &mdash; problem definition, mathematical modeling, solver selection, execution and integration &mdash; and on protecting enterprise systems as quantum computing advances. Qubiteer: AI-driven hybrid quantum computing Currently in development with a demo launched in June 2026, Qubiteer lets a user describe a business prob",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002070542",
+      "company": "AIB Data Centers Inc.",
+      "mappedCompany": "AIB Data Centers Inc.",
+      "ticker": "AIB",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001213900-26-107421",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2070542/0001213900-26-107421.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (4 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 5,
+      "currentAiMentions": 4,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "Strategy for CLT1 New York, NY &ndash; October 7, 2026 &ndash; AIB Data Centers, Inc. (NYSE American: AIB) (&ldquo;AIB&rdquo; or the &ldquo;Company&rdquo;), a developer and operator of digital infrastructure focused on artificial intelligence and high-performance computing workloads, today issued a letter to shareholders from Chief Executive Officer Jerry Ta",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "od, we have taken significant steps toward transforming AIB from a company assembling a portfolio of strategically located, power-rich data center sites into an operating platform with contracted capacity from a leading AI infrastructure customer. Most importantly, we announced our agreement with Nebius for 50 MW of critical IT capacity at our CLT1 data cent",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording",
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "ecure Power &rarr; Contract Customer Capacity &rarr; Secure Project Funding &rarr; Develop and Deliver Infrastructure &rarr; Generate Long-Term Revenue We believe the scarcity of available power suitable for large-scale AI infrastructure creates an increasingly valuable opportunity for companies capable of securing that power and delivering data center capac",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording",
+            "customer or contract wording",
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001998560",
+      "company": "Mint Inc Ltd",
+      "mappedCompany": "Mint Inc Ltd",
+      "ticker": "MIMI",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001213900-26-107423",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1998560/0001213900-26-107423.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 5,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "(GLOBE NEWSWIRE) -- Mint Incorporation Limited (&ldquo;Mint&rdquo; or the &ldquo;Company&rdquo;, together with its subsidiaries, the &ldquo;Group&rdquo;, NASDAQ: MIMI), a Hong Kong-based company strategically focused on artificial intelligence (AI) and robotics as its primary growth engine, today announced that Axonex Robotics Limited (&ldquo;Axonex&rdquo;),",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "s Limited (Axonex Robotics), Mint delivers comprehensive intelligent automation solutions. Axonex AI specializes in smart facility management, integrating robotics, IoT, physical AI solutions such as humanoid robots and AI-powered analytics to provide real-time monitoring and predictive insights. In addition, through Matter International Limited, the Group p",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI solutions",
+          "text": "majority-owned subsidiary Axonex Robotics Limited (Axonex Robotics), Mint delivers comprehensive intelligent automation solutions. Axonex AI specializes in smart facility management, integrating robotics, IoT, physical AI solutions such as humanoid robots and AI-powered analytics to provide real-time monitoring and predictive insights. In addition, through M",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001825452",
+      "company": "Onfolio Holdings, Inc",
+      "mappedCompany": "Onfolio Holdings, Inc",
+      "ticker": "ONFO, ONFOP, ONFOW",
+      "exchange": "Nasdaq, OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001213900-26-107433",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1825452/0001213900-26-107433.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "olio Holdings Inc. acquires and operates online businesses in sectors including marketing, education and e-commerce. Its approach emphasizes sustainable cash generation and building long-term value. Onfolio also applies artificial intelligence to improve its businesses, create internal tools and develop products. Additional information is available at www.on",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002101411",
+      "company": "WISeSat.Space Holdings Corp.",
+      "mappedCompany": "WISeSat.Space Holdings Corp.",
+      "ticker": "SAIQ",
+      "exchange": "Nasdaq",
+      "form": "20-F",
+      "filingDate": "2026-10-07",
+      "accession": "0001213900-26-107579",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2101411/0001213900-26-107579.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI-language lead; prior filing comparison unavailable",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": null,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "machine learning",
+          "text": "well as serving as Global Head of Corporate Marketing. In 2000, she was recruited as CEO by venture-backed Wordstream, an MIT-Harvard spinout focused on multilingual translations utilizing computational linguistics and machine learning, where she commercialized the software. OneMain, a company she co-founded in 1998, was acquired by Earthlink in 2000 after a",
+          "documentType": "20-F",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001104038",
+      "company": "OpenWorld, Inc.",
+      "mappedCompany": "OpenWorld, Inc.",
+      "ticker": "OPNW, VRME",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001214659-26-012609",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1104038/0001214659-26-012609.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 4,
+      "evidence": [
+        {
+          "term": "generative AI",
+          "text": "Europe, Australia, and Southeast Asia. To learn more, visit openworld.dev About BeyondAI BeyondAI develops trusted, autonomous AI for complex, high-consequence operations. Its platform combines neuro-symbolic reasoning, generative AI and multi-agent orchestration, and its foundational AI technology traces its origins to NASA&rsquo;s Jet Propulsion Laboratory",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI solutions",
+          "text": "collateral. BeyondAI would retain control of its technology, and investors would receive a transparent, on-chain structure with institutional safeguards.&rdquo; &ldquo;Our intellectual property is the foundation for the AI solutions that BeyondAI brings into complex industrial environments. This transaction unlocks financing that preserves flexibility to ser",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI solutions",
+          "text": "According to BeyondAI, its investors include Aramco Ventures, ILA, and BP Ventures, among others. BeyondAI has previously announced commercial agreements with Aramco and a collaboration with HUMAIN to develop and deploy AI solutions across Saudi Arabia&rsquo;s resource sectors. BeyondAI&rsquo;s early foundations come from NASA/JPL/Caltech with some of the mo",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000913059",
+      "company": "Banco BBVA Argentina S.A.",
+      "mappedCompany": "Banco BBVA Argentina S.A.",
+      "ticker": "BBAR",
+      "exchange": "NYSE",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001292814-26-004862",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/913059/0001292814-26-004862.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI solutions",
+          "text": "ns, both reporting to the Executive Chairman: the AI Transformation Division and the Engineering Division. This new structure reaffirms the focus on developing critical capabilities and on the deployment and adoption of AI solutions at scale across the organization. Under this new structure, Leandro Alvarez, who has until now headed the AI Transformation & E",
+          "documentType": "6-K",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001397187",
+      "company": "lululemon athletica inc.",
+      "mappedCompany": "lululemon athletica inc.",
+      "ticker": "LULU",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001397187-26-000131",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1397187/0001397187-26-000131.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-enabled",
+          "text": "erprise data and AI, and cybersecurity. The position will focus on strategically leveraging technology across every touchpoint in the business to enhance communications and collaboration, accelerate a more connected and AI-enabled approach to technology, drive efficiency in processes, improve agility and speed-to-market, and create more engaging and personal",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002011208",
+      "company": "Safe Pro Group Inc.",
+      "mappedCompany": "Safe Pro Group Inc.",
+      "ticker": "SPAI",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001437749-26-032265",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2011208/0001437749-26-032265.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 7,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "e Growth in Q3 2026 Driven by Multiple Government Contracts for AI-Powered Threat Detection and Mapping AVENTURA, Fla. – October 7, 2026 – Safe Pro Group Inc. (Nasdaq: SPAI) (“Safe Pro” or the “Company”), a developer of artificial intelligence (AI)-enabled defense, security, and situational awareness solutions, today announced preliminary, unaudited revenue ",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "e solutions. Through cutting-edge platforms like SPOTD, Safe Pro provides advanced situational awareness tools for defense, humanitarian, and homeland security applications globally. The Company is a leading provider of artificial intelligence (AI) solutions specializing in drone imagery processing and mapping, leveraging commercially available off-the-shelf",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "machine learning",
+          "text": "ons globally. The Company is a leading provider of artificial intelligence (AI) solutions specializing in drone imagery processing and mapping, leveraging commercially available off-the-shelf drones with its proprietary machine learning and computer vision technology to enable rapid identification of explosive threats, providing a safer and more efficient al",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000746210",
+      "company": "TaoWeave, Inc.",
+      "mappedCompany": "TaoWeave, Inc.",
+      "ticker": "TWAV",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001437749-26-032268",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/746210/0001437749-26-032268.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (2 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 2,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "and acting on it in real time. Manako turns the cameras these businesses already own into that capability, quickly and with privacy and security at its core. We believe Physical AI is one of the largest opportunities in artificial intelligence today.” For TaoWeave, the deployment demonstrates that an enterprise operator has committed to the platform commerci",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "w we take Vision Agents to market. Avia shows what our agents can do across a live enterprise network,” said Max Sebti, Chief Executive Officer of Manako Labs. ABOUT TAOWEAVE TaoWeave, Inc. (Nasdaq: TWAV) is building an artificial intelligence commercialization platform focused on identifying, investing in, and scaling emerging AI technologies. Through strat",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001737523",
+      "company": "BioNexus Gene Lab Corp",
+      "mappedCompany": "BioNexus Gene Lab Corp",
+      "ticker": "BGLC",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001477932-26-006075",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1737523/0001477932-26-006075.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "applications for Malaysian healthcare, following the signing of a definitive agreement with Ruanyun Edai Technology Inc. (Nasdaq: RYET) on October 5, 2026 for an exclusive Malaysian healthcare licence to RYET's CogniAI artificial intelligence platform. BGLC's first target is Malaysia's public healthcare digitalization programme, which covers 150 hospitals an",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI platform",
+          "text": "ly, the agreement also gives BGLC a right to add other Malaysian industries by written notice, which would allow it to pursue digitalization work beyond healthcare. A platform already in commercial use CogniAI is RYET's AI platform for document intelligence. It recognizes, classifies and extracts information from documents and records. In June 2026, RYET rep",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001829311",
+      "company": "BITMINE IMMERSION TECHNOLOGIES, INC.",
+      "mappedCompany": "BITMINE IMMERSION TECHNOLOGIES, INC.",
+      "ticker": "BMNR, BMNP",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001493152-26-046088",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1829311/0001493152-26-046088.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "the Company changes such target or strategy; the risk that anticipated drivers of market growth, including tokenization, institutional adoption, generational wealth transfer, digital asset treasury company activity, and artificial intelligence, do not develop as expected; changes in market conditions affecting the trading price, yield, and volume of the Comp",
+          "documentType": "EX-99.3",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001954694",
+      "company": "Lucas GC Ltd",
+      "mappedCompany": "Lucas GC Ltd",
+      "ticker": "LGCL",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001493152-26-046090",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1954694/0001493152-26-046090.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "026 Financial Results: Revenue at US$35.74 million with Increases in Gross Margin NEW YORK, OCTOBER 7, 2026 (GLOBE NEWSWIRE) &mdash; Lucas GC Limited (NASDAQ: LGCL) (&ldquo;Lucas&rdquo; or the &ldquo;Company&rdquo;), an artificial intelligence (the &ldquo;AI&rdquo;) technology-driven Platform-as-a-Service (the &ldquo;PaaS&rdquo;) company, applying such techn",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI model",
+          "text": "million (US$3.5 million) for the six months ended June 30, 2026. This reduction was primarily attributable to engineering efficiencies gained from our prior-period platform investments, which reduced the need for major AI model updates during the period. We will continue allocating capital toward high-ROI technology initiatives to support long-term commercia",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002020027",
+      "company": "Click Holdings Ltd.",
+      "mappedCompany": "Click Holdings Ltd.",
+      "ticker": "CLIK",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001493152-26-046092",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2020027/0001493152-26-046092.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "oving between the clinic and clients. There is no fit-out required, ensuring zero interruption of service. About Click Holdings Limited (NASDAQ: CLIK) Click Holdings Limited (NASDAQ: CLIK) is a Hong Kong-based leader in AI-powered human resources and senior care solutions. Through its proprietary platform, CLIK connects clients with a talent pool of over 25,",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000065770",
+      "company": "MICROVISION, INC.",
+      "mappedCompany": "MICROVISION, INC.",
+      "ticker": "MVIS",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001493152-26-046140",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/65770/0001493152-26-046140.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI data centers",
+          "text": "uct company serving a diversified set of end markets. The company&rsquo;s Lidar 2.0 strategy aligned its technology portfolio around customer needs across industrial, security and defense, robotics, aerial applications, AI data centers, intelligent infrastructure, and other commercial markets. That portfolio includes IRIS, HALO, MOVIA S, MOVIA L, MOVIA Air a",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "AI data center",
+          "text": "to purchase orders, and developing customer relationships that can lead to longer-term, repeatable revenue. Recent commercial activity has included opportunities with Robinson Unmanned, photonics applications supporting AI data center scale-up, MSI advanced photonics activity, IRIS deployments for autonomous ground vehicle defense applications, and an APAC a",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001949864",
+      "company": "Mag Magna Corp",
+      "mappedCompany": "Mag Magna Corp",
+      "ticker": "MGNC",
+      "exchange": "OTC",
+      "form": "10-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001683168-26-007689",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1949864/0001683168-26-007689.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "undation of modern technologies and industries and have become nearly irreplaceable in many circumstances. REE stand as critical inputs in the building of an array of modern technologies, including electronics, physical artificial intelligence, transportation and robotics, that are now embedded in our lives. By economic value, neodymium-praseodymium (previou",
+          "documentType": "10-K",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001968487",
+      "company": "Worthington Steel, Inc.",
+      "mappedCompany": "Worthington Steel, Inc.",
+      "ticker": "WS",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-07",
+      "accession": "0001968487-26-000032",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1968487/0001968487-26-000032.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 12,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "n, decarbonization, infrastructure investment and electric-grid modernization and expansion; additions to product lines and opportunities to participate in new markets; expected benefits from transformation, innovation, artificial intelligence, machine learning and other technology initiatives; the ability to improve performance and competitive position at t",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "improving and sustainable earnings, earnings potential, margins or shareholder value; effects of judicial rulings, laws and regulations; anticipated improvements in business and efficiencies to be gained from the use of artificial intelligence and machine learning and other technologies; effects of cybersecurity breaches and other disruptions to information ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "such laws, which may increase the Company's costs and negatively impact its operations and financial results; the operational, data privacy, security, regulatory and legal risks associated with the Company’s reliance on artificial intelligence and machine learning technologies, its ability to stay abreast of technological advancements and its dependence on t",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000016918",
+      "company": "CONSTELLATION BRANDS, INC.",
+      "mappedCompany": "CONSTELLATION BRANDS, INC.",
+      "ticker": "STZ",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0000016918-26-000039",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/16918/0000016918-26-000039.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "rtation difficulties, disruptions, and impacts, including limited groups of certain suppliers; • reliance on complex information systems and third-party global networks as well as risks associated with cybersecurity and artificial intelligence; • dependence on limited facilities for production of our beer brands and impacts from our Brewery Projects; • opera",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001023459",
+      "company": "Simulations Plus, Inc.",
+      "mappedCompany": "Simulations Plus, Inc.",
+      "ticker": "SLP",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001023459-26-000092",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1023459/0001023459-26-000092.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "f Executive Officer of Simulations Plus. \"Our mission has always been to help our customers accelerate the discovery, development, and commercialization of innovative therapies through advanced modeling, simulation, and AI-driven technologies. By joining CCG, we believe we are well positioned to accelerate investment in innovation, expand our capabilities, a",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001498148",
+      "company": "Artificial Intelligence Technology Solutions Inc.",
+      "mappedCompany": "Artificial Intelligence Technology Solutions Inc.",
+      "ticker": "AITX",
+      "exchange": "OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001062993-26-005191",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1498148/0001062993-26-005191.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 10,
+      "currentAiMentions": 10,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "revised financial accounting standards provided pursuant to Section 13(a) of the Exchange Act. ☐ When used in this Current Report on Form 8-K, unless otherwise indicated, the terms the \"Company,\" \"our,\" or \"we\" refer to Artificial Intelligence Technology Solutions Inc. and its subsidiaries. Item 8.01 Other Events On October 6, 2026, we will be issuing a pres",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "om Exhibit 99.1 AITX's RAD Secures Third ROAMEO Order from Global Logistics Client Logistics Provider Expands Autonomous Patrol to Reduce Costs Compared with Manned Security Patrols Detroit, Michigan, October 6, 2026 -- Artificial Intelligence Technology Solutions, Inc. (the \"Company\") ( OTCID:AITX ), a developer and operator of AI-driven security and produc",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "lower patrol cost. The Company invites prospective clients, channel partners, and industry participants to connect with its team to learn how RAD's solutions can support their security and operational objectives. About Artificial Intelligence Technology Solutions, Inc. (AITX) AITX is a developer and provider of artificial intelligence-based solutions that em",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000016859",
+      "company": "Scully Royalty Ltd.",
+      "mappedCompany": "Scully Royalty Ltd.",
+      "ticker": "SRL",
+      "exchange": "NYSE",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001104659-26-113851",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/16859/0001104659-26-113851.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI Infrastructure",
+          "text": "d the following persons to its Board of Directors Ho Kwun Cheong 何冠昌 An admitted Solicitor of the High Court of Hong Kong SAR, China Yu Chi Kong 余智綱 Core experience with vertical integration expansion, Private cloud and AI Infrastructure, data Center and Enterprise Architecture and Operations and Venture Leadership in Hong Kong, China, Singapore and Japan ma",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001411579",
+      "company": "AMC ENTERTAINMENT HOLDINGS, INC.",
+      "mappedCompany": "AMC ENTERTAINMENT HOLDINGS, INC.",
+      "ticker": "AMC",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001104659-26-113853",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1411579/0001104659-26-113853.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "production, supply and release schedule of theatrical motion picture content and choice of distributors to release fewer feature-length films as a result of the additional financial burden imposed by tariffs; the use of artificial intelligence (&ldquo;AI&rdquo;) technology in the filmmaking process and audience acceptance of movies made utilizing AI technolo",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI technology",
+          "text": "length films as a result of the additional financial burden imposed by tariffs; the use of artificial intelligence (&ldquo;AI&rdquo;) technology in the filmmaking process and audience acceptance of movies made utilizing AI technology; general and international economic, political, regulatory and other risks, including but not limited to rising interest rates",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001821769",
+      "company": "Navitas Semiconductor Corp",
+      "mappedCompany": "Navitas Semiconductor Corp",
+      "ticker": "NVTS",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001104659-26-114051",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1821769/0001104659-26-114051.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 16,
+      "evidence": [
+        {
+          "term": "AI Infrastructure",
+          "text": "Exhibit 99.1 Navitas Closes Acquisition of Claros, Advancing AI Infrastructure with Grid-to-xPU Power Delivery Completes Navitas&rsquo; high-power portfolio with Claros&rsquo; IVR technology, enabling vertical and embedded architectures and providing last step in power delivery to the core Navitas",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI data centers",
+          "text": "chnologies, today announced the closing of its previously announced acquisition of Claros, Inc. (Claros), a power management solutions company developing integrated voltage regulator (IVR) technology for next-generation AI data centers, providing the last step to powering the xPU. The completed transaction extends Navitas&rsquo; AI infrastructure portfolio f",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "er management solutions company developing integrated voltage regulator (IVR) technology for next-generation AI data centers, providing the last step to powering the xPU. The completed transaction extends Navitas&rsquo; AI infrastructure portfolio from the grid to the xPU, bringing industry-leading IVR capabilities. Claros&trade; IVR integrates power transis",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001682149",
+      "company": "Datavault AI Inc.",
+      "mappedCompany": "Datavault AI Inc.",
+      "ticker": "DVLT",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001104659-26-114118",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1682149/0001104659-26-114118.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI platform",
+          "text": "well as the Company&rsquo;s events and experiential media businesses, including CompuSystems, Inc., operated under the Event Citadel brand, and API Media Innovations Inc. Together, these capabilities form an integrated AI platform designed to connect data, intelligence, value and markets, enabling enterprises, institutions and asset owners to identify, prote",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001095435",
+      "company": "Alpha Compute Corp",
+      "mappedCompany": "Alpha Compute Corp",
+      "ticker": "ALP",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001171843-26-006446",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1095435/0001171843-26-006446.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (2 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI computing",
+          "text": "ments to differ materially from those expressed or implied by such statements. Risks include, but are not limited to: supply chain disruptions affecting hardware delivery and deployment; changes in enterprise demand for AI computing; delays in infrastructure buildouts; regulatory developments regarding AI and data sovereignty; and general economic conditions",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI Platform",
+          "text": "EdgarFiling EXHIBIT 99.1 Alpha Compute Corp. Signs Agreement with AI Platform to deliver Compute via its ALPHA-02 Cluster in Sweden, with a total value of $71.9 Million The Master Services Agreement is expected to add $24 million in new annual contracted revenue bringing the Company’s projected a",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001574565",
+      "company": "Evogene Ltd.",
+      "mappedCompany": "Evogene Ltd.",
+      "ticker": "EVGN",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001178913-26-004722",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1574565/0001178913-26-004722.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "generative AI",
+          "text": "a pioneering company in computational chemistry, specializing in the generative design of small molecules for drug development and ag-chemical products. At the core of its technology is ChemPass AI&trade;, a proprietary generative AI designed to explore vast chemical space and generate novel, highly potent small molecules optimized across multiple critical p",
+          "documentType": "EX-99.4",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "&rdquo;) to resolve all outstanding differences between the parties. The agreement is intended to establish long-term operational stability and empower Evogene to focus entirely on its goal of becoming a world leader in AI-driven small-molecule discovery and optimization for the pharmaceutical and ag-chemical industries. Subsequent to the Annual General Meet",
+          "documentType": "EX-99.4",
+          "reviewCues": [
+            "customer or contract wording",
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001916241",
+      "company": "ParaZero Technologies Ltd.",
+      "mappedCompany": "ParaZero Technologies Ltd.",
+      "ticker": "PRZO",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001185185-26-004596",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1916241/0001185185-26-004596.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "e company&rsquo;s products are designed to be reliable, mobile, and operational 24/7, providing an optimal solution for operational units in the field. ThirdEye Systems&rsquo; solutions set a new standard in integrating artificial intelligence with defense and security systems, advancing the capabilities of the field. Forward-Looking Statements This press re",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "n Web at ADEX 2026 in Baku. Iron Web is designed to give armored combat vehicles a perimeter drone-detection layer and to complement ThirdEye's Argus Shield system. Under the architecture, ThirdEye's electro-optical and AI-driven detection is intended to find and classify an approaching drone, and DefendAir is intended to provide the last physical layer: a c",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001715925",
+      "company": "MindWalk Holdings Corp.",
+      "mappedCompany": "MindWalk Holdings Corp.",
+      "ticker": "HYFT",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001193125-26-415053",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1715925/0001193125-26-415053.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (5 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 2,
+      "currentAiMentions": 7,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "flows pharmaceutical companies are now deploying. By design, value compounds in this HYFT representation layer, not in any individual AI model that runs on top of it. References [1] Stanford Institute for Human-Centered Artificial Intelligence, 2025 AI Index Report, Technical Performance chapter, April 2025. The performance gap between the top-ranked and ten",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "generative AI",
+          "text": "to keep compounding inside it. That is what we built, and we are not aware of anyone else delivering it as a governed layer any model or agent can reason over.\" The layer the market has converged on Four years into the generative AI cycle, the enterprise has learned that large language models are becoming interchangeable &sup1; and that deploying them inside",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "generative AI",
+          "text": "els are becoming interchangeable &sup1; and that deploying them inside a real organization disappoints far more often than the demonstrations suggest. MIT's 2025 State of AI in Business study put the share of enterprise generative AI pilots delivering no measurable return at 95 percent and located the cause not in model quality but in systems that do not ret",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001616533",
+      "company": "Penguin Solutions, Inc.",
+      "mappedCompany": "Penguin Solutions, Inc.",
+      "ticker": "PENG",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001193125-26-415645",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-415645.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 4,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "tions, including the impact on the financial condition of our customers, particularly in challenging macroeconomic environments; growth and demand trends in technology industries (including trends and markets related to artificial intelligence), our customer markets and various geographic regions; uncertainties in the geopolitical environment, including thos",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "AI-driven",
+          "text": "ompany”) (Nasdaq: PENG), the AI Factory Platform Company, today announced the appointment of Stephen Cumming as Senior Vice President and Chief Financial Officer, effective immediately. “We enter fiscal 2027 with strong AI-driven momentum, meaningful operating leverage, and a clear strategy to scale our AI Factory Platform business,” said Kash Shaikh, Presid",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "nancial strategy, and investor relations. “I am excited to join Penguin Solutions at this important stage in its growth,” said Cumming. “The Company has built a differentiated position at the intersection of data center AI infrastructure and memory, with a significant opportunity ahead as customers scale production AI. I look forward to partnering with Kash ",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000814547",
+      "company": "FAIR ISAAC CORP",
+      "mappedCompany": "FAIR ISAAC CORP",
+      "ticker": "FICO",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001193125-26-415732",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/814547/0001193125-26-415732.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "air Isaac Corporation (the “Company”) committed to a plan of workforce reduction by reducing the number of layers in the organization, simplifying the operating structure, optimizing processes and tools, and integrating AI-driven product development. This plan involves the elimination of approximately 15% of positions across the Company. Affected employees w",
+          "documentType": "8-K",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001963439",
+      "company": "Turbo Energy, S.A.",
+      "mappedCompany": "Turbo Energy, S.A.",
+      "ticker": "TURB",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001213900-26-106991",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1963439/0001213900-26-106991.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 4,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "tions. VALENCIA, Spain &mdash; (GLOBE NEWSWIRE) &ndash; October 6, 2026 &mdash; Turbo Energy, S.A. (Nasdaq: TURB) (&ldquo;Turbo Energy&rdquo; or the &ldquo;Company&rdquo;), a global technology integrator specializing in AI-driven energy storage and energy management solutions, today announced that 62.5 MWh of intelligent energy storage capacity supplied by t",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "acute;a Solar, another subsidiary of Umbrella Global Energy. Under the previously announced $53 million contract, Turbo Energy is responsible for supplying and implementing the battery storage technology and proprietary AI-driven energy management system that connect the project&rsquo;s generation, storage and industrial consumption assets within a coordinat",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "AI-driven",
+          "text": "ergy&rsquo;s technology across a diversified range of commercial and industrial applications. About Turbo Energy, S.A. Founded in 2013, Turbo Energy, S.A. (Nasdaq: TURB) is a global technology integrator specializing in AI-driven energy storage and energy management solutions. The Company integrates advanced battery storage, proprietary software and energy m",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001780731",
+      "company": "E-Power Inc.",
+      "mappedCompany": "E-Power Inc.",
+      "ticker": "EPOW",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001213900-26-107196",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1780731/0001213900-26-107196.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI Data Center",
+          "text": "Announces Pricing of Approximately $1.87 Million Registered Direct Offering DOVER, USA, Sept. 29, 2026 (GLOBE NEWSWIRE) -- E-Power Inc. (the &ldquo;Company&rdquo; or &ldquo;E-Power&rdquo;) (NASDAQ: EPOW), a provider of AI Data Center (AIDC) microgrid solutions and advanced battery materials, today announced that it has entered into a securities purchase agre",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording",
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002077709",
+      "company": "Rank One Computing Corp",
+      "mappedCompany": "Rank One Computing Corp",
+      "ticker": "ROC",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001213900-26-107208",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2077709/0001213900-26-107208.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "machine learning",
+          "text": "chers in the history of computer science, with five decades of experience focused on translating research into practical applications, including foundational work in pattern recognition, biometrics, computer vision, and machine learning. His research has been patented, licensed, and deployed in operational environments and has informed identity technologies ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI platform",
+          "text": "Jain adds a foundational scientific perspective to ROC&rsquo;s Board at a pivotal stage in the Company&rsquo;s growth. His guidance will help inform ROC&rsquo;s research-led product development as it advances its Vision AI platform across national security, public safety, and commercial markets. &ldquo;I&rsquo;ve dedicated my career to computer science and e",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI platform",
+          "text": "mission to advance its biometric and identity intelligence is a natural extension of that work. I look forward to contributing my experience as the Company expands its technology capabilities, strengthens the ROC Vision AI platform, and executes on its long-term growth strategy.&rdquo; Dr. Anil Jain is a globally recognized pioneer in pattern recognition, co",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002074973",
+      "company": "Churchill Capital Corp XI",
+      "mappedCompany": "Churchill Capital Corp XI",
+      "ticker": "CCXI, CCXIU, CCXIW",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001213900-26-107259",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2074973/0001213900-26-107259.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "gulations; risks associated with product liability, workplace safety regulations and potential injuries arising from the deployment of humanoid robots alongside human workers; the use, rate of adoption and regulation of artificial intelligence and machine learning; the evolving regulatory landscape for AI technologies across multiple jurisdictions and the ri",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "machine learning",
+          "text": "with product liability, workplace safety regulations and potential injuries arising from the deployment of humanoid robots alongside human workers; the use, rate of adoption and regulation of artificial intelligence and machine learning; the evolving regulatory landscape for AI technologies across multiple jurisdictions and the risk that failure to comply wi",
+          "documentType": "8-K",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000099070",
+      "company": "TRANSCANADA PIPELINES LTD",
+      "mappedCompany": "TRANSCANADA PIPELINES LTD",
+      "ticker": "TCPA",
+      "exchange": "NYSE",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001232384-26-000053",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/99070/0001232384-26-000053.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "icy 37 Home Table of contents Living our values Ethical business conduct Communication Assets and information Have a question? We’re here to help ASSETS AND INFORMATION + Protecting confidential information + Generative Artificial Intelligence (AI) + Recording on Company premises + Protecting personal information + Managing and maintaining the security of da",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "ngs including legally privileged information • Other information which is or may be either applicable to or related in any way to the assets, business or affairs of TC EnergyꝒ Protection of Personal Information Policy Ꝓ Artificial Intelligence Policy Ꝓ Acceptable Use Policy Ꝓ Data and Information Policy Ꝓ Cybersecurity Policy Confidential information can inc",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "generative AI",
+          "text": "reats to confidential information. To further protect confidential information, Personnel must never create, transmit or store non- public Company information on non-TC Energy accounts and must use only Company-approved generative AI software on TC Energy computer systems. RECORDING ON COMPANY PREMISES As technology continues to evolve, Personnel must remain",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001546296",
+      "company": "Professional Diversity Network, Inc.",
+      "mappedCompany": "Professional Diversity Network, Inc.",
+      "ticker": "IPDN",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001437749-26-032105",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1546296/0001437749-26-032105.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 10,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "portions omitted as permitted by Item 601 of Regulation S-K. Item 7.01 Regulation FD Disclosure. On October 6, 2026, the Company issued a press release announcing PDN Intelligence’s acquisition of one NVIDIA B300-based artificial intelligence computing system described in Item 1.01 of this Current Report on Form 8-K (this “Form 8-K”). A copy of the press rel",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "Infrastructure Strategy with NVIDIA B300 System Order CHICAGO, October 6, 2026 — Professional Diversity Network, Inc. (NASDAQ: IPDN) (“IPDN” or the “Company”) today announced a significant step in the development of its artificial intelligence (“AI”) infrastructure business through its wholly owned subsidiary, PDN Intelligence, Inc. (“PDN Intelligence”). The",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "ating performance and capital resources. About Professional Diversity Network, Inc. Professional Diversity Network, Inc. is a technology holding company operating businesses across workforce solutions, remote talent and artificial intelligence. Through its operating platforms and strategic initiatives, the Company seeks to connect talent, technology and oppo",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001378590",
+      "company": "Bridgeline Digital, Inc.",
+      "mappedCompany": "Bridgeline Digital, Inc.",
+      "ticker": "BLIN",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001437749-26-032177",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1378590/0001437749-26-032177.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 4,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "ex_1022590.htm Exhibit 99.1 Bridgeline Reports Record Fourth-Quarter and Fiscal 2026 Sales for HawkSearch AI eCommerce Platform WOBURN, MA — Bridgeline Digital, Inc. (NASDAQ: BLIN), a leader in AI-powered product discovery and eCommerce solutions, today announced record quarterly and annual sales, led by its HawkSearch AI eCommerce platform. Fiscal 2026 Sale",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording"
+          ]
+        },
+        {
+          "term": "AI-powered",
+          "text": "ore ● 5 new AI product releases The company ended fiscal 2026 with approximately $1.0M in cash and less than $200K in legacy bank debt, bearing interest at an annual rate of approximately 3.5%. “HawkSearch’s value as an AI-powered platform with a growing customer base and strong customer expansion is demonstrated by its numbers,” said Ari Kahn, Bridgeline’s ",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "AI product",
+          "text": "in gross profit, supporting continued investment in HawkSearch. Fourth Quarter Core Highlights ● 96% of all sales were Core Products ● 63% of total revenue and 65% of subscription revenue are expected to be Core ● 2 new AI product releases Fiscal 2026 Core Highlights ● 89% of all sales were Core Products ● 61% of total revenue and 64% of subscription revenue",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording",
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001877461",
+      "company": "1606 CORP.",
+      "mappedCompany": "1606 CORP.",
+      "ticker": "CBDW",
+      "exchange": "OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001477932-26-006060",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1877461/0001477932-26-006060.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "eetings and site visits. The Company will provide additional updates as material developments occur. About 1606 Corp. 1606 Corp. (OTCID) is focused on pursuing opportunities at the intersection of energy infrastructure, artificial intelligence and data center development. The Company is currently evaluating multiple potential paths involving the East Texas p",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001682265",
+      "company": "Onar Holding Corp",
+      "mappedCompany": "Onar Holding Corp",
+      "ticker": "ONAR",
+      "exchange": "OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001477932-26-006061",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1682265/0001477932-26-006061.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 3,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "mpletion days earlier of the largest acquisition in Company history and its up to $15 million financing Miami, FL, October 6, 2026 (GLOBE NEWSWIRE) -- ONAR Holding Corporation (OTCID: ONAR) (“ONAR” or the “Company”), an AI-powered marketing platform, today announced the appointment of Kelly Anderson as Interim Chief Financial Officer, effective October 1, 20",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "funding or dilution wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001534708",
+      "company": "Beeline Holdings, Inc.",
+      "mappedCompany": "Beeline Holdings, Inc.",
+      "ticker": "BLNE",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001493152-26-045840",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1534708/0001493152-26-045840.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "rs to our products and services, our ability to comply with applicable regulatory requirements and new regulations and developments that may arise including the potential for regulatory changes regarding digital assets, artificial intelligence, and other areas that impact and may in the future impact the Company&rsquo;s business, the possibility that our exp",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001926293",
+      "company": "Green Circle Decarbonize Technology Ltd",
+      "mappedCompany": "Green Circle Decarbonize Technology Ltd",
+      "ticker": "GCDT",
+      "exchange": "NYSE",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001493152-26-045846",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1926293/0001493152-26-045846.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (7 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 7,
+      "evidence": [
+        {
+          "term": "AI data center",
+          "text": "rmation contained in this report On October 6, 2026, Green Circle Decarbonize Technology Limited, a Cayman Islands exempted company (the &ldquo;Company&rdquo;), issued a press release announcing that it planned to enter AI data center cooling market with proprietary ultra-low energy liquid cooling solutions. A copy of the press release is furnished as Exhibi",
+          "documentType": "6-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI Data Center",
+          "text": "solutions. A copy of the press release is furnished as Exhibit 99.1 to this Report. Exhibits. Exhibit No. Description 99.1 Press Release dated October 6, 2026 &ndash; Green Circle Decarbonize Technology Planned to Enter AI Data Center Cooling Market with Proprietary Ultra-Low Energy Liquid Cooling Solutions SIGNATURES Pursuant to the requirements of the Secu",
+          "documentType": "6-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "utions Hong Kong, October 6, 2026, Green Circle Decarbonize Technology Limited (the &ldquo; Company &rdquo;) (NYSE: GCDT), a premier provider of customized energy-saving solutions, today announced its expansion into the artificial intelligence (&ldquo; AI &rdquo;) data center infrastructure market in the near future. The Company is launching next-generation,",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001875547",
+      "company": "Locafy Ltd",
+      "mappedCompany": "Locafy Ltd",
+      "ticker": "LCFY, LCFYW",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001493152-26-045884",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1875547/0001493152-26-045884.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (2 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 2,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": ". ● Pathways to drive growth and margin expansion: Locafy will combine Map Labs&rsquo; established U.S. multi-location customer base and Maps marketing capabilities with Locafy&rsquo;s SEO, AEO, citation, automation and AI-powered website technologies. The Company expects to drive cross-selling, automation-led efficiencies, and increased operating leverage a",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "creates a broader and more complete customer proposition. We can introduce Maps marketing and Google Business Profile capabilities to Locafy customers while giving Map Labs customers access to our SEO, AEO, citation and AI-powered website solutions. &ldquo;We believe the ability to cross-sell Locafy products into Map Labs&rsquo; established customer base is ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "afy (Nasdaq: LCFY, LCFYW) is on a mission to accelerate visibility and prominence for local, national and brand-focused businesses across online and AI search engines through proprietary SEO techniques, technologies and AI-driven automation. For more information, please visit www.locafy.com . 2 Forward-Looking Statements This press release contains &ldquo;fo",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001471727",
+      "company": "SRX Global Inc.",
+      "mappedCompany": "SRX Global Inc.",
+      "ticker": "SRXH",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001493152-26-045941",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1471727/0001493152-26-045941.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 6,
+      "evidence": [
+        {
+          "term": "AI-Powered",
+          "text": "Exhibit 99.1 SRX Global Commits $1.5 Million to Launch Family of AI-Powered ETFs through its EMJX Platform, Partnering with Kupa AI Co-Founder Andy Kim SRX to dividend ETF holdings to shareholders Initial ETF to feature an actively managed digital asset hedging strategy powered by EMJX&rsquo;s",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-enabled",
+          "text": "ed digital asset hedging strategy powered by EMJX&rsquo;s proprietary AI technology NORTH PALM BEACH, Fla., Oct. 6, 2026 &mdash; SRX Global Inc. (NYSE American: SRXH) (the &ldquo;Company&rdquo; or &ldquo;SRX&rdquo;), an AI-enabled platform dedicated to generating long-term shareholder value through investments in high-conviction operating companies and strat",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "strategic assets, today announced a $1.5 million commitment to launch a new family of actively managed Exchange Traded Funds (ETFs) through its EMJX platform, marking the first step in bringing EMJX&rsquo;s proprietary AI-driven investment intelligence to the broader investing public. The ETF family will be actively managed by Eric Jackson, President, EMJX P",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002026767",
+      "company": "Calisa Acquisition Corp",
+      "mappedCompany": "Calisa Acquisition Corp",
+      "ticker": "ALIS, ALISR, ALISU",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001493152-26-045978",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2026767/0001493152-26-045978.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 9,
+      "evidence": [
+        {
+          "term": "AI infrastructure",
+          "text": "obal Redwood City, CA, October 5, 2026 &mdash; GoodVision AI (&ldquo;GoodVision&rdquo;), a developer of next-generation AI compute infrastructure purpose-built for inference, today announced further progress in its U.S. AI infrastructure strategy through separate collaboration agreements with Tokenomics Digital Tech Corp. (&ldquo;TDTC&rdquo;) and HOP Global ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI data center",
+          "text": "ements with Tokenomics Digital Tech Corp. (&ldquo;TDTC&rdquo;) and HOP Global Service Inc. (&ldquo;HOP Global&rdquo;) in Texas. The two initiatives represent complementary deployment paths within GoodVision&rsquo;s U.S. AI data center (&ldquo;AIDC&rdquo;) and inference infrastructure strategy. The TDTC collaboration focuses on the development of dedicated mo",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI computing",
+          "text": "ion agreement with TDTC, the parties will look to jointly invest in, develop and operate modular AI Factory inference computing facilities in the United States. Under the collaboration, GoodVision is expected to provide AI computing technologies including GPU cluster design, network architecture, cooling systems and compute-scheduling software, while TDTC wo",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001318482",
+      "company": "KIDOZ INC.",
+      "mappedCompany": "KIDOZ INC.",
+      "ticker": "KDOZF",
+      "exchange": "OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001493152-26-045992",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1318482/0001493152-26-045992.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI investment",
+          "text": "provide superior campaign performance without relying on personal data. This AI contextual intelligence engine delivers higher brand recall and better return on advertising spend than traditional targeting methods. Our AI investment is growing to deliver next-generation solutions and operational efficiencies. Our expansion strategy extends beyond our market-",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001616533",
+      "company": "Penguin Solutions, Inc.",
+      "mappedCompany": "Penguin Solutions, Inc.",
+      "ticker": "PENG",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001616533-26-000046",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000046.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 13,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "tions, including the impact on the financial condition of our customers, particularly in challenging macroeconomic environments; growth and demand trends in technology industries (including trends and markets related to artificial intelligence), our customer markets and various geographic regions; uncertainties in the geopolitical environment, including thos",
+          "documentType": "EX-99",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "AI-Driven",
+          "text": "Document Exhibit 99.1 Press Release FOR IMMEDIATE RELEASE Penguin Solutions Announces Fourth-Quarter and Full-Year Fiscal 2026 Results Record Results Across Key Financial Metrics Reflecting AI-Driven Data Center Demand; Raising Fiscal 2027 Outlook Supported by Accelerating AI Infrastructure Business Fremont, Calif. – October 6, 2026 – Penguin Solutions, Inc.",
+          "documentType": "EX-99",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI Infrastructure",
+          "text": "ASE Penguin Solutions Announces Fourth-Quarter and Full-Year Fiscal 2026 Results Record Results Across Key Financial Metrics Reflecting AI-Driven Data Center Demand; Raising Fiscal 2027 Outlook Supported by Accelerating AI Infrastructure Business Fremont, Calif. – October 6, 2026 – Penguin Solutions, Inc. (“Penguin Solutions,” “Penguin,” “we,” “us,” “our,” o",
+          "documentType": "EX-99",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001660280",
+      "company": "Tenable Holdings, Inc.",
+      "mappedCompany": "Tenable Holdings, Inc.",
+      "ticker": "TENB",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001660280-26-000042",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1660280/0001660280-26-000042.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (3 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 2,
+      "currentAiMentions": 4,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "Document Tenable Appoints Industry Veteran Charlie Bell to Board of Directors Former Microsoft and AWS executive brings decades of product engineering, cloud security and infrastructure expertise to accelerate Tenable’s AI-powered exposure management leadership COLUMBIA, Md. (October 6, 2026) — Tenable® Holdings, Inc. (NASDAQ: TENB), the exposure management ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "e with nearly four decades of hands-on software engineering and operational leadership, Bell brings deep expertise in building and scaling complex cloud systems to Tenable’s board as the company continues to advance its AI-powered exposure management platform. Bell’s appointment comes at a crucial inflection point for the enterprise cybersecurity industry. A",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "gh major technology shifts, from the rise of cloud computing at massive scale to the security transformations that followed. He'll bring that same judgment to Tenable as we lead the security market into this next era of AI-driven exposure management and proactive risk reduction,\" said Steve Vintz, Co-CEO of Tenable. Bell spent over two decades at Amazon Web ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001554818",
+      "company": "AUDDIA INC.",
+      "mappedCompany": "AUDDIA INC.",
+      "ticker": "AUUD",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001683168-26-007636",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1554818/0001683168-26-007636.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-infrastructure",
+          "text": "Company will issue a CEO Letter to Shareholders later this week providing a comprehensive update on Auddia&rsquo;s progress throughout 2026, including recent developments related to LT350 and the company&rsquo;s broader AI-infrastructure strategy. Following this update, and the additional announcements expected to follow, Auddia expects to establish a new re",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001376793",
+      "company": "Cavitation Technologies, Inc.",
+      "mappedCompany": "Cavitation Technologies, Inc.",
+      "ticker": "CVAT",
+      "exchange": "OTC",
+      "form": "10-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001683168-26-007653",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1376793/0001683168-26-007653.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "uting environments. That same technology now underpins Xyra’s infrastructure backbone, giving it a rare dual strength: precision fluid management to keep the physical computing layer efficient and secure, and to deliver AI-driven, quantum-secure remittances and tokenization rails at a global scale. Xyra launched the first AI-driven, quantum-secure remittance",
+          "documentType": "10-K",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "dual strength: precision fluid management to keep the physical computing layer efficient and secure, and to deliver AI-driven, quantum-secure remittances and tokenization rails at a global scale. Xyra launched the first AI-driven, quantum-secure remittance and tokenization network designed for the global economy. The platform addresses the inefficiencies of ",
+          "documentType": "10-K",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001713683",
+      "company": "Zscaler, Inc.",
+      "mappedCompany": "Zscaler, Inc.",
+      "ticker": "ZS",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001713683-26-000200",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1713683/0001713683-26-000200.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "of Zscaler. “The agentic AI era is quickly becoming the most significant opportunity in our company’s history. Our Zero Trust platform was purpose-built to solve the challenges customers face today – protecting against AI-driven threats, securing data everywhere, and enabling the secure deployment of AI – by hiding the attack surface and preventing lateral m",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001764046",
+      "company": "CLARIVATE PLC",
+      "mappedCompany": "CLARIVATE PLC",
+      "ticker": "CLVT",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001764046-26-000117",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1764046/0001764046-26-000117.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "thereof and underlying assumptions, the impact or anticipated benefits of our Value Creation Plan, our growth strategies and future business prospects, the global macroeconomic uncertainty and volatility, the impact of artificial intelligence on our business and strategy, and the timing of any of the foregoing. These forward-looking statements can generally ",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI-powered",
+          "text": "or $600 million was previously announced on July 6, 2026. With the completion of the transaction, Clarivate is now a more-focused subscription-first global provider of trusted proprietary data and authoritative content, AI-powered intelligence solutions, embedded workflow software, and tech-enabled services. The leading Academia & Government and Intellectual",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "profile. We are now positioned as a more focused company centered on two market-leading segments with attractive recurring revenue characteristics, deep customer relationships, and significant opportunities to leverage AI-driven innovation.\" \"I want to thank our Life Sciences & Healthcare colleagues for their many contributions to Clarivate and wish them con",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording",
+            "customer or contract wording"
+          ]
+        }
+      ],
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001871638",
+      "company": "Blaize Holdings, Inc.",
+      "mappedCompany": "Blaize Holdings, Inc.",
+      "ticker": "BZAI, BZAIW",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-06",
+      "accession": "0001871638-26-000063",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1871638/0001871638-26-000063.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI computing",
+          "text": "y Third Quarter 2026 Revenue Update and Full-Year Guidance Update SAN JOSE, Calif. – October 5, 2026 - Blaize Holdings, Inc. (Nasdaq: BZAI; BZAIW) (“Blaize” or the “Company”) , a leader in programmable, energy-efficient AI computing, today announced its preliminary third quarter 2026 revenue. The Company also provided an update regarding its previously issue",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording"
+          ]
+        },
+        {
+          "term": "AI platform",
+          "text": "re be delays in timing or in receiving payments from customers scheduled during the fourth quarter, the Company’s revenue recognition for the year could be adversely affected. About Blaize Blaize delivers a programmable AI platform, purpose-built for AI inference workloads in real-world environments. Its Hybrid AI architecture combines the Blaize GSP (Graph ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "reviewedByHuman": false
+    }
+  ],
+  "checkedAccessions": [
+    "0000006845-26-000100",
+    "0000006845-26-000103",
+    "0000016918-26-000039",
+    "0000093410-26-000192",
+    "0000318833-26-000057",
+    "0000753308-26-000074",
+    "0000772406-26-000045",
+    "0000790816-26-000038",
+    "0000793074-26-000156",
+    "0000828944-26-000031",
+    "0000842517-26-000227",
+    "0000883569-26-000065",
+    "0000927653-26-000253",
+    "0000929351-26-000043",
+    "0000943374-26-000442",
+    "0000947871-26-000922",
+    "0000950103-26-015232",
+    "0000950103-26-015233",
+    "0000950103-26-015281",
+    "0000950103-26-015293",
+    "0000950142-26-002687",
+    "0001023459-26-000092",
+    "0001048477-26-000019",
+    "0001058290-26-000033",
+    "0001062993-26-005191",
+    "0001062993-26-005196",
+    "0001062993-26-005199",
+    "0001079973-26-001322",
+    "0001079973-26-001329",
+    "0001104659-26-113851",
+    "0001104659-26-113853",
+    "0001104659-26-113883",
+    "0001104659-26-113895",
+    "0001104659-26-113896",
+    "0001104659-26-113897",
+    "0001104659-26-113898",
+    "0001104659-26-113899",
+    "0001104659-26-113904",
+    "0001104659-26-113907",
+    "0001104659-26-113909",
+    "0001104659-26-113910",
+    "0001104659-26-113913",
+    "0001104659-26-113963",
+    "0001104659-26-113975",
+    "0001104659-26-114035",
+    "0001104659-26-114041",
+    "0001104659-26-114042",
+    "0001104659-26-114046",
+    "0001104659-26-114051",
+    "0001104659-26-114056",
+    "0001104659-26-114073",
+    "0001104659-26-114079",
+    "0001104659-26-114091",
+    "0001104659-26-114113",
+    "0001104659-26-114118",
+    "0001104659-26-114127",
+    "0001140361-26-038710",
+    "0001140361-26-038728",
+    "0001140361-26-038800",
+    "0001140361-26-038812",
+    "0001140361-26-038814",
+    "0001140361-26-038818",
+    "0001140361-26-038819",
+    "0001140361-26-038822",
+    "0001171843-26-006429",
+    "0001171843-26-006433",
+    "0001171843-26-006434",
+    "0001171843-26-006436",
+    "0001171843-26-006438",
+    "0001171843-26-006439",
+    "0001171843-26-006440",
+    "0001171843-26-006446",
+    "0001171843-26-006451",
+    "0001171843-26-006458",
+    "0001171843-26-006459",
+    "0001171843-26-006460",
+    "0001171843-26-006461",
+    "0001171843-26-006465",
+    "0001171843-26-006469",
+    "0001171843-26-006470",
+    "0001171843-26-006471",
+    "0001178913-26-004712",
+    "0001178913-26-004716",
+    "0001178913-26-004718",
+    "0001178913-26-004720",
+    "0001178913-26-004722",
+    "0001178913-26-004724",
+    "0001185185-26-004589",
+    "0001185185-26-004596",
+    "0001185185-26-004599",
+    "0001185185-26-004602",
+    "0001185185-26-004625",
+    "0001193125-26-414757",
+    "0001193125-26-414840",
+    "0001193125-26-414887",
+    "0001193125-26-414888",
+    "0001193125-26-414891",
+    "0001193125-26-414916",
+    "0001193125-26-414949",
+    "0001193125-26-414956",
+    "0001193125-26-414965",
+    "0001193125-26-414991",
+    "0001193125-26-414993",
+    "0001193125-26-415012",
+    "0001193125-26-415015",
+    "0001193125-26-415031",
+    "0001193125-26-415053",
+    "0001193125-26-415055",
+    "0001193125-26-415321",
+    "0001193125-26-415542",
+    "0001193125-26-415543",
+    "0001193125-26-415544",
+    "0001193125-26-415545",
+    "0001193125-26-415547",
+    "0001193125-26-415553",
+    "0001193125-26-415555",
+    "0001193125-26-415558",
+    "0001193125-26-415559",
+    "0001193125-26-415560",
+    "0001193125-26-415565",
+    "0001193125-26-415585",
+    "0001193125-26-415597",
+    "0001193125-26-415617",
+    "0001193125-26-415625",
+    "0001193125-26-415645",
+    "0001193125-26-415679",
+    "0001193125-26-415730",
+    "0001193125-26-415732",
+    "0001193125-26-415780",
+    "0001193125-26-415811",
+    "0001213900-26-106968",
+    "0001213900-26-106979",
+    "0001213900-26-106983",
+    "0001213900-26-106984",
+    "0001213900-26-106986",
+    "0001213900-26-106988",
+    "0001213900-26-106991",
+    "0001213900-26-106997",
+    "0001213900-26-106999",
+    "0001213900-26-107002",
+    "0001213900-26-107012",
+    "0001213900-26-107037",
+    "0001213900-26-107056",
+    "0001213900-26-107187",
+    "0001213900-26-107188",
+    "0001213900-26-107196",
+    "0001213900-26-107197",
+    "0001213900-26-107198",
+    "0001213900-26-107199",
+    "0001213900-26-107204",
+    "0001213900-26-107206",
+    "0001213900-26-107208",
+    "0001213900-26-107212",
+    "0001213900-26-107213",
+    "0001213900-26-107214",
+    "0001213900-26-107223",
+    "0001213900-26-107225",
+    "0001213900-26-107238",
+    "0001213900-26-107239",
+    "0001213900-26-107243",
+    "0001213900-26-107244",
+    "0001213900-26-107254",
+    "0001213900-26-107259",
+    "0001213900-26-107282",
+    "0001213900-26-107289",
+    "0001213900-26-107305",
+    "0001213900-26-107308",
+    "0001217160-26-000078",
+    "0001232384-26-000053",
+    "0001279569-26-000950",
+    "0001279569-26-000952",
+    "0001292814-26-004856",
+    "0001292814-26-004858",
+    "0001336706-26-000070",
+    "0001376474-26-000629",
+    "0001437749-26-032054",
+    "0001437749-26-032094",
+    "0001437749-26-032097",
+    "0001437749-26-032098",
+    "0001437749-26-032105",
+    "0001437749-26-032107",
+    "0001437749-26-032108",
+    "0001437749-26-032125",
+    "0001437749-26-032139",
+    "0001437749-26-032174",
+    "0001437749-26-032175",
+    "0001437749-26-032177",
+    "0001437749-26-032179",
+    "0001437749-26-032180",
+    "0001437749-26-032200",
+    "0001437749-26-032237",
+    "0001437749-26-032242",
+    "0001476765-26-000072",
+    "0001477932-26-006060",
+    "0001477932-26-006061",
+    "0001487918-26-000087",
+    "0001493152-26-045816",
+    "0001493152-26-045823",
+    "0001493152-26-045828",
+    "0001493152-26-045836",
+    "0001493152-26-045840",
+    "0001493152-26-045844",
+    "0001493152-26-045846",
+    "0001493152-26-045847",
+    "0001493152-26-045859",
+    "0001493152-26-045860",
+    "0001493152-26-045861",
+    "0001493152-26-045865",
+    "0001493152-26-045866",
+    "0001493152-26-045867",
+    "0001493152-26-045868",
+    "0001493152-26-045870",
+    "0001493152-26-045874",
+    "0001493152-26-045876",
+    "0001493152-26-045877",
+    "0001493152-26-045884",
+    "0001493152-26-045885",
+    "0001493152-26-045896",
+    "0001493152-26-045910",
+    "0001493152-26-045933",
+    "0001493152-26-045939",
+    "0001493152-26-045941",
+    "0001493152-26-045942",
+    "0001493152-26-045946",
+    "0001493152-26-045952",
+    "0001493152-26-045955",
+    "0001493152-26-045959",
+    "0001493152-26-045960",
+    "0001493152-26-045978",
+    "0001493152-26-045992",
+    "0001493152-26-045994",
+    "0001493152-26-046010",
+    "0001493152-26-046023",
+    "0001493152-26-046025",
+    "0001516912-26-000052",
+    "0001520138-26-000410",
+    "0001520138-26-000411",
+    "0001527541-26-000370",
+    "0001527541-26-000381",
+    "0001535929-26-000176",
+    "0001538263-26-000113",
+    "0001546066-26-000074",
+    "0001554855-26-002074",
+    "0001564708-26-000216",
+    "0001575872-26-000675",
+    "0001589526-26-000053",
+    "0001616533-26-000046",
+    "0001628280-26-065077",
+    "0001628280-26-065214",
+    "0001628280-26-065221",
+    "0001628280-26-065232",
+    "0001628280-26-065243",
+    "0001628280-26-065252",
+    "0001628280-26-065254",
+    "0001637459-26-000067",
+    "0001641489-26-000032",
+    "0001651717-26-000026",
+    "0001654954-26-008805",
+    "0001654954-26-008808",
+    "0001654954-26-008811",
+    "0001654954-26-008813",
+    "0001654954-26-008816",
+    "0001660280-26-000042",
+    "0001677703-26-000123",
+    "0001679273-26-000051",
+    "0001679273-26-000052",
+    "0001679273-26-000053",
+    "0001683168-26-007632",
+    "0001683168-26-007633",
+    "0001683168-26-007636",
+    "0001683168-26-007653",
+    "0001683168-26-007657",
+    "0001683168-26-007665",
+    "0001713683-26-000200",
+    "0001731122-26-001320",
+    "0001731122-26-001321",
+    "0001756770-26-000126",
+    "0001764046-26-000117",
+    "0001801661-26-000112",
+    "0001823878-26-000065",
+    "0001829126-26-010813",
+    "0001829126-26-010815",
+    "0001829126-26-010817",
+    "0001829126-26-010821",
+    "0001835856-26-000066",
+    "0001871509-26-000061",
+    "0001871638-26-000063",
+    "0001929980-26-000539",
+    "0001960262-26-000006",
+    "0001978867-26-000119",
+    "0000015847-26-000051",
+    "0000016918-26-000040",
+    "0000025445-26-000041",
+    "0000040729-26-000021",
+    "0000046765-26-000055",
+    "0000094845-26-000047",
+    "0000094845-26-000048",
+    "0000355948-26-000017",
+    "0000723254-26-000047",
+    "0000731012-26-000052",
+    "0000771992-26-000069",
+    "0000771992-26-000071",
+    "0000885725-26-000064",
+    "0000894627-26-000054",
+    "0000909832-26-000093",
+    "0000919574-26-006733",
+    "0000919574-26-006740",
+    "0000931427-26-000012",
+    "0000950103-26-015298",
+    "0000950142-26-002694",
+    "0000950157-26-001079",
+    "0000950157-26-001081",
+    "0001001614-26-000053",
+    "0001043337-26-000087",
+    "0001062993-26-005201",
+    "0001062993-26-005208",
+    "0001062993-26-005221",
+    "0001062993-26-005226",
+    "0001084765-26-000078",
+    "0001084765-26-000080",
+    "0001091818-26-000150",
+    "0001104659-26-114156",
+    "0001104659-26-114157",
+    "0001104659-26-114158",
+    "0001104659-26-114169",
+    "0001104659-26-114177",
+    "0001104659-26-114183",
+    "0001104659-26-114188",
+    "0001104659-26-114191",
+    "0001104659-26-114193",
+    "0001104659-26-114201",
+    "0001104659-26-114202",
+    "0001104659-26-114207",
+    "0001104659-26-114214",
+    "0001104659-26-114224",
+    "0001104659-26-114243",
+    "0001104659-26-114293",
+    "0001104659-26-114302",
+    "0001104659-26-114342",
+    "0001104659-26-114347",
+    "0001104659-26-114353",
+    "0001104659-26-114359",
+    "0001104659-26-114364",
+    "0001104659-26-114373",
+    "0001104659-26-114374",
+    "0001104659-26-114376",
+    "0001104659-26-114381",
+    "0001104659-26-114388",
+    "0001104659-26-114390",
+    "0001140361-26-038917",
+    "0001140361-26-038926",
+    "0001140361-26-038928",
+    "0001144879-26-000057",
+    "0001144879-26-000059",
+    "0001171843-26-006475",
+    "0001171843-26-006477",
+    "0001171843-26-006479",
+    "0001171843-26-006482",
+    "0001171843-26-006483",
+    "0001171843-26-006484",
+    "0001171843-26-006488",
+    "0001171843-26-006489",
+    "0001171843-26-006499",
+    "0001171843-26-006500",
+    "0001171843-26-006504",
+    "0001174947-26-000912",
+    "0001178913-26-004726",
+    "0001178913-26-004729",
+    "0001178913-26-004730",
+    "0001178913-26-004732",
+    "0001185185-26-004631",
+    "0001185185-26-004634",
+    "0001193125-26-416002",
+    "0001193125-26-416054",
+    "0001193125-26-416130",
+    "0001193125-26-416163",
+    "0001193125-26-416173",
+    "0001193125-26-416247",
+    "0001193125-26-416251",
+    "0001193125-26-416454",
+    "0001193125-26-416952",
+    "0001193125-26-416954",
+    "0001193125-26-416964",
+    "0001193125-26-416977",
+    "0001193125-26-416987",
+    "0001193125-26-417007",
+    "0001193125-26-417011",
+    "0001193125-26-417038",
+    "0001193125-26-417059",
+    "0001193125-26-417062",
+    "0001193125-26-417064",
+    "0001193125-26-417083",
+    "0001193125-26-417085",
+    "0001205613-26-000072",
+    "0001213900-26-107329",
+    "0001213900-26-107360",
+    "0001213900-26-107369",
+    "0001213900-26-107372",
+    "0001213900-26-107391",
+    "0001213900-26-107400",
+    "0001213900-26-107402",
+    "0001213900-26-107409",
+    "0001213900-26-107410",
+    "0001213900-26-107411",
+    "0001213900-26-107414",
+    "0001213900-26-107421",
+    "0001213900-26-107423",
+    "0001213900-26-107425",
+    "0001213900-26-107432",
+    "0001213900-26-107433",
+    "0001213900-26-107434",
+    "0001213900-26-107436",
+    "0001213900-26-107442",
+    "0001213900-26-107531",
+    "0001213900-26-107541",
+    "0001213900-26-107570",
+    "0001213900-26-107571",
+    "0001213900-26-107573",
+    "0001213900-26-107574",
+    "0001213900-26-107578",
+    "0001213900-26-107579",
+    "0001213900-26-107580",
+    "0001213900-26-107581",
+    "0001213900-26-107591",
+    "0001213900-26-107603",
+    "0001213900-26-107608",
+    "0001213900-26-107610",
+    "0001214659-26-012609",
+    "0001279569-26-000955",
+    "0001279569-26-000957",
+    "0001279569-26-000958",
+    "0001289877-26-000034",
+    "0001292814-26-004860",
+    "0001292814-26-004862",
+    "0001376474-26-000630",
+    "0001397187-26-000131",
+    "0001432364-26-000032",
+    "0001434265-26-000134",
+    "0001437749-26-032255",
+    "0001437749-26-032264",
+    "0001437749-26-032265",
+    "0001437749-26-032268",
+    "0001437749-26-032270",
+    "0001437749-26-032271",
+    "0001477932-26-006073",
+    "0001477932-26-006075",
+    "0001477932-26-006091",
+    "0001477932-26-006099",
+    "0001493152-26-046028",
+    "0001493152-26-046030",
+    "0001493152-26-046036",
+    "0001493152-26-046056",
+    "0001493152-26-046060",
+    "0001493152-26-046080",
+    "0001493152-26-046085",
+    "0001493152-26-046086",
+    "0001493152-26-046088",
+    "0001493152-26-046089",
+    "0001493152-26-046090",
+    "0001493152-26-046091",
+    "0001493152-26-046092",
+    "0001493152-26-046094",
+    "0001493152-26-046096",
+    "0001493152-26-046120",
+    "0001493152-26-046126",
+    "0001493152-26-046130",
+    "0001493152-26-046135",
+    "0001493152-26-046136",
+    "0001493152-26-046138",
+    "0001493152-26-046140",
+    "0001493152-26-046143",
+    "0001493152-26-046154",
+    "0001493152-26-046165",
+    "0001493152-26-046169",
+    "0001493152-26-046176",
+    "0001529274-26-000056",
+    "0001564708-26-000217",
+    "0001575872-26-000677",
+    "0001575872-26-000679",
+    "0001628280-26-065281",
+    "0001628280-26-065287",
+    "0001628280-26-065291",
+    "0001628280-26-065292",
+    "0001628280-26-065295",
+    "0001628280-26-065296",
+    "0001628280-26-065308",
+    "0001628280-26-065337",
+    "0001628280-26-065357",
+    "0001637459-26-000069",
+    "0001640334-26-001635",
+    "0001647088-26-000063",
+    "0001654954-26-008826",
+    "0001654954-26-008829",
+    "0001654954-26-008830",
+    "0001654954-26-008834",
+    "0001666138-26-000037",
+    "0001683168-26-007669",
+    "0001683168-26-007677",
+    "0001683168-26-007679",
+    "0001683168-26-007689",
+    "0001683168-26-007699",
+    "0001753926-26-001913",
+    "0001766478-26-000065",
+    "0001773751-26-000220",
+    "0001803599-26-000155",
+    "0001829126-26-010827",
+    "0001831631-26-000111",
+    "0001836875-26-000084",
+    "0001837671-26-000080",
+    "0001841666-26-000058",
+    "0001874178-26-000061",
+    "0001886190-26-000031",
+    "0001959455-26-000122",
+    "0001968487-26-000032",
+    "0002007855-26-000069",
+    "0002028541-26-000009",
+    "0000004962-26-000376",
+    "0000008947-26-000181",
+    "0000051434-26-000140",
+    "0000077476-26-000048",
+    "0000077476-26-000050",
+    "0000078890-26-000063",
+    "0000103595-26-000018",
+    "0000313143-26-000138",
+    "0000355948-26-000019",
+    "0000708781-26-000033",
+    "0000759944-26-000192",
+    "0000793074-26-000159",
+    "0000795266-26-000071",
+    "0000821189-26-000202",
+    "0000844965-26-000061",
+    "0000916789-26-000137",
+    "0000916789-26-000138",
+    "0000918541-26-000107",
+    "0000919574-26-006762",
+    "0000919574-26-006764",
+    "0000950103-26-015335",
+    "0000950103-26-015392",
+    "0000950142-26-002704",
+    "0000950142-26-002717",
+    "0001021635-26-000031",
+    "0001046179-26-000680",
+    "0001047716-26-000102",
+    "0001062993-26-005236",
+    "0001062993-26-005237",
+    "0001062993-26-005239",
+    "0001071739-26-000186",
+    "0001096906-26-001522",
+    "0001104659-26-114418",
+    "0001104659-26-114456",
+    "0001104659-26-114460",
+    "0001104659-26-114491",
+    "0001104659-26-114494",
+    "0001104659-26-114518",
+    "0001104659-26-114526",
+    "0001104659-26-114544",
+    "0001104659-26-114556",
+    "0001104659-26-114557",
+    "0001104659-26-114562",
+    "0001104659-26-114571",
+    "0001104659-26-114628",
+    "0001104659-26-114654",
+    "0001104659-26-114690",
+    "0001104659-26-114691",
+    "0001104659-26-114695",
+    "0001104659-26-114699",
+    "0001104659-26-114701",
+    "0001104659-26-114714",
+    "0001104659-26-114716",
+    "0001104659-26-114718",
+    "0001104659-26-114724",
+    "0001140361-26-039019",
+    "0001140361-26-039020",
+    "0001140361-26-039024",
+    "0001140361-26-039136",
+    "0001171843-26-006510",
+    "0001171843-26-006524",
+    "0001171843-26-006525",
+    "0001171843-26-006526",
+    "0001171843-26-006527",
+    "0001171843-26-006528",
+    "0001171843-26-006529",
+    "0001171843-26-006530",
+    "0001171843-26-006536",
+    "0001171843-26-006538",
+    "0001171843-26-006540",
+    "0001171843-26-006543",
+    "0001178913-26-004740",
+    "0001178913-26-004746",
+    "0001185185-26-004648",
+    "0001185185-26-004650",
+    "0001185185-26-004666",
+    "0001193125-26-417155",
+    "0001193125-26-417167",
+    "0001193125-26-417188",
+    "0001193125-26-417209",
+    "0001193125-26-417257",
+    "0001193125-26-417352",
+    "0001193125-26-417353",
+    "0001193125-26-417354",
+    "0001193125-26-417358",
+    "0001193125-26-417359",
+    "0001193125-26-417370",
+    "0001193125-26-417384",
+    "0001193125-26-417402",
+    "0001193125-26-417409",
+    "0001193125-26-417413",
+    "0001193125-26-417432",
+    "0001193125-26-417437",
+    "0001193125-26-417468",
+    "0001193125-26-417469",
+    "0001193125-26-417472",
+    "0001193125-26-417473",
+    "0001193125-26-417702",
+    "0001193125-26-417912",
+    "0001193125-26-417915",
+    "0001193125-26-417926",
+    "0001193125-26-417935",
+    "0001193125-26-417937",
+    "0001193125-26-417939",
+    "0001193125-26-417944",
+    "0001193125-26-417979",
+    "0001193125-26-417980",
+    "0001193125-26-418035",
+    "0001193125-26-418053",
+    "0001193125-26-418057",
+    "0001193125-26-418058",
+    "0001193125-26-418064",
+    "0001193125-26-418065",
+    "0001193125-26-418075",
+    "0001193125-26-418076",
+    "0001193125-26-418097",
+    "0001213900-26-107649",
+    "0001213900-26-107704",
+    "0001213900-26-107716",
+    "0001213900-26-107719",
+    "0001213900-26-107723",
+    "0001213900-26-107727",
+    "0001213900-26-107735",
+    "0001213900-26-107737",
+    "0001213900-26-107744",
+    "0001213900-26-107820",
+    "0001213900-26-107822",
+    "0001213900-26-107829",
+    "0001213900-26-107954",
+    "0001213900-26-107955",
+    "0001213900-26-107960",
+    "0001213900-26-107963",
+    "0001213900-26-107967",
+    "0001213900-26-107990",
+    "0001213900-26-108018",
+    "0001213900-26-108072",
+    "0001213900-26-108077",
+    "0001214659-26-012706",
+    "0001214659-26-012713",
+    "0001279569-26-000960",
+    "0001279569-26-000962",
+    "0001292814-26-004866",
+    "0001292814-26-004868",
+    "0001298946-26-000043",
+    "0001332349-26-000068",
+    "0001342874-26-000048",
+    "0001375365-26-000023",
+    "0001376474-26-000634",
+    "0001396440-26-000104",
+    "0001406666-26-000038",
+    "0001437749-26-032352",
+    "0001437749-26-032353",
+    "0001437749-26-032354",
+    "0001437749-26-032361",
+    "0001437749-26-032379",
+    "0001437749-26-032382",
+    "0001493152-26-046187",
+    "0001493152-26-046192",
+    "0001493152-26-046194",
+    "0001493152-26-046205",
+    "0001493152-26-046213",
+    "0001493152-26-046257",
+    "0001493152-26-046260",
+    "0001493152-26-046261",
+    "0001493152-26-046265",
+    "0001493152-26-046266",
+    "0001493152-26-046268",
+    "0001493152-26-046275",
+    "0001493152-26-046278",
+    "0001493152-26-046279",
+    "0001493152-26-046280",
+    "0001493152-26-046290",
+    "0001493152-26-046304",
+    "0001493152-26-046330",
+    "0001493152-26-046334",
+    "0001493152-26-046340",
+    "0001493152-26-046343",
+    "0001493152-26-046344",
+    "0001493152-26-046349",
+    "0001493152-26-046354",
+    "0001493152-26-046357",
+    "0001493152-26-046360",
+    "0001493152-26-046364",
+    "0001501697-26-000081",
+    "0001535778-26-000096",
+    "0001539497-26-002667",
+    "0001539838-26-000177",
+    "0001555280-26-000042",
+    "0001564708-26-000218",
+    "0001574085-26-000151",
+    "0001575872-26-000683",
+    "0001603978-26-000092",
+    "0001628280-26-065374",
+    "0001628280-26-065383",
+    "0001628280-26-065385",
+    "0001628280-26-065400",
+    "0001628280-26-065404",
+    "0001628280-26-065408",
+    "0001628280-26-065410",
+    "0001628280-26-065414",
+    "0001628280-26-065423",
+    "0001628280-26-065453",
+    "0001628280-26-065455",
+    "0001628280-26-065459",
+    "0001628280-26-065460",
+    "0001628280-26-065470",
+    "0001640334-26-001640",
+    "0001650664-26-000093",
+    "0001654954-26-008837",
+    "0001654954-26-008841",
+    "0001654954-26-008852",
+    "0001654954-26-008854",
+    "0001662991-26-000165",
+    "0001663577-26-000326",
+    "0001666138-26-000039",
+    "0001683168-26-007705",
+    "0001683168-26-007709",
+    "0001699350-26-000058",
+    "0001708441-26-000106",
+    "0001723464-26-000058",
+    "0001731122-26-001330",
+    "0001753926-26-001919",
+    "0001802974-26-000046",
+    "0001816431-26-000064",
+    "0001823306-26-000047",
+    "0001829126-26-010878",
+    "0001829126-26-010910",
+    "0001833141-26-000089",
+    "0001842731-26-000047",
+    "0001877787-26-000038",
+    "0001999371-26-022397",
+    "0001999371-26-022487",
+    "0002001557-26-000192",
+    "0002007855-26-000072",
+    "0000006955-26-000050",
+    "0000024090-26-000045",
+    "0000027904-26-000035",
+    "0000027904-26-000038",
+    "0000049071-26-000057",
+    "0000057515-26-000023",
+    "0000072903-26-000175",
+    "0000093389-26-000094",
+    "0000096223-26-000033",
+    "0000723125-26-000023",
+    "0000764180-26-000105",
+    "0000802481-26-000070",
+    "0000807863-26-000038",
+    "0000818479-26-000278",
+    "0000849399-26-000079",
+    "0000858877-26-000156",
+    "0000899923-26-000084",
+    "0000914208-26-000353",
+    "0000919574-26-006773",
+    "0000919574-26-006836",
+    "0000919574-26-006837",
+    "0000950142-26-002721",
+    "0000950157-26-001087",
+    "0001006837-26-000121",
+    "0001062993-26-005250",
+    "0001062993-26-005263",
+    "0001062993-26-005267",
+    "0001079973-26-001337",
+    "0001096906-26-001527",
+    "0001104659-26-114805",
+    "0001104659-26-114830",
+    "0001104659-26-114858",
+    "0001104659-26-114862",
+    "0001104659-26-114863",
+    "0001104659-26-114886",
+    "0001104659-26-115028",
+    "0001104659-26-115030",
+    "0001104659-26-115032",
+    "0001104659-26-115037",
+    "0001104659-26-115043",
+    "0001104659-26-115056",
+    "0001104659-26-115058",
+    "0001104659-26-115059",
+    "0001104659-26-115060",
+    "0001104659-26-115061",
+    "0001104659-26-115067",
+    "0001104659-26-115071",
+    "0001104659-26-115084",
+    "0001104659-26-115108",
+    "0001104659-26-115111",
+    "0001140361-26-039191",
+    "0001140361-26-039199",
+    "0001140361-26-039200",
+    "0001140361-26-039202",
+    "0001140361-26-039203",
+    "0001140361-26-039205",
+    "0001140361-26-039264",
+    "0001140361-26-039271",
+    "0001140361-26-039287",
+    "0001171843-26-006547",
+    "0001171843-26-006551",
+    "0001171843-26-006556",
+    "0001171843-26-006559",
+    "0001171843-26-006561",
+    "0001171843-26-006563",
+    "0001171843-26-006564",
+    "0001171843-26-006565",
+    "0001185185-26-004679",
+    "0001185185-26-004682",
+    "0001193125-26-418405",
+    "0001193125-26-418407",
+    "0001193125-26-418501",
+    "0001193125-26-418538",
+    "0001193125-26-418560",
+    "0001193125-26-418574",
+    "0001193125-26-418579",
+    "0001193125-26-418645",
+    "0001193125-26-418699",
+    "0001193125-26-418789",
+    "0001193125-26-419073",
+    "0001193125-26-419080",
+    "0001193125-26-419084",
+    "0001193125-26-419110",
+    "0001193125-26-419117",
+    "0001193125-26-419118",
+    "0001193125-26-419120",
+    "0001193125-26-419151",
+    "0001193125-26-419154",
+    "0001193125-26-419156",
+    "0001193125-26-419170",
+    "0001193125-26-419174",
+    "0001193125-26-419189",
+    "0001193125-26-419228",
+    "0001193125-26-419229",
+    "0001213900-26-108128",
+    "0001213900-26-108195",
+    "0001213900-26-108211",
+    "0001213900-26-108213",
+    "0001213900-26-108218",
+    "0001213900-26-108219",
+    "0001213900-26-108221",
+    "0001213900-26-108225",
+    "0001213900-26-108232",
+    "0001213900-26-108233",
+    "0001213900-26-108237",
+    "0001213900-26-108255",
+    "0001213900-26-108282",
+    "0001213900-26-108295",
+    "0001213900-26-108296",
+    "0001213900-26-108305",
+    "0001213900-26-108435",
+    "0001213900-26-108455",
+    "0001213900-26-108466",
+    "0001213900-26-108467",
+    "0001213900-26-108468",
+    "0001213900-26-108497",
+    "0001213900-26-108499",
+    "0001213900-26-108501",
+    "0001213900-26-108504",
+    "0001213900-26-108507",
+    "0001213900-26-108511",
+    "0001213900-26-108523",
+    "0001213900-26-108552",
+    "0001213900-26-108556",
+    "0001213900-26-108557",
+    "0001213900-26-108572",
+    "0001213900-26-108575",
+    "0001213900-26-108579",
+    "0001232582-26-000207",
+    "0001279569-26-000964",
+    "0001279569-26-000966",
+    "0001279569-26-000968",
+    "0001292814-26-004874",
+    "0001292814-26-004876",
+    "0001292814-26-004878",
+    "0001292814-26-004882",
+    "0001292814-26-004884",
+    "0001292814-26-004886",
+    "0001292814-26-004888",
+    "0001292814-26-004890",
+    "0001292814-26-004892",
+    "0001292814-26-004896",
+    "0001335258-26-000046",
+    "0001384905-26-000055",
+    "0001437749-26-032387",
+    "0001437749-26-032392",
+    "0001437749-26-032398",
+    "0001437749-26-032400",
+    "0001437749-26-032423",
+    "0001437749-26-032445",
+    "0001437749-26-032446",
+    "0001437749-26-032448",
+    "0001437749-26-032455",
+    "0001437749-26-032456",
+    "0001451505-26-000072",
+    "0001474098-26-000066",
+    "0001477932-26-006138",
+    "0001477932-26-006155",
+    "0001477932-26-006156",
+    "0001477932-26-006158",
+    "0001493152-26-046379",
+    "0001493152-26-046400",
+    "0001493152-26-046405",
+    "0001493152-26-046409",
+    "0001493152-26-046415",
+    "0001493152-26-046424",
+    "0001493152-26-046433",
+    "0001493152-26-046435",
+    "0001493152-26-046440",
+    "0001493152-26-046447",
+    "0001493152-26-046456",
+    "0001493152-26-046462",
+    "0001493152-26-046502",
+    "0001493152-26-046510",
+    "0001493152-26-046512",
+    "0001493152-26-046514",
+    "0001493152-26-046517",
+    "0001493152-26-046519",
+    "0001493152-26-046533",
+    "0001493152-26-046544",
+    "0001493152-26-046545",
+    "0001493152-26-046546",
+    "0001493152-26-046548",
+    "0001493152-26-046565",
+    "0001493152-26-046568",
+    "0001493152-26-046572",
+    "0001493152-26-046575",
+    "0001493152-26-046576",
+    "0001493152-26-046577",
+    "0001493152-26-046580",
+    "0001493152-26-046590",
+    "0001493152-26-046594",
+    "0001493152-26-046595",
+    "0001493152-26-046599",
+    "0001493152-26-046604",
+    "0001493152-26-046619",
+    "0001516912-26-000054",
+    "0001517302-26-000126",
+    "0001554855-26-002088",
+    "0001554855-26-002090",
+    "0001560385-26-000026",
+    "0001564708-26-000219",
+    "0001628280-26-065475",
+    "0001628280-26-065491",
+    "0001628280-26-065496",
+    "0001628280-26-065497",
+    "0001628280-26-065525",
+    "0001628280-26-065536",
+    "0001628280-26-065542",
+    "0001628280-26-065547",
+    "0001628280-26-065552",
+    "0001628280-26-065559",
+    "0001640334-26-001663",
+    "0001640334-26-001665",
+    "0001654954-26-008864",
+    "0001654954-26-008866",
+    "0001654954-26-008869",
+    "0001654954-26-008872",
+    "0001654954-26-008875",
+    "0001683168-26-007728",
+    "0001683168-26-007749",
+    "0001683168-26-007752",
+    "0001683168-26-007758",
+    "0001708599-26-000060",
+    "0001718939-26-000060",
+    "0001728688-26-000048",
+    "0001731122-26-001333",
+    "0001731122-26-001334",
+    "0001781755-26-000058",
+    "0001801170-26-000250",
+    "0001829126-26-010950",
+    "0001829126-26-010988",
+    "0001829126-26-010991",
+    "0001829126-26-010994",
+    "0001829126-26-010995",
+    "0001835856-26-000074",
+    "0001856437-26-000023",
+    "0001940243-26-000024",
+    "0002057463-26-000023"
+  ]
 }

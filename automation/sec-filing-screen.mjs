@@ -169,17 +169,29 @@ export function attachListedIssuer(rows, tickerRows) {
 
 export function parseMasterIndex(text) {
   const rows = String(text ?? '').split(/\r?\n/);
-  const header = rows.findIndex(line => /^CIK\|Company Name\|Form Type\|Date Filed\|Filename$/.test(line.trim()));
+  const header = rows.findIndex(line => /^CIK\|Company Name\|Form Type\|Date Filed\|File ?Name$/i.test(line.trim()));
   if (header < 0) throw new Error('SEC master index header was not found');
   return rows.slice(header + 1).flatMap(line => {
     const parts = line.split('|');
     if (parts.length !== 5) return [];
-    const [cik, company, form, filed, filename] = parts;
-    if (!ELIGIBLE_FORMS.has(form) || !/^\d{4}-\d{2}-\d{2}$/.test(filed) || !filename.startsWith('edgar/data/')) return [];
-    const accession = filename.match(/\/(\d{10,})\//)?.[1];
+    const [cik, company, form, rawFiled, filename] = parts.map(part => part.trim());
+    if (!ELIGIBLE_FORMS.has(form) || !filename.startsWith('edgar/data/')) return [];
+    const filed = /^\d{8}$/.test(rawFiled)
+      ? `${rawFiled.slice(0, 4)}-${rawFiled.slice(4, 6)}-${rawFiled.slice(6, 8)}`
+      : rawFiled;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(filed)) return [];
+    const accessionRaw = filename.match(/(?:^|\/)(\d{10}-\d{2}-\d{6})(?:\.txt)?$/i)?.[1]
+      ?? filename.match(/\/(\d{18})\//)?.[1];
+    const accession = normalizeAccession(accessionRaw);
     if (!accession) return [];
-    return [{ cik: String(cik).padStart(10, '0'), company, form, filed, filename, accession }];
+    return [{ cik: String(cik).replace(/^0+/, '').padStart(10, '0'), company, form, filed, filename, accession }];
   });
+}
+
+function normalizeAccession(value) {
+  const digits = String(value ?? '').replace(/\D/g, '');
+  if (!/^\d{18}$/.test(digits)) return '';
+  return `${digits.slice(0, 10)}-${digits.slice(10, 12)}-${digits.slice(12)}`;
 }
 
 export function relevantDocuments(raw, form) {
@@ -223,6 +235,9 @@ async function secFetch(url, userAgent) {
     });
     if (response.ok) return { status: response.status, body: await response.text() };
     if (response.status === 404) return { status: 404, body: '' };
+    if (response.status === 403 && url.includes('/Archives/edgar/daily-index/')) {
+      return { status: response.status, body: await response.text() };
+    }
     if (![429, 500, 502, 503, 504].includes(response.status)) throw new Error(`SEC request failed (${response.status}) for ${url}`);
     if (attempt === 3) throw new Error(`SEC request exhausted retries (${response.status}) for ${url}`);
     const retryAfter = Number(response.headers.get('retry-after'));
@@ -353,19 +368,26 @@ async function scan(options) {
   if (tickerResponse.status !== 200) throw new Error('SEC ticker and exchange map could not be loaded');
   const tickerRows = parseTickerExchange(JSON.parse(tickerResponse.body));
   const listedCiks = new Set(tickerRows.map(item => item.cik));
-  const seen = new Set(options.feed.checkedAccessions ?? []);
+  const seen = new Set((options.feed.checkedAccessions ?? []).map(normalizeAccession).filter(Boolean));
   const filings = new Map();
+  const unavailableIndexDays = [];
+  let readableIndexDays = 0;
   for (let offset = options.lookbackDays; offset >= 0; offset--) {
     const day = new Date(now);
     day.setUTCDate(day.getUTCDate() - offset);
     const dayText = dateString(day);
     const response = await secFetch(dailyIndexUrl(dayText), userAgent);
-    if (response.status === 404) continue;
+    if (response.status === 404 || response.status === 403 || /<Code>AccessDenied<\/Code>/i.test(response.body)) {
+      unavailableIndexDays.push(dayText);
+      continue;
+    }
+    readableIndexDays++;
     for (const row of parseMasterIndex(response.body)) {
       if (seen.has(row.accession)) continue;
       filings.set(row.accession, row);
     }
   }
+  if (!readableIndexDays) throw new Error('No SEC daily indexes were readable in the scan window; the existing feed was left unchanged.');
 
   const candidates = [];
   const checked = [...seen];
@@ -442,12 +464,14 @@ async function scan(options) {
   }
   const retained = (options.feed.leads ?? []).map(item => {
     const mapped = mappedByCik.get(String(item.cik ?? '').padStart(10, '0'));
-    if (!mapped?.length) return item;
     return {
       ...item,
-      ticker: item.ticker || [...new Set(mapped.map(row => row.ticker))].join(', '),
-      exchange: item.exchange || [...new Set(mapped.map(row => row.exchange).filter(Boolean))].join(', '),
-      mappedCompany: item.mappedCompany || mapped[0].name,
+      accession: normalizeAccession(item.accession) || item.accession,
+      ...(mapped?.length ? {
+        ticker: item.ticker || [...new Set(mapped.map(row => row.ticker))].join(', '),
+        exchange: item.exchange || [...new Set(mapped.map(row => row.exchange).filter(Boolean))].join(', '),
+        mappedCompany: item.mappedCompany || mapped[0].name,
+      } : {}),
     };
   });
   const unique = new Map([...retained, ...candidates].map(item => [item.accession, item]));
@@ -461,6 +485,7 @@ async function scan(options) {
     coverage: 'SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.',
     scanWindowStart: dateString(new Date(now.getTime() - options.lookbackDays * 86400000)),
     scanWindowEnd: dateString(now),
+    unavailableIndexDays,
     sources: ['https://www.sec.gov/Archives/edgar/daily-index/', 'https://data.sec.gov/submissions/', TICKER_EXCHANGE_URL],
     leads,
     checkedAccessions,
@@ -470,7 +495,10 @@ async function scan(options) {
 export function selfTest() {
   const index = 'CIK|Company Name|Form Type|Date Filed|Filename\n--------------------------------------------------------------------------------\n100|Example Corp|8-K|2026-10-11|edgar/data/100/000000010026000123/form8-k.htm\n101|Other|S-1|2026-10-11|edgar/data/101/000000010126000001/s1.htm';
   const parsed = parseMasterIndex(index);
-  if (parsed.length !== 1 || parsed[0].accession !== '000000010026000123') throw new Error('master index parser self-test failed');
+  if (parsed.length !== 1 || parsed[0].accession !== '0000000100-26-000123') throw new Error('legacy master index parser self-test failed');
+  const currentIndex = 'Description: Daily Index of EDGAR Dissemination Feed\nLast Data Received: Oct 9, 2026\n\nCIK|Company Name|Form Type|Date Filed|File Name\n--------------------------------------------------------------------------------\n1000275|ROYAL BANK OF CANADA|6-K|20261009|edgar/data/1000275/0000950103-26-015425.txt';
+  const currentParsed = parseMasterIndex(currentIndex);
+  if (currentParsed.length !== 1 || currentParsed[0].accession !== '0000950103-26-015425' || currentParsed[0].filed !== '2026-10-09') throw new Error('current SEC daily index parser self-test failed');
   const text = plainText('<html><body>Item 5.03 Amendments. The Company changed its name from Old Co to New Co.</body></html>');
   if (!isNameChangeLead(text, '8-K') || isNameChangeLead(text, '10-Q')) throw new Error('name-change screen self-test failed');
   if (isNameChangeLead('Item 5.03. There will be no name change.', '8-K')) throw new Error('negated name-change language self-test failed');
