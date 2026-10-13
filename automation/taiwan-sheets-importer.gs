@@ -18,7 +18,7 @@ const SIGNALS = {
 const RAW_HEADERS = ['Market', 'Data area', 'Endpoint', 'Company code', 'Company name', 'Report period', 'Retrieved at', 'Raw source record', 'Source URL', 'Record signature'];
 const MARGIN_AUDIT_HEADERS = ['Market', 'Company code', 'Company name', 'Report period', 'Source endpoint', 'Retrieved at', 'Source URL', 'Source signature', 'Margin dependency signatures', 'Calculation signature', 'Source basis', 'Revenue reported YTD', 'Gross profit reported YTD', 'Operating income reported YTD', 'Prior-quarter revenue YTD', 'Prior-quarter gross profit YTD', 'Prior-quarter operating income YTD', 'Revenue standalone quarter', 'Gross profit standalone quarter', 'Operating income standalone quarter', 'Gross margin %', 'Operating margin %', 'Gross margin YoY change (pp)', 'Operating margin YoY change (pp)', 'Calculation status', 'Raw source record'];
 const LOG_HEADERS = ['Run time', 'Result', 'Monthly source period', 'Rows received', 'Rows added or revised', 'Raw records added or revised', 'Notes', 'Monthly feed status'];
-const FEED_HEADERS = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL'];
+const FEED_HEADERS = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL', 'English company name or official abbreviation', 'Mandarin pronunciation lookup', 'Revenue prior month', 'Revenue year-ago month', 'Revenue MoM %', 'Revenue YTD', 'Revenue prior-year YTD', 'Revenue YTD growth %'];
 
 function setupTaiwanSignals() {
   const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
@@ -60,6 +60,166 @@ function refreshTaiwanSignals() {
     writeLog_('Failed', reportMonth, received, monthlyAdded, rawAdded, notes.join(' '), sourceStatus.join('; '));
     throw err;
   }
+}
+
+function previewTaiwanMopsHistory() {
+  const reports = fetchTaiwanMopsHistory_();
+  const summary = reports.map(report => ({market: report.market, month: report.month, rows: report.records.length, url: report.url}));
+  console.log(JSON.stringify({result: 'validated preview only', reports: summary, totalRows: reports.reduce((sum, report) => sum + report.records.length, 0)}));
+  return summary;
+}
+
+function importTaiwanMopsHistory() {
+  const started = new Date();
+  const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
+  const sheet = book.getSheetByName(SIGNALS.monthlySheet);
+  if (!sheet) throw new Error('Taiwan Monthly sheet is missing.');
+  const reports = fetchTaiwanMopsHistory_();
+  const existing = sheet.getLastRow() > 4 ? sheet.getRange(5, 1, sheet.getLastRow() - 4, 17).getValues() : [];
+  const seen = new Set();
+  existing.forEach(row => seen.add(mopsHistoryDataKey_(row[0], row[1], row[2], row[4], row.slice(5, 13))));
+  const additions = [];
+  let unchanged = 0;
+  reports.forEach(report => report.records.forEach(record => {
+    const values = [record.current, record.prior, record.yearAgo, record.mom, record.yoy, record.ytd, record.priorYtd, record.ytdGrowth];
+    const key = mopsHistoryDataKey_(report.market, record.code, record.name, record.month, values);
+    if (seen.has(key)) { unchanged += 1; return; }
+    seen.add(key);
+    const raw = {
+      '公司代號': record.code, '公司名稱': record.name, '產業別': record.industry,
+      '資料年月': record.month, '營業收入-當月營收': record.current,
+      '營業收入-上月營收': record.prior, '營業收入-去年當月營收': record.yearAgo,
+      '營業收入-上月比較增減(%)': record.mom, '營業收入-去年同月增減(%)': record.yoy,
+      '累計營業收入-當月累計營收': record.ytd, '累計營業收入-去年累計營收': record.priorYtd,
+      '累計營業收入-前期比較增減(%)': record.ytdGrowth,
+      '來源說明': 'MOPS monthly archive suffix _0, combined domestic and foreign issuer report'
+    };
+    additions.push([report.market, record.code, record.name, record.industry, record.month,
+      record.current, record.prior, record.yearAgo, record.mom, record.yoy,
+      record.ytd, record.priorYtd, record.ytdGrowth, 'TWD thousands, as published', report.url,
+      new Date(), JSON.stringify(raw)]);
+  }));
+  if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
+  rebuildSiteFeed_(book);
+  refreshTaiwanCompanyNames();
+  const totalRows = reports.reduce((sum, report) => sum + report.records.length, 0);
+  const months = [...new Set(reports.map(report => report.month))].sort();
+  writeLog_('MOPS history imported', months.join(', '), totalRows, additions.length, 0,
+    'Four official MOPS report families, combined domestic and foreign populations. Exact economic duplicates were skipped. Runtime seconds: ' + Math.round((new Date() - started) / 1000),
+    reports.map(report => report.market + ' ' + report.month + ': ' + report.records.length + ' rows').join('; '));
+  return {result: 'success', reports: reports.length, received: totalRows, added: additions.length, unchanged, months};
+}
+
+function fetchTaiwanMopsHistory_() {
+  const groups = [
+    {path: 'sii', market: 'Listed (TWSE)', title: /上市公司/},
+    {path: 'otc', market: 'OTC (TPEx)', title: /上櫃公司/},
+    {path: 'rotc', market: 'Emerging (MOPS)', title: /興櫃公司/},
+    {path: 'pub', market: 'Publicly issued (MOPS)', title: /公開發行公司/}
+  ];
+  const months = ['2026-06', '2026-07', '2026-08', '2026-09'];
+  const reports = [];
+  groups.forEach(group => months.forEach(month => {
+    const parts = month.split('-').map(Number);
+    const rocYear = parts[0] - 1911;
+    const monthNumber = parts[1];
+    const url = 'https://mopsov.twse.com.tw/nas/t21/' + group.path + '/t21sc03_' + rocYear + '_' + monthNumber + '_0.html';
+    const response = UrlFetchApp.fetch(url, {muteHttpExceptions: true, followRedirects: true});
+    const status = response.getResponseCode();
+    if (status < 200 || status >= 300) throw new Error('MOPS history request failed with HTTP ' + status + ': ' + url);
+    const html = response.getContentText('Big5');
+    const parsed = parseTaiwanMopsArchive_(html, month, group);
+    if (parsed.records.length < 20) throw new Error('MOPS archive unexpectedly contains only ' + parsed.records.length + ' rows for ' + group.market + ' ' + month + '.');
+    reports.push({market: group.market, month, url, records: parsed.records});
+  }));
+  return reports;
+}
+
+function parseTaiwanMopsArchive_(html, month, group) {
+  const rocYear = Number(month.slice(0, 4)) - 1911;
+  const monthNumber = Number(month.slice(5));
+  const titleText = (html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || html.slice(0, 12000);
+  const title = decodeTaiwanHtml_(titleText);
+  if (!group.title.test(title) || !new RegExp(rocYear + '年\\s*' + monthNumber + '月份?').test(title) || !/營業收入統計表/.test(title)) {
+    throw new Error('MOPS title did not match ' + group.market + ' ' + month + ': ' + title.slice(0, 160));
+  }
+  const tableMatches = [...html.matchAll(/<table\b[^>]*>([\s\S]*?)<\/table\s*>/gi)];
+  const records = new Map();
+  let headerTables = 0;
+  tableMatches.forEach(tableMatch => {
+    const table = tableMatch[1];
+    const rowMatches = [...table.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr\s*>/gi)];
+    let industry = '';
+    let columns = null;
+    rowMatches.forEach(rowMatch => {
+      const cells = [...rowMatch[1].matchAll(/<(td|th)\b[^>]*>([\s\S]*?)<\/\1\s*>/gi)].map(cell => decodeTaiwanHtml_(cell[2]));
+      if (!cells.length) return;
+      const industryText = cells.join(' ');
+      const industryMatch = /產業別\s*[：:]?\s*([^\s　]+)/.exec(industryText);
+      if (industryMatch) industry = industryMatch[1].replace(/單位.*$/, '');
+      if (cells.some(cell => /公司\s*代號|公司代碼/.test(cell)) && cells.some(cell => /公司名稱/.test(cell)) && cells.some(cell => /當月營收/.test(cell))) {
+        columns = {
+          code: cells.findIndex(cell => /公司\s*代號|公司代碼/.test(cell)),
+          name: cells.findIndex(cell => /公司名稱/.test(cell)),
+          current: cells.findIndex(cell => /當月營收/.test(cell)),
+          prior: cells.findIndex(cell => /上月營收/.test(cell)),
+          yearAgo: cells.findIndex(cell => /去年當月營收/.test(cell)),
+          mom: cells.findIndex(cell => /上月比較/.test(cell)),
+          yoy: cells.findIndex(cell => /去年同月/.test(cell)),
+          ytd: cells.findIndex(cell => /當月累計營收/.test(cell)),
+          priorYtd: cells.findIndex(cell => /去年累計營收/.test(cell)),
+          ytdGrowth: cells.findIndex(cell => /前期比較/.test(cell))
+        };
+        headerTables += 1;
+        return;
+      }
+      if (!columns) return;
+      const code = String(cells[columns.code] || '').trim().toUpperCase();
+      if (!/^\d{4,6}$/.test(code)) return;
+      const name = String(cells[columns.name] || '').trim();
+      const current = numberOrBlankTaiwan_(cells[columns.current]);
+      if (!name || current === '') throw new Error('Malformed MOPS company row ' + code + ' in ' + month + '.');
+      const record = {
+        code, name, industry, month, current,
+        prior: numberOrBlankTaiwan_(cells[columns.prior]),
+        yearAgo: numberOrBlankTaiwan_(cells[columns.yearAgo]),
+        mom: numberOrBlankTaiwan_(cells[columns.mom]),
+        yoy: numberOrBlankTaiwan_(cells[columns.yoy]),
+        ytd: numberOrBlankTaiwan_(cells[columns.ytd]),
+        priorYtd: numberOrBlankTaiwan_(cells[columns.priorYtd]),
+        ytdGrowth: numberOrBlankTaiwan_(cells[columns.ytdGrowth])
+      };
+      const previous = records.get(code);
+      if (previous && JSON.stringify(previous) !== JSON.stringify(record)) throw new Error('Conflicting duplicate MOPS issuer row ' + code + ' in ' + month + '.');
+      records.set(code, record);
+    });
+  });
+  if (!headerTables || !records.size) throw new Error('No MOPS company rows found for ' + group.market + ' ' + month + '.');
+  return {title, headerTables, records: [...records.values()]};
+}
+
+function decodeTaiwanHtml_(value) {
+  return String(value || '').replace(/<br\s*\/?\s*>/gi, ' ').replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([\da-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
+    .replace(/[\u00a0\s]+/g, ' ').trim();
+}
+
+function numberOrBlankTaiwan_(value) {
+  const text = decodeTaiwanHtml_(value).replace(/,/g, '').replace(/[％%]/g, '').trim();
+  if (!text || /^[-–—－]+$/.test(text)) return '';
+  const number = Number(text.replace(/^\((.*)\)$/, '-$1'));
+  return Number.isFinite(number) ? number : '';
+}
+
+function mopsHistoryDataKey_(market, code, name, month, values) {
+  return [String(market).trim(), String(code).trim(), normalizeIssuerName_(name), normalizeMonthlyPeriod_(month)]
+    .concat(values.map((value, index) => {
+      if (value === '' || value == null) return '';
+      const number = Number(value);
+      return String([3, 4, 7].includes(index) ? Math.round(number * 100) / 100 : number);
+    })).join('|');
 }
 
 function fetchMonthlyRows_() {
@@ -146,6 +306,7 @@ function appendMonthlyRevisions_(sheet, rows) {
 function rebuildSiteFeed_(book) {
   const monthly = book.getSheetByName(SIGNALS.monthlySheet);
   const feed = book.getSheetByName(SIGNALS.feedSheet);
+  if (feed.getMaxColumns && feed.getMaxColumns() < FEED_HEADERS.length) feed.insertColumnsAfter(feed.getMaxColumns(), FEED_HEADERS.length - feed.getMaxColumns());
   const values = monthly.getLastRow() > 4 ? monthly.getRange(5, 1, monthly.getLastRow() - 4, 17).getValues() : [];
   // Keep the source partitions separate unless code and normalized company name
   // agree. The public-issued feed overlaps listed markets, but a code alone is
@@ -162,9 +323,12 @@ function rebuildSiteFeed_(book) {
   values.forEach(row => {
     const normalizedRow = row.slice();
     normalizedRow[0] = normalizeMonthlyMarket_(row[0]);
+    // Sheets coerces the YYYY-MM period into a date cell. Convert it back to
+    // a stable month key before de-duplication and continuity calculations.
+    normalizedRow[4] = normalizeMonthlyPeriod_(row[4]);
     const market = String(normalizedRow[0] || '').trim();
     const code = String(row[1] || '').trim();
-    const period = String(row[4] || '').trim();
+    const period = String(normalizedRow[4] || '').trim();
     if (!code || !period) return;
     const nameVariants = namesByCode.get(code) || new Set();
     const mergeVerified = nameVariants.size === 1;
@@ -205,7 +369,7 @@ function rebuildSiteFeed_(book) {
       margin.matched === false ? 'Quarterly issuer name did not match monthly feed; margin series left blank' : '',
       margin.status
     ].filter(Boolean).join('; ');
-    output.push([current[0], issuerKey, current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14]]);
+    output.push([current[0], issuerKey, current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14], '', '', number_(current[6]), number_(current[7]), number_(current[8]), number_(current[10]), number_(current[11]), number_(current[12])]);
   });
   output.sort((a, b) => (Number(b[7]) || -Infinity) - (Number(a[7]) || -Infinity));
   if (feed.getLastRow() > 4) feed.getRange(5, 1, feed.getLastRow() - 4, FEED_HEADERS.length).clearContent();
@@ -506,6 +670,18 @@ function reportPeriod_(value) {
   return m ? m[1] + '-' + m[2] : s;
 }
 
+function normalizeMonthlyPeriod_(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]' && Number.isFinite(value.getTime())) {
+    return value.getFullYear() + '-' + String(value.getMonth() + 1).padStart(2, '0');
+  }
+  // The Sheets API can expose a date as its serial number instead of a Date.
+  if (typeof value === 'number' && Number.isFinite(value) && value > 20000 && value < 100000) {
+    const date = new Date(Math.round((value - 25569) * 86400000));
+    return date.getUTCFullYear() + '-' + String(date.getUTCMonth() + 1).padStart(2, '0');
+  }
+  return reportPeriod_(value);
+}
+
 function quarterPeriod_(record) {
   const yearText = textField_(record || {}, ['年度', '報告年度', 'FiscalYear', 'Year']);
   const quarterText = textField_(record || {}, ['季別', '季度', 'Quarter', 'FiscalQuarter']);
@@ -523,8 +699,8 @@ function quarterIndex_(period) {
 }
 
 function monthDistance_(a, b) {
-  const pa = String(a).match(/^(\d{4})-(\d{2})$/);
-  const pb = String(b).match(/^(\d{4})-(\d{2})$/);
+  const pa = normalizeMonthlyPeriod_(a).match(/^(\d{4})-(\d{2})$/);
+  const pb = normalizeMonthlyPeriod_(b).match(/^(\d{4})-(\d{2})$/);
   if (!pa || !pb) return NaN;
   return (Number(pb[1]) * 12 + Number(pb[2])) - (Number(pa[1]) * 12 + Number(pa[2]));
 }
@@ -535,4 +711,56 @@ function normalizeKey_(key) {
 
 function parseJson_(value) {
   try { return JSON.parse(String(value || '{}')); } catch (err) { return {}; }
+}
+
+function refreshTaiwanCompanyNames() {
+  const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
+  const feed = book.getSheetByName(SIGNALS.feedSheet);
+  if (!feed || feed.getLastRow() < 5) throw new Error('SiteFeed has no issuer rows to enrich.');
+  const sources = [
+    {market: 'Listed (TWSE)', urls: ['https://openapi.twse.com.tw/v1/opendata/t187ap03_L']},
+    {market: 'OTC (TPEx)', urls: ['https://mopsfin.twse.com.tw/opendata/t187ap03_O.csv']},
+    {market: 'Emerging (MOPS)', urls: ['https://mopsfin.twse.com.tw/opendata/t187ap03_R.csv']},
+    {market: 'Publicly issued (MOPS)', urls: ['https://mopsfin.twse.com.tw/opendata/t187ap03_P.csv']}
+  ];
+  const byMarket = new Map();
+  const byCode = new Map();
+  const notes = [];
+  let profileRows = 0;
+  sources.forEach(source => {
+    let records = [];
+    for (const url of source.urls) {
+      try { records = fetchRecords_(url); break; }
+      catch (err) { notes.push(source.market + ' profile feed: ' + String(err && err.message || err)); }
+    }
+    profileRows += records.length;
+    records.forEach(record => {
+      const code = textField_(record, ['公司代號', '公司代碼', '股票代號', '證券代號', 'CompanyCode', 'SecuritiesCompanyCode']);
+      const english = textField_(record, ['公司英文名稱', '公司英文簡稱', '英文公司名稱', '英文簡稱', '英文名稱', '公司英文縮寫', 'CompanyEnglishName', 'EnglishCompanyName', 'CompanyNameEnglish', 'EnglishAbbreviation']);
+      if (!code || !english) return;
+      byMarket.set(source.market + '|' + code, english);
+      if (!byCode.has(code)) byCode.set(code, new Set());
+      byCode.get(code).add(english);
+    });
+  });
+  const last = feed.getLastRow();
+  if (feed.getMaxColumns() < 27) feed.insertColumnsAfter(feed.getMaxColumns(), 27 - feed.getMaxColumns());
+  feed.getRange(4, 26, 1, 2).setValues([['English company name or official abbreviation', 'Mandarin pronunciation lookup']]);
+  feed.getRange(4, 26, 1, 2).setFontWeight('bold').setBackground('#DDE8F4').setWrap(true);
+  const rows = feed.getRange(5, 1, last - 4, 4).getDisplayValues();
+  const output = rows.map(row => {
+    const market = String(row[0] || '').trim();
+    const code = String(row[2] || '').trim();
+    const chinese = String(row[3] || '').trim();
+    let english = byMarket.get(market + '|' + code) || '';
+    if (!english && byCode.get(code) && byCode.get(code).size === 1) english = [...byCode.get(code)][0];
+    const pronunciation = chinese ? 'https://translate.google.com/?sl=zh-TW&tl=en&text=' + encodeURIComponent(chinese) + '&op=translate' : '';
+    return [english, pronunciation];
+  });
+  if (output.length) feed.getRange(5, 26, output.length, 2).setValues(output);
+  const matched = output.filter(row => row[0]).length;
+  const triggerExists = ScriptApp.getProjectTriggers().some(t => t.getHandlerFunction() === 'refreshTaiwanCompanyNames');
+  if (!triggerExists) ScriptApp.newTrigger('refreshTaiwanCompanyNames').timeBased().everyDays(1).atHour(8).inTimezone('America/New_York').create();
+  writeLog_('Names refreshed', '', profileRows, matched, 0, notes.join(' '), 'English names matched ' + matched + ' of ' + output.length + ' SiteFeed issuers; pronunciation links added for Chinese names. Profile feeds used: ' + sources.map(s => s.market).join(', '));
+  return {profileRows, matched, issuers: output.length, notes};
 }

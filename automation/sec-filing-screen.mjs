@@ -13,11 +13,14 @@ const ELIGIBLE_FORMS = new Set(['8-K', '10-K', '10-Q', '6-K', '20-F']);
 const AI_PATTERNS = [
   /\bartificial intelligence\b/gi,
   /\bgenerative\s+AI\b/gi,
+  /\bmachine learning\b/gi,
   /\bAI[- ](?:powered|enabled|driven|based|infrastructure|computing|data cent(?:er|re)s?)\b/gi,
+  /\bAI[- ](?:focused|oriented|related|adjacent|native|first)\b/gi,
   /\bAI\s+(?:platform|business|products?|services?|strategy|operations?|segment|solutions?|systems?|models?|technology|investment|opportunity|initiative|division|focus|roadmap|contract|revenue|customers?)\b/gi,
   /\blarge language models?\b/gi,
 ];
-const NAME_CHANGE = /\b(?:changed|change)\s+(?:its\s+)?(?:corporate\s+)?name\s+(?:from\s+.{1,140}?\s+)?to\s+.{1,140}|\bname change\b|\bchange of name\b/gi;
+const NAME_CHANGE = /\b(?:changed|change|changing|changes)\s+(?:(?:its|the company's|the issuer's)\s+)?(?:corporate\s+)?name\s+(?:from\s+.{1,140}?\s+)?to\s+.{1,140}|\bname change\b|\bchange of name\b|\b(?:renamed|re-named)\s+(?:itself\s+)?(?:as|to)\b/gi;
+const NAME_CHANGE_EXPLICIT = /\b(?:name change|change of name|changed\s+(?:(?:its|the company's|the issuer's)\s+)?(?:corporate\s+)?name|renamed\s+(?:itself\s+)?(?:as|to))\b/i;
 const OPERATIONAL_CONTEXT = /\b(?:customer|commercial|revenue|product|service|business|segment|launch|contract|facility|data cent(?:er|re)|compute|GPU|operations?|strategy|plan|license|licen[cs]e|acquisition|manufactur|deploy|capital|financ)\w*\b/i;
 const RISK_HEADING = /\b(?:risk factors|risks related to|forward-looking statements|cautionary statement)\b/i;
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
@@ -116,16 +119,20 @@ export function novelAiEvidence(currentHits, priorHits) {
 }
 
 export function isNameChangeLead(text, form) {
-  if (form !== '8-K') return false;
+  if (!['8-K', '6-K'].includes(form)) return false;
   const normalized = String(text ?? '').replace(/\s+/g, ' ');
-  const hasItem503 = /item\s+5\.03\b/i.test(normalized);
+  const hasItem503 = form === '8-K' && /item\s+5\.03\b/i.test(normalized);
   NAME_CHANGE.lastIndex = 0;
   const positive = normalized
     .replace(/\b(?:no|not|never|did not|does not|has not|will not|hasn't|didn't|doesn't|won't)\s+(?:change|changed|changing)\s+(?:its\s+)?(?:corporate\s+)?name\b/gi, ' ')
     .replace(/\bno\s+(?:corporate\s+)?name\s+change\b/gi, ' ');
   NAME_CHANGE.lastIndex = 0;
   const hasNameLanguage = NAME_CHANGE.test(positive);
-  return hasItem503 && hasNameLanguage;
+  // Domestic issuers normally identify name changes under Form 8-K Item 5.03.
+  // Foreign private issuers report on Form 6-K and do not use that item number,
+  // so require explicit name-change wording; submissions history later verifies
+  // the actual old/new names and an effective date near the filing.
+  return hasNameLanguage && (hasItem503 || (form === '6-K' && NAME_CHANGE_EXPLICIT.test(positive)));
 }
 
 export function parseTickerExchange(payload) {
@@ -307,7 +314,24 @@ function snippets(hits, max = 3) {
     if (seen.has(compact)) return false;
     seen.add(compact);
     return true;
-  }).slice(0, max).map(hit => ({ term: hit.term, text: hit.context.slice(0, 360), documentType: hit.documentType ?? null }));
+  }).slice(0, max).map(hit => ({
+    term: hit.term,
+    text: hit.context.slice(0, 360),
+    documentType: hit.documentType ?? null,
+    reviewCues: reviewCues(hit.sentence ?? hit.context),
+  }));
+}
+
+/** Filing-word cues for triage only. They do not establish the AI business has these attributes. */
+export function reviewCues(text) {
+  const source = String(text ?? '');
+  const cues = [];
+  if (/\b(?:revenue|sales|gross profit|gross margin|operating income|segment results)\b/i.test(source)) cues.push('financial-results wording');
+  if (/\b(?:customer|contract|agreement|purchase order|bookings|backlog|offtake)\b/i.test(source)) cues.push('customer or contract wording');
+  if (/\b(?:facility|data cent(?:er|re)|construction|commission(?:ed|ing)?|capacity|MW|GPU|deployed|production)\b/i.test(source)) cues.push('asset, capacity, or deployment wording');
+  if (/\b(?:financing|funding|capital raise|offering|dilution|shares|cash burn|liquidity)\b/i.test(source)) cues.push('funding or dilution wording');
+  if (/\b(?:may|might|could|expect(?:s|ed|ing)?|plans?|planned|intends?|intended|propos(?:e|es|ed|ing)|seek(?:s|ing)?|potential|subject to)\b/i.test(source)) cues.push('forward-looking wording');
+  return cues;
 }
 
 async function previousSameForm(row, userAgent, cache) {
@@ -401,6 +425,7 @@ async function scan(options) {
       accession: row.accession,
       filingUrl: filingUrl(row.filename),
       leadType: nameLead && aiLabel ? 'name-change-and-ai-language' : nameLead ? 'possible-name-change' : 'ai-language-change',
+      reviewStatus: 'automated lead; human review required',
       label: [nameLead ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName} (history date ${legalNameChange.effectiveDate}); Form 8-K Item 5.03 name-change wording corroborates it. Review the filing.` : '', aiLabel].filter(Boolean).join(' '),
       legalNameChange,
       nameChangeTextCorroborated: nameLead,

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { analyzeText, aiDeltaLabel, attachListedIssuer, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, parseTickerExchange, selfTest } from '../automation/sec-filing-screen.mjs';
+import { analyzeText, aiDeltaLabel, attachListedIssuer, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, parseTickerExchange, reviewCues, selfTest } from '../automation/sec-filing-screen.mjs';
 
 const moduleSource = await readFile(new URL('../public/ai-pivot-watch.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
@@ -32,6 +32,14 @@ assert.match(moduleSource, /repository Actions secret SEC_USER_AGENT/);
 selfTest();
 assert.equal(isNameChangeLead('Item 5.03. The company changed its corporate name from Old Co to New Co.', '8-K'), true);
 assert.equal(isNameChangeLead('Item 5.03. No name change occurred.', '8-K'), false);
+assert.equal(isNameChangeLead('The issuer changed its name from Old Holdings Limited to New AI Holdings Limited.', '6-K'), true, 'explicit 6-K name-change language is eligible for submissions-history verification');
+assert.equal(isNameChangeLead('Item 5.03. The company adopted a new strategy.', '6-K'), false, '6-K requires explicit name-change wording');
+assert.equal(isNameChangeLead('The issuer plans to change its name next year.', '6-K'), false, 'planned name changes do not count as completed name changes');
+assert.equal(isNameChangeLead('The issuer changed its name from Old Inc. to New Inc.', '20-F'), false, 'annual reports do not independently trigger name-change candidates');
+assert.deepEqual(reviewCues('AI data center capacity for customers under a proposed contract, with expected revenue and financing.'), [
+  'financial-results wording', 'customer or contract wording', 'asset, capacity, or deployment wording', 'funding or dilution wording', 'forward-looking wording'
+]);
+assert.ok(analyzeText('The company sells machine learning services to enterprise customers.').length, 'machine-learning business wording should be screened');
 const verifiedNameChange = legalNameChangeFromSubmissions(formerNamesFixture, '2026-10-10', '123');
 assert.deepEqual(verifiedNameChange, {
   oldName: 'Beta Manufacturing Inc.',
@@ -40,6 +48,8 @@ assert.deepEqual(verifiedNameChange, {
   source: 'SEC submissions formerNames history and current name',
   sourceUrl: 'https://data.sec.gov/submissions/CIK0000000123.json'
 });
+assert.ok(isNameChangeLead('The issuer changed its name from Beta Manufacturing Inc. to Current AI Systems Inc.', '6-K') && verifiedNameChange, '6-K wording is only eligible when the SEC submissions history independently confirms the transition');
+assert.equal(legalNameChangeFromSubmissions({name: 'Unrelated Current Inc.', formerNames: []}, '2026-10-10', '123'), null, '6-K text without a matching SEC name history cannot confirm a transition');
 assert.equal(legalNameChangeFromSubmissions(formerNamesFixture, '2026-07-01', '123'), null, 'stale SEC name transitions should not be assigned to a recent filing');
 assert.equal(legalNameChangeFromSubmissions(formerNamesFixture, '2026-11-15', '123')?.effectiveDate, '2026-10-01', 'a transition exactly 45 days before filing remains in scope');
 assert.equal(legalNameChangeFromSubmissions(formerNamesFixture, '2026-11-16', '123'), null, 'a transition 46 days before filing is outside the matching window');

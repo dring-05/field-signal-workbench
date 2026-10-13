@@ -29,3 +29,11 @@ The automated legal-name screen now requires a recent transition in the SEC subm
 OpenDART and Brazil CVM adapters are local, manual tools, not live feeds. Their current tests use synthetic or reconstructed fixtures; do not treat those tests as validation against a live exchange archive. The CVM adapter now sorts by filing delivery date before applying the document cap so an archive's physical order cannot silently select older documents.
 
 Sources: [SEC API documentation](https://www.sec.gov/search-filings/edgar-application-programming-interfaces), [SEC full-text search FAQ](https://www.sec.gov/edgar/search/efts-faq.html), [SEC fair-access guidance](https://www.sec.gov/about/developer-resources).
+
+## Follow-up code audit · 13 October 2026
+
+The SEC scanner previously required 8-K Item 5.03 for every legal-name lead. It now also accepts explicit name-change wording in a 6-K, then requires the same independent SEC submissions-history match and effective-date proximity before retaining the lead. This matters for foreign private issuers reporting through 6-K. Tests cover positive and negative 6-K cases and confirm that filing text alone does not establish a name transition.
+
+The phrase list now includes “machine learning” and common AI positioning terms. Matched snippets can show nearby text cues for financial results, customers or contracts, assets/capacity/deployment, funding/dilution, and forward-looking language. These cues are only words near a keyword hit. They are not extracted financial facts and do not establish that AI caused the revenue, contract, facility, or financing mentioned in the same excerpt.
+
+Coverage remains partial. The scheduled feed still scans only SEC filers mapped by the SEC company-ticker-exchange association file. OpenDART Korea and Brazil CVM are separate local/manual adapters, not a combined live international database. The public SEC feed currently has no successful scan timestamp until the GitHub Actions `SEC_USER_AGENT` secret is configured and the job completes. Offline tests do not verify live provider connectivity or filing coverage.

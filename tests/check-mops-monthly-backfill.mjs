@@ -5,7 +5,7 @@ import path from 'node:path';
 import {ATTRIBUTION, backfillOptionsFromCli, parseMonthlyReport, reportUrl, runBackfill} from '../automation/mops-monthly-backfill.mjs';
 
 assert.deepEqual(backfillOptionsFromCli({from:'2026-07',to:'2026-09',out:'/tmp/history'}), {
-  from:'2026-07',to:'2026-09',outDir:'/tmp/history',markets:['sii','otc','rotc','pub'],issuerTypes:['0','1'],
+  from:'2026-07',to:'2026-09',outDir:'/tmp/history',markets:['sii','otc','rotc','pub'],issuerTypes:['0'],
   maxRequests:8,delayMs:3000,retries:3,recheckCompleted:false
 }, 'CLI defaults must cover every MOPS report family and domestic/foreign issuer population');
 
@@ -16,7 +16,7 @@ assert.match(parsed.title, /114年9月份/);
 assert.equal(parsed.records.length, 2, 'aggregate rows must not become company rows');
 assert.deepEqual(parsed.records.map(row => row.companyCode), ['1101', '1102']);
 assert.deepEqual(parsed.records[0], {
-  market: 'sii', issuerType: 'domestic', companyCode: '1101', companyName: '台泥', industry: '水泥工業',
+  market: 'sii', issuerType: 'combined', companyCode: '1101', companyName: '台泥', industry: '水泥工業',
   reportMonth: '2025-09', revenue: 13306676, priorMonthRevenue: 12214776, yearAgoRevenue: 13325249,
   monthChangePct: 8.93, yearChangePct: -0.13, ytdRevenue: 109438297, priorYearYtdRevenue: 105591346,
   ytdChangePct: 3.64, notes: '', currency: 'TWD', unit: 'thousand',
@@ -29,11 +29,12 @@ assert.deepEqual(parsed.records[0], {
 assert.equal(parsed.records[1].yearChangePct, -1.66);
 const titleWithoutHeading = fixture.replace(/<title>[\s\S]*?<\/title>/i, '').replace(/<h1>[\s\S]*?<\/h1>/i, '<div>上市公司114年9月份(累計與當月)營業收入統計表</div><p>本資料由各公司提供</p>');
 assert.equal(parseMonthlyReport(titleWithoutHeading, {reportMonth: '2025-09', market: 'sii', issuerType: '0'}).records.length, 2);
-assert.equal(reportUrl('otc', '2024-01', '1'), 'https://mopsov.twse.com.tw/nas/t21/otc/t21sc03_113_1_1.html');
+assert.equal(reportUrl('otc', '2024-01', '0'), 'https://mopsov.twse.com.tw/nas/t21/otc/t21sc03_113_1_0.html');
 assert.throws(() => parseMonthlyReport(fixture, {reportMonth: '2025-08', market: 'sii', issuerType: '0'}), /does not match/);
 assert.throws(() => parseMonthlyReport('<html><title>上市公司114年9月份</title><table><tr><td>not a report</td></tr></table></html>', {reportMonth: '2025-09', market: 'sii', issuerType: '0'}), /No valid company rows/);
 assert.equal(reportUrl('rotc', '2025-09', '0'), 'https://mopsov.twse.com.tw/nas/t21/rotc/t21sc03_114_9_0.html');
-assert.equal(reportUrl('pub', '2025-09', '1'), 'https://mopsov.twse.com.tw/nas/t21/pub/t21sc03_114_9_1.html');
+assert.equal(reportUrl('pub', '2025-09', '0'), 'https://mopsov.twse.com.tw/nas/t21/pub/t21sc03_114_9_0.html');
+assert.throws(() => reportUrl('sii', '2025-09', '1'), /Unsupported issuer type/);
 for (const [market, label] of [['otc', '上櫃公司'], ['rotc', '興櫃公司'], ['pub', '公開發行公司']]) {
   const familyFixture = fixture.replaceAll('上市公司', label);
   assert.equal(parseMonthlyReport(familyFixture, {reportMonth:'2025-09',market,issuerType:'0'}).records.length, 2, `${market} report family title and rows should parse`);

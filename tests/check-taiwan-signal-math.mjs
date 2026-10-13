@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const source = await readFile(new URL('../automation/taiwan-sheets-importer.gs', import.meta.url), 'utf8');
 const context = {};
-vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, marginDependencySignatures_, issuerIdentityKey_, monthlyMarketPriority_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, writeLog_};`, context, {timeout: 1000});
+vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, marginDependencySignatures_, issuerIdentityKey_, monthlyMarketPriority_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, normalizeMonthlyPeriod_, monthDistance_, mopsHistoryDataKey_, writeLog_};`, context, {timeout: 1000});
 const h = context.helpers;
 assert.equal(h.feedHeaders[1], 'Issuer series key');
 assert.equal(h.issuerIdentityKey_('2330', '台積電股份有限公司'), h.issuerIdentityKey_('2330', '台積電 股份有限公司'), 'identity matching should normalize spacing without dropping issuer-name evidence');
@@ -17,6 +17,10 @@ assert.deepEqual(Array.from(h.signals.monthlySources, source => [source.market, 
 ]);
 assert.equal(h.monthlyMarketPriority_('Emerging (MOPS)'), 2);
 assert.equal(h.monthlyMarketPriority_('Publicly issued (MOPS)'), 3);
+assert.equal(h.normalizeMonthlyPeriod_(46174), '2026-06', 'Google Sheets date serials must normalize to report months');
+assert.equal(h.normalizeMonthlyPeriod_(new Date(2026, 5, 1)), '2026-06', 'Date values from Sheets must normalize to report months');
+assert.equal(h.monthDistance_(46174, 46266), 3, 'serial dates must preserve monthly continuity');
+assert.equal(h.mopsHistoryDataKey_('Listed (TWSE)', '2330', '台積電', 46266, [100, 90, 80, 10.1234, 5.6789, 500, 450, 11.2345]), h.mopsHistoryDataKey_('Listed (TWSE)', '2330', '台積電', '2026-09', [100, 90, 80, 10.12, 5.68, 500, 450, 11.23]), 'archive and API snapshots should deduplicate rounded percentages and Sheet date cells');
 
 const fetchCalls = [];
 const fetchContext = {
@@ -109,7 +113,8 @@ assert.equal(h.differencesForQuarterSeries_(shortSeries, shortYoy).d3, '');
 const monthRows = ['2026-06', '2026-07', '2026-08', '2026-09'].map((period, i) => {
   const row = Array(17).fill('');
   row[0] = 'Taiwan public issuers'; row[1] = '1234'; row[2] = 'Example Co.'; row[3] = 'General'; row[4] = period;
-  row[5] = 100 + i; row[9] = [10, 12, 16, 22][i]; row[14] = 'https://example.test/monthly'; row[16] = '{}';
+  row[5] = 100 + i; row[6] = 90 + i; row[7] = 80 + i; row[8] = 10; row[9] = [10, 12, 16, 22][i];
+  row[10] = 1000 + i; row[11] = 900 + i; row[12] = 11.1; row[14] = 'https://example.test/monthly'; row[16] = '{}';
   return row;
 });
 let generated = [];
@@ -121,10 +126,27 @@ const feedSheet = {getLastRow: () => 4, getRange: () => ({setValues: rows => {ge
 const book = {getSheetByName: name => ({'Taiwan Monthly': monthlySheet, 'Raw Statements': rawSheet, SiteFeed: feedSheet, 'Margin Signals': marginAuditSheet}[name])};
 h.rebuildSiteFeed_(book);
 assert.equal(generated.length, 1);
-assert.equal(generated[0].length, 25);
+assert.equal(generated[0].length, 33);
 assert.deepEqual(Array.from(generated[0].slice(8, 11)), [6, 2, 0]);
+assert.deepEqual(Array.from(generated[0].slice(27, 33)), [93, 83, 10, 1003, 903, 11.1], 'the public feed should carry the reported monthly and YTD revenue comparison bases');
 assert.match(generated[0][23], /Revenue Δ3 available/);
 assert.equal(generated[0][1], 'TW|1234|exampleco');
+
+// Sheets returns a real Date for date-formatted YYYY-MM cells. The actual
+// Taiwan workbook stores month cells that way, so test the full feed path.
+const dateBackfillRows = monthRows.map((row, i) => {
+  const copy = row.slice();
+  copy[4] = new Date(2026, 5 + i, 1);
+  return copy;
+});
+let dateBackfillGenerated = [];
+const dateBackfillSheet = {getLastRow: () => 4 + dateBackfillRows.length, getRange: () => ({getValues: () => dateBackfillRows})};
+const dateBackfillFeed = {getLastRow: () => 4, getRange: () => ({setValues: rows => {dateBackfillGenerated = rows}})};
+const dateBackfillBook = {getSheetByName: name => ({'Taiwan Monthly': dateBackfillSheet, 'Raw Statements': rawSheet, SiteFeed: dateBackfillFeed, 'Margin Signals': marginAuditSheet}[name])};
+h.rebuildSiteFeed_(dateBackfillBook);
+assert.equal(dateBackfillGenerated[0][5], '2026-09', 'the public feed should use a stable YYYY-MM period');
+assert.equal(dateBackfillGenerated[0][11], 4, 'date-formatted Sheet rows should produce four contiguous monthly observations');
+assert.deepEqual(Array.from(dateBackfillGenerated[0].slice(8, 11)), [6, 2, 0]);
 
 const multiMarketMonthlyRows = [];
 for (const [market, yields, name] of [['Listed (TWSE)', [1, 2, 4, 7], 'Example Co.'], ['OTC (TPEx)', [10, 14, 19, 25], 'Other Issuer Ltd.'], ['Publicly issued (MOPS)', [20, 30, 40, 50], 'Example Co.']]) {

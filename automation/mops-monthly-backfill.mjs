@@ -32,7 +32,9 @@ const MONTH_HEADERS = [
 
 const MARKET_PATH = Object.freeze({sii: 'sii', otc: 'otc', rotc: 'rotc', pub: 'pub'});
 const MARKET_LABEL = Object.freeze({sii: /上市/, otc: /上櫃|櫃買/, rotc: /興櫃/, pub: /公開發行/});
-const ISSUER_TYPE = Object.freeze({0: 'domestic', 1: 'foreign'});
+// MOPS suffix _0 is the combined report, including domestic and foreign issuers.
+// Suffix _1 is not a separate foreign-only population.
+const ISSUER_TYPE = Object.freeze({0: 'combined'});
 
 function sha256(buffer) {
   return createHash('sha256').update(buffer).digest('hex');
@@ -251,7 +253,7 @@ export function backfillOptionsFromCli(options) {
     to: options.to,
     outDir: options.out,
     markets: options.markets ? options.markets.split(',') : ['sii', 'otc', 'rotc', 'pub'],
-    issuerTypes: options['issuer-types'] ? options['issuer-types'].split(',') : ['0', '1'],
+    issuerTypes: options['issuer-types'] ? options['issuer-types'].split(',') : ['0'],
     maxRequests: options['max-requests'] ? Number(options['max-requests']) : 8,
     delayMs: options['delay-ms'] ? Number(options['delay-ms']) : 3000,
     retries: options.retries ? Number(options.retries) : 3,
@@ -339,7 +341,7 @@ async function fetchWithRetry(url, {retries, fetchImpl, onAttempt}) {
 }
 
 export async function runBackfill({
-  from, to, outDir, markets = ['sii', 'otc', 'rotc', 'pub'], issuerTypes = ['0', '1'], maxRequests = 8,
+  from, to, outDir, markets = ['sii', 'otc', 'rotc', 'pub'], issuerTypes = ['0'], maxRequests = 8,
   delayMs = 3000, retries = 3, recheckCompleted = false,
   fetchImpl = globalThis.fetch, sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 }) {
@@ -419,7 +421,7 @@ export const HELP = `Usage: node automation/mops-monthly-backfill.mjs --from YYY
 
 Options:
   --markets sii,otc,rotc,pub Official MOPS report families, default all four
-  --issuer-types 0,1         0 domestic, 1 foreign, default both populations
+  --issuer-types 0           MOPS combined domestic and foreign report, default 0
   --max-requests N           Per-run request cap, default 8, maximum 200
   --delay-ms N               Minimum serial delay between requests, default 3000
   --retries N                Bounded transient retries, default 3, maximum 5
