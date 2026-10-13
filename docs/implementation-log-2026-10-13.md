@@ -48,3 +48,11 @@ Full verification: every `tests/check-*.mjs` passed, as did `node --check` for t
 - Fixed Taiwan margin attachment when the monthly company name differs from MOPS quarterly statements. Code-only matching is permitted only if the quarterly records contain a single distinct issuer identity for that code. A regression test covers the unique-code case.
 - Verified the private SiteFeed currently includes September 2026 and showed four consecutive monthly observations for sampled September rows. The public feed remains restricted, so the site has not been verified against this current Sheet data.
 - Checks: `node tests/check-ai-pivot-watch.mjs`, `node automation/sec-filing-screen.mjs --self-test`, `node tests/check-taiwan-signal-math.mjs`, `node tests/check-mops-monthly-backfill.mjs`, and `git diff --check`.
+
+## Taiwan public-feed schema audit
+
+- A full read of the private SiteFeed found 2,587 September 2026 issuer series. Of these, 2,461 have four consecutive monthly observations, enough for the revenue-growth Δ1 to Δ3 calculations. All gross and operating margin fields are blank; margin growth is not currently available.
+- The sheet's row 4 had only 27 headers although each data row has 33 fields. The six revenue comparison values in columns AB to AG therefore had no field names for the website to read. The checked-in `rebuildSiteFeed_()` now writes all 33 `FEED_HEADERS` on every rebuild, with a regression test.
+- This code fix has not been copied into the live Apps Script. Its current editor and execution history do not match the checked-in source, so the live project needs a source reconciliation before editing.
+- The personal-Gmail destination exists but is private and empty. The connected Sheets account is Columbia and receives a 403 when reading it. The site's current anonymous fetch fails, so the Taiwan data is not live on the public dashboard yet.
+- The workbook contains only a current quarterly snapshot for margins. Margin trends require a historical quarterly filing backfill with adjacent YTD periods and prior-year quarters. Do not label margins available until those source rows are present and the series is matched safely.

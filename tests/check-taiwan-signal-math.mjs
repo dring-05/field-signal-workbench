@@ -126,13 +126,15 @@ const monthRows = ['2026-06', '2026-07', '2026-08', '2026-09'].map((period, i) =
   return row;
 });
 let generated = [];
+let generatedHeaders = [];
 const monthlySheet = {getLastRow: () => 8, getRange: () => ({getValues: () => monthRows})};
 const rawSheet = {getLastRow: () => 4};
 const marginAuditRows = [];
 const marginAuditSheet = {getLastRow: () => 4, getRange: () => ({getDisplayValues: () => [], setValues: rows => marginAuditRows.push(...rows)})};
-const feedSheet = {getLastRow: () => 4, getRange: () => ({setValues: rows => {generated = rows}})};
+const feedSheet = {getLastRow: () => 4, getRange: (row) => ({setValues: rows => {if (row === 4) generatedHeaders = rows[0]; else generated = rows}})};
 const book = {getSheetByName: name => ({'Taiwan Monthly': monthlySheet, 'Raw Statements': rawSheet, SiteFeed: feedSheet, 'Margin Signals': marginAuditSheet}[name])};
 h.rebuildSiteFeed_(book);
+assert.deepEqual(Array.from(generatedHeaders), Array.from(h.feedHeaders), 'every feed rebuild must write the complete 33-column header, including revenue comparison fields');
 assert.equal(generated.length, 1);
 assert.equal(generated[0].length, 33);
 assert.deepEqual(Array.from(generated[0].slice(8, 11)), [6, 2, 0]);

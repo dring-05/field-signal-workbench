@@ -309,6 +309,11 @@ function rebuildSiteFeed_(book) {
   const monthly = book.getSheetByName(SIGNALS.monthlySheet);
   const feed = book.getSheetByName(SIGNALS.feedSheet);
   if (feed.getMaxColumns && feed.getMaxColumns() < FEED_HEADERS.length) feed.insertColumnsAfter(feed.getMaxColumns(), FEED_HEADERS.length - feed.getMaxColumns());
+  // Keep the public schema in sync with the row builder. Older sheets may have
+  // stopped at 27 headers even though the revenue comparison fields were added
+  // later. Refreshing the header on every rebuild makes those fields addressable
+  // by name for both the CSV export and the dashboard.
+  feed.getRange(4, 1, 1, FEED_HEADERS.length).setValues([FEED_HEADERS]);
   const values = monthly.getLastRow() > 4 ? monthly.getRange(5, 1, monthly.getLastRow() - 4, 17).getValues() : [];
   // Keep the source partitions separate unless code and normalized company name
   // agree. The public-issued feed overlaps listed markets, but a code alone is
