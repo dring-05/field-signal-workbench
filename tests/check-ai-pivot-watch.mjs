@@ -19,6 +19,20 @@ assert.match(app, /p==='ai-watch'\?window\.AIPivotWatch\.render\(\)/);
 for (const term of ['Rocket One', 'Smartbird', 'BluSky AI', 'Greater Bay Area AI Computing Tech', 'AIB Data Centers']) {
   assert.ok(rendered.includes(term), `Missing AI pivot case: ${term}`);
 }
+for (const [market, url] of [
+  ['United Kingdom', 'https://developer.company-information.service.gov.uk/overview/'],
+  ['Hong Kong', 'https://www.hkex.com.hk/eng/market/sec_tradinfo/tradarng/etatgem.htm'],
+  ['Taiwan', 'https://mops.twse.com.tw/'],
+  ['South Korea', 'https://engopendart.fss.or.kr/'],
+  ['Japan', 'https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/WEEK0060.html'],
+  ['India', 'https://www.nseindia.com/companies-listing/corporate-filings-announcements'],
+  ['Canada', 'https://systems.securities-administrators.ca/onlinehelp/general-help/getting-started/general-public-access/'],
+  ['Australia', 'https://www.asx.com.au/asx/v2/statistics/announcements.do']
+]) {
+  assert.ok(rendered.includes(market), `Missing international source market: ${market}`);
+  assert.ok(rendered.includes(url), `Missing official source link for ${market}`);
+}
+assert.match(rendered, /Only the SEC is automated here/);
 for (const href of [
   'https://www.sec.gov/Archives/edgar/data/1711786/000121390026090048/ea0300119-10q_rocket.htm',
   'https://www.sec.gov/Archives/edgar/data/1653909/000143774926028446/bird20260630_10q.htm',
