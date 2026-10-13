@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const source = await readFile(new URL('../automation/taiwan-sheets-importer.gs', import.meta.url), 'utf8');
 const context = {};
-vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, marginDependencySignatures_, issuerIdentityKey_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, writeLog_};`, context, {timeout: 1000});
+vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, marginDependencySignatures_, issuerIdentityKey_, monthlyMarketPriority_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, writeLog_};`, context, {timeout: 1000});
 const h = context.helpers;
 assert.equal(h.feedHeaders[1], 'Issuer series key');
 assert.equal(h.issuerIdentityKey_('2330', '台積電股份有限公司'), h.issuerIdentityKey_('2330', '台積電 股份有限公司'), 'identity matching should normalize spacing without dropping issuer-name evidence');
@@ -12,8 +12,11 @@ assert.equal(h.issuerIdentityKey_('2330', '台積電股份有限公司'), h.issu
 assert.deepEqual(Array.from(h.signals.monthlySources, source => [source.market, source.endpoint, source.csvUrl]), [
   ['Listed (TWSE)', 't187ap05_L', 'https://mopsfin.twse.com.tw/opendata/t187ap05_L.csv'],
   ['OTC (TPEx)', 't187ap05_O', 'https://mopsfin.twse.com.tw/opendata/t187ap05_O.csv'],
+  ['Emerging (MOPS)', 't187ap05_R', 'https://mopsfin.twse.com.tw/opendata/t187ap05_R.csv'],
   ['Publicly issued (MOPS)', 't187ap05_P', 'https://mopsfin.twse.com.tw/opendata/t187ap05_P.csv']
 ]);
+assert.equal(h.monthlyMarketPriority_('Emerging (MOPS)'), 2);
+assert.equal(h.monthlyMarketPriority_('Publicly issued (MOPS)'), 3);
 
 const fetchCalls = [];
 const fetchContext = {
@@ -23,6 +26,8 @@ const fetchContext = {
       'https://openapi.twse.com.tw/v1/opendata/t187ap05_L': '[{"公司代號":"2330"}]',
       'https://openapi.twse.com.tw/v1/opendata/t187ap05_O': '503',
       'https://mopsfin.twse.com.tw/opendata/t187ap05_O.csv': '公司代號,公司名稱\n6488,環球晶',
+      'https://openapi.twse.com.tw/v1/opendata/t187ap05_R': '503',
+      'https://mopsfin.twse.com.tw/opendata/t187ap05_R.csv': '公司代號,公司名稱\n5274,信驊',
       'https://openapi.twse.com.tw/v1/opendata/t187ap05_P': '503',
       'https://mopsfin.twse.com.tw/opendata/t187ap05_P.csv': '503'
     };
@@ -35,12 +40,13 @@ const fetchContext = {
 context.UrlFetchApp = fetchContext.UrlFetchApp;
 context.Utilities = fetchContext.Utilities;
 const multiSource = h.fetchMonthlyRows_();
-assert.equal(fetchCalls.length, 5, 'each source should try the API and only failed APIs should use the CSV fallback');
-assert.deepEqual(Array.from(multiSource.records, row => row.market), ['Listed (TWSE)', 'OTC (TPEx)']);
+assert.equal(fetchCalls.length, 7, 'each source should try the API and only failed APIs should use the CSV fallback');
+assert.deepEqual(Array.from(multiSource.records, row => row.market), ['Listed (TWSE)', 'OTC (TPEx)', 'Emerging (MOPS)']);
 assert.equal(multiSource.records[1].url, 'https://mopsfin.twse.com.tw/opendata/t187ap05_O.csv');
-assert.deepEqual(Array.from(multiSource.sources, row => row.status), ['success', 'success', 'failed']);
-assert.equal(multiSource.sources[2].rows, 0);
-assert.match(multiSource.sources[2].error, /API: HTTP 503.*CSV: HTTP 503/);
+assert.equal(multiSource.records[2].url, 'https://mopsfin.twse.com.tw/opendata/t187ap05_R.csv');
+assert.deepEqual(Array.from(multiSource.sources, row => row.status), ['success', 'success', 'success', 'failed']);
+assert.equal(multiSource.sources[3].rows, 0);
+assert.match(multiSource.sources[3].error, /API: HTTP 503.*CSV: HTTP 503/);
 assert.equal(h.normalizeMonthly_(multiSource.records[0].record, multiSource.records[0].url, multiSource.records[0].market).market, 'Listed (TWSE)');
 assert.equal(h.normalizeMonthlyMarket_('Taiwan public issuers'), 'Publicly issued (MOPS)', 'legacy rows from the P feed should retain a continuous history under its explicit source label');
 const legacyRaw = JSON.stringify({公司代號: '2330', 資料年月: '11509'});
@@ -53,9 +59,9 @@ assert.equal(h.appendMonthlyRevisions_(legacyAppendSheet, [legacyNormalized]), 0
 assert.equal(legacyAppendRows.length, 0);
 let provenanceRows = [];
 const provenanceSheet = {getLastRow: () => 4, getRange: () => ({setValues: rows => {provenanceRows = rows;}})};
-const provenanceInputs = ['Listed (TWSE)', 'OTC (TPEx)', 'Publicly issued (MOPS)'].map((market, i) => h.normalizeMonthly_({公司代號: '2330', 公司名稱: 'Example Co.', 資料年月: '11509', '營業收入-當月營收': 100 + i}, `https://example.test/${market}`, market));
-assert.equal(h.appendMonthlyRevisions_(provenanceSheet, provenanceInputs), 3, 'retain each original feed record and its source market in the append-only table');
-assert.deepEqual(Array.from(provenanceRows, row => row[0]), ['Listed (TWSE)', 'OTC (TPEx)', 'Publicly issued (MOPS)']);
+const provenanceInputs = ['Listed (TWSE)', 'OTC (TPEx)', 'Emerging (MOPS)', 'Publicly issued (MOPS)'].map((market, i) => h.normalizeMonthly_({公司代號: '2330', 公司名稱: 'Example Co.', 資料年月: '11509', '營業收入-當月營收': 100 + i}, `https://example.test/${market}`, market));
+assert.equal(h.appendMonthlyRevisions_(provenanceSheet, provenanceInputs), 4, 'retain each original feed record and its source market in the append-only table');
+assert.deepEqual(Array.from(provenanceRows, row => row[0]), ['Listed (TWSE)', 'OTC (TPEx)', 'Emerging (MOPS)', 'Publicly issued (MOPS)']);
 
 const allFailedContext = {
   UrlFetchApp: {fetch: () => ({getResponseCode: () => 503, getContentText: () => 'unavailable'})},
@@ -65,7 +71,7 @@ context.UrlFetchApp = allFailedContext.UrlFetchApp;
 context.Utilities = allFailedContext.Utilities;
 const allFailed = h.fetchMonthlyRows_();
 assert.equal(allFailed.records.length, 0);
-assert.deepEqual(Array.from(allFailed.sources, row => row.status), ['failed', 'failed', 'failed']);
+assert.deepEqual(Array.from(allFailed.sources, row => row.status), ['failed', 'failed', 'failed', 'failed']);
 
 let loggedRow = null;
 const logRange = {

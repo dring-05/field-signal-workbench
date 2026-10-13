@@ -3,6 +3,7 @@ const SIGNALS = {
   monthlySources: [
     {market: 'Listed (TWSE)', endpoint: 't187ap05_L', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_L.csv'},
     {market: 'OTC (TPEx)', endpoint: 't187ap05_O', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_O.csv'},
+    {market: 'Emerging (MOPS)', endpoint: 't187ap05_R', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_R.csv'},
     {market: 'Publicly issued (MOPS)', endpoint: 't187ap05_P', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_P.csv'}
   ],
   sourceBase: 'https://openapi.twse.com.tw/v1/opendata/',
@@ -214,8 +215,9 @@ function rebuildSiteFeed_(book) {
 function monthlyMarketPriority_(market) {
   if (market === 'Listed (TWSE)') return 0;
   if (market === 'OTC (TPEx)') return 1;
-  if (market === 'Publicly issued (MOPS)') return 2;
-  return 3;
+  if (market === 'Emerging (MOPS)') return 2;
+  if (market === 'Publicly issued (MOPS)') return 3;
+  return 4;
 }
 
 function emptyMarginSignals_() {

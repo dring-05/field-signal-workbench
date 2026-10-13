@@ -4,7 +4,7 @@
 
 ## What it imports
 
-- Four official monthly revenue feeds: listed companies (TWSE, `t187ap05_L`), OTC companies (TPEx, `t187ap05_O`), emerging companies (MOPS, `t187ap05_R`), and publicly issued companies (MOPS, `t187ap05_P`). These are reporting issuer populations, not every private company in Taiwan. Each snapshot feed is fetched separately and records its source market.
+- Four official monthly revenue feeds: listed companies (TWSE, `t187ap05_L`), OTC companies (TPEx, `t187ap05_O`), emerging companies (MOPS, `t187ap05_R`), and publicly issued companies (MOPS, `t187ap05_P`). These are reporting issuer populations, not every private company in Taiwan. Each snapshot feed is fetched separately and records its source market; each OpenAPI request falls back to its dataset CSV when the API route is unavailable.
 - Public-issuer quarterly income-statement and balance-sheet feeds split by industry.
 - The public-issuer director and supervisor ownership feed.
 - Full source records, report periods, retrieval times, endpoint names, and source links in `Raw Statements`.
