@@ -285,7 +285,9 @@ function appendMonthlyRevisions_(sheet, rows) {
   existing.forEach(row => {
     const market = normalizeMonthlyMarket_(row[0]);
     const code = String(row[1]);
-    const period = String(row[4]);
+    // Google Sheets stores YYYY-MM values as date serials. Normalize the
+    // stored value before comparing it with the API's normalized YYYY-MM.
+    const period = normalizeMonthlyPeriod_(row[4]);
     const raw = String(row[16]);
     signatures.add(market + '|' + code + '|' + period + '|' + raw);
     // Before source-market labels were added, the append-only signature omitted market.

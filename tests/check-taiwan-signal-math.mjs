@@ -61,6 +61,14 @@ const legacyAppendSheet = {getLastRow: () => 5, getRange: () => ({getValues: () 
 const legacyNormalized = h.normalizeMonthly_(JSON.parse(legacyRaw), 'https://openapi.twse.com.tw/v1/opendata/t187ap05_P', 'Publicly issued (MOPS)');
 assert.equal(h.appendMonthlyRevisions_(legacyAppendSheet, [legacyNormalized]), 0, 'same P-feed snapshot should not be re-appended under its normalized label');
 assert.equal(legacyAppendRows.length, 0);
+
+const repeatedSnapshot = {公司代號: '2330', 公司名稱: '台積電', 產業別: '半導體業', 資料年月: '11509', '營業收入-當月營收': '100', '營業收入-去年同月增減(%)': '20'};
+const repeatedNormalized = h.normalizeMonthly_(repeatedSnapshot, 'https://example.test/monthly', 'Listed (TWSE)');
+const repeatedSheetRow = ['Listed (TWSE)', '2330', '台積電', '半導體業', new Date(2026, 8, 1), 100, '', '', '', 20, '', '', '', 'TWD thousands', 'https://example.test/monthly', new Date(), JSON.stringify(repeatedSnapshot)];
+let repeatedAppendRows = [];
+const repeatedAppendSheet = {getLastRow: () => 5, getRange: () => ({getValues: () => [repeatedSheetRow], setValues: rows => {repeatedAppendRows = rows;}})};
+assert.equal(h.appendMonthlyRevisions_(repeatedAppendSheet, [repeatedNormalized]), 0, 'same monthly source record must deduplicate when the stored report month is a Sheets Date');
+assert.equal(repeatedAppendRows.length, 0);
 let provenanceRows = [];
 const provenanceSheet = {getLastRow: () => 4, getRange: () => ({setValues: rows => {provenanceRows = rows;}})};
 const provenanceInputs = ['Listed (TWSE)', 'OTC (TPEx)', 'Emerging (MOPS)', 'Publicly issued (MOPS)'].map((market, i) => h.normalizeMonthly_({公司代號: '2330', 公司名稱: 'Example Co.', 資料年月: '11509', '營業收入-當月營收': 100 + i}, `https://example.test/${market}`, market));
