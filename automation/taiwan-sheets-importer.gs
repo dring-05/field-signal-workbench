@@ -359,7 +359,9 @@ function rebuildSiteFeed_(book) {
     const y = history.map(r => number_(r[9]));
     const continuous = contiguousMonths_(periods, index);
     const diffs = finiteDifferencesAtEnd_(y, continuous);
-    const margin = marginMap.get(issuerIdentityKey_(current[1], current[2])) || emptyMarginSignals_();
+    // Prefer the exact name match. The code-only fallback is populated only
+    // when the quarterly source has one verified issuer identity for that code.
+    const margin = marginMap.get(issuerIdentityKey_(current[1], current[2])) || marginMap.get(String(current[1])) || emptyMarginSignals_();
     if (/金融|保險|證券|期貨|金控|financial|insurance|securities|bank/i.test(String(current[3] || ''))) {
       margin.gross = ''; margin.grossYoY = ''; margin.grossD1 = ''; margin.grossD2 = ''; margin.grossD3 = '';
       margin.operating = ''; margin.operatingYoY = ''; margin.operatingD1 = ''; margin.operatingD2 = ''; margin.operatingD3 = '';

@@ -208,6 +208,23 @@ assert.equal(marginAuditRows[1][17], 130, 'Q2 standalone revenue must be Q2 YTD 
 assert.equal(marginAuditRows[3][17], 190, 'Q4 standalone revenue must be annual YTD less Q3 YTD');
 assert.match(marginAuditRows[3][24], /cumulative YTD/i);
 
+const differentlyNamedMonthlyRows = [Array(17).fill('')];
+differentlyNamedMonthlyRows[0][0] = 'Listed (TWSE)';
+differentlyNamedMonthlyRows[0][1] = '2330';
+differentlyNamedMonthlyRows[0][2] = 'TSMC';
+differentlyNamedMonthlyRows[0][3] = 'Semiconductors';
+differentlyNamedMonthlyRows[0][4] = '2026-09';
+differentlyNamedMonthlyRows[0][5] = 100;
+differentlyNamedMonthlyRows[0][9] = 10;
+differentlyNamedMonthlyRows[0][14] = 'https://example.test/monthly';
+let matchedNameVariantOutput = [];
+const differentlyNamedMonthlySheet = {getLastRow: () => 5, getRange: () => ({getValues: () => differentlyNamedMonthlyRows})};
+const matchedNameVariantFeed = {getLastRow: () => 4, getRange: () => ({setValues: rows => {matchedNameVariantOutput = rows}})};
+const nameVariantBook = {getSheetByName: name => ({'Taiwan Monthly': differentlyNamedMonthlySheet, 'Raw Statements': statementSheet, SiteFeed: matchedNameVariantFeed, 'Margin Signals': marginAuditSheet}[name])};
+h.rebuildSiteFeed_(nameVariantBook);
+assert.ok(Math.abs(matchedNameVariantOutput[0][12] - derivedMargins.gross) < 1e-9, 'a unique issuer code must connect quarterly margins when monthly and quarterly provider names differ');
+assert.ok(!/name did not match/.test(matchedNameVariantOutput[0][23]), 'a unique-code match should not be labeled as an unresolved name mismatch');
+
 const missingPriorRows = statementRows.filter(row => row[5] !== '2024-Q1');
 const missingPriorSheet = {getLastRow: () => 4 + missingPriorRows.length, getRange: () => ({getValues: () => missingPriorRows})};
 const missingAuditRows = [];
