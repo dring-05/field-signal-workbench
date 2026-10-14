@@ -11,7 +11,7 @@
         ['Pivot announcement', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026060075/ea029183701ex99-1.htm'],
         ['Name change announcement', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026061252/ea029221301ex99-1.htm'],
         ['August 2026 10-Q', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026090048/ea0300119-10q_rocket.htm'],
-        ['Filing metadata and SIC', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026090048/0001213900-26-090048-index-headers.html']
+        ['Filing metadata and SIC', 'https://www.sec.gov/Archives/edgardata/1711786/000121390026090048/0001213900-26-090048-index-headers.html']
       ]
     },
     {
@@ -92,7 +92,7 @@
     if (!bridge?.facts?.revenue) {
       const status = item.operatingBridgeStatus === 'Retry pending'
         ? 'The SEC facts request did not complete. The scheduled job will retry it.'
-        : 'No unambiguous standardized financial facts were available by this filing date.';
+        : item.operatingBridgeStatus === 'No standardized facts available by the filing date' ? 'No unambiguous standardized revenue fact was available by this filing date. Custom and segment facts may still be in the filing.' : !Object.hasOwn(item, 'operatingBridge') ? 'Queued for SEC CompanyFacts backfill. The job processes up to 20 older leads per daily run. Until then, this bridge has not been assessed.' : 'The filing-as-of financial bridge is unavailable.';
       return `<p class="footnote">${status} Check the filing directly. Missing facts do not mean zero.</p>`;
     }
     const format = value => new Intl.NumberFormat(undefined, {maximumFractionDigits: 2}).format(value);
