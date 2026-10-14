@@ -11,7 +11,7 @@
         ['Pivot announcement', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026060075/ea029183701ex99-1.htm'],
         ['Name change announcement', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026061252/ea029221301ex99-1.htm'],
         ['August 2026 10-Q', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026090048/ea0300119-10q_rocket.htm'],
-        ['Filing metadata and SIC', 'https://www.sec.gov/Archives/edgardata/1711786/000121390026090048/0001213900-26-090048-index-headers.html']
+        ['Filing metadata and SIC', 'https://www.sec.gov/Archives/edgar/data/1711786/000121390026090048/0001213900-26-090048-index-headers.html']
       ]
     },
     {
