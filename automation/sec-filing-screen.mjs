@@ -597,7 +597,8 @@ async function scan(options) {
   }
   const retained = (options.feed.leads ?? []).filter(item => {
     const evidence = Array.isArray(item.evidence) ? item.evidence : [];
-    return !evidence.length || evidence.some(hit => !isLikelyBiographyEvidence(hit.text));
+    if (evidence.length) item.evidence = evidence.filter(hit => !isLikelyBiographyEvidence(hit.text) && !EXPLICIT_RISK_LIST.test(String(hit.text ?? '')));
+    return !evidence.length || item.evidence.length > 0;
   }).map(item => {
     const mapped = mappedByCik.get(String(item.cik ?? '').padStart(10, '0'));
     return {
