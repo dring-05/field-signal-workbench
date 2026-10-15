@@ -25,7 +25,7 @@ const OPERATIONAL_CONTEXT = /\b(?:customer|commercial|revenue|product|service|bu
 const RISK_HEADING = /\b(?:risk factors|risks related to|forward-looking statements|cautionary statement)\b/i;
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
 const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
-const BIOGRAPHY_CONTEXT = /\b(?:biograph(?:y|ical)|professional background|career history|previously served|formerly served|prior to joining|before joining|appointed to the board|director nominee|board nominee|served as.{0,100}\b(?:at|for)\b)\b/i;
+const BIOGRAPHY_CONTEXT = /\b(?:biograph(?:y|ical)|professional background|career history|previously served|formerly served|prior to joining|before joining|appointed to the board|director nominee|board nominee|served as.{0,100}\b(?:at|for)\b|experience\s+(?:with|at)\s+.{1,100}\bspans?\s+over\s+.{1,30}\b(?:years?|decades?)|held\s+(?:a number of\s+)?leadership positions|career\s+(?:at|with)\s+.{1,100}\bover\s+.{1,30}\b(?:years?|decades?))\b/i;
 const OPERATING_FACTS = {
   'us-gaap': {
     revenue: ['RevenueFromContractWithCustomerExcludingAssessedTax', 'Revenues', 'SalesRevenueNet'],

@@ -69,6 +69,9 @@ assert.ok(analyzeText('The company sells machine learning services to enterprise
 const executiveBio = 'The board appointed Ms. Example as a director. She previously served as COO at HP, where she led AI-powered insights for enterprise customers. Her biography describes her career in technology.';
 assert.equal(isLikelyBiographyEvidence(executiveBio), true);
 assert.equal(analyzeText(executiveBio).length, 0, 'AI references in executive biographies should not create operating leads');
+const executiveBioWithExperienceSpan = 'She serves as senior vice president and chief operating officer of Global HP Solutions for HP Inc., where she leads operations and strategic execution across HP’s global Solutions portfolio, enabling intelligent platforms, AI-powered insights and collaboration across all HP global businesses. Her experience with HP spans over two decades during which she has held a number of leadership positions.';
+assert.equal(isLikelyBiographyEvidence(executiveBioWithExperienceSpan), true);
+assert.equal(analyzeText(executiveBioWithExperienceSpan).length, 0, 'AI references in filed executive biographies should not create operating leads');
 assert.ok(analyzeText('We launched an AI-powered analytics product for customers in September.').length, 'issuer product language should remain eligible');
 const verifiedNameChange = legalNameChangeFromSubmissions(formerNamesFixture, '2026-10-10', '123');
 assert.deepEqual(verifiedNameChange, {
