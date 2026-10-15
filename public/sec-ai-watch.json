@@ -1,17 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T01:53:46.107Z",
+  "generatedAt": "2026-10-15T19:07:58.575Z",
   "coverage": "SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.",
-  "scanWindowStart": "2026-10-07",
-  "scanWindowEnd": "2026-10-14",
+  "scanWindowStart": "2026-10-08",
+  "scanWindowEnd": "2026-10-15",
   "unavailableIndexDays": [],
   "indexCoverage": {
     "timeZone": "America/New_York",
     "checkedDays": [
-      {
-        "date": "2026-10-07",
-        "status": "readable"
-      },
       {
         "date": "2026-10-08",
         "status": "readable"
@@ -41,6 +37,10 @@
       },
       {
         "date": "2026-10-14",
+        "status": "readable"
+      },
+      {
+        "date": "2026-10-15",
         "status": "expected-skip",
         "reason": "current ET date; daily index is published after the filing day closes"
       }
@@ -52,6 +52,3171 @@
     "https://www.sec.gov/files/company_tickers_exchange.json"
   ],
   "leads": [
+    {
+      "cik": "0000023197",
+      "company": "COMTECH TELECOMMUNICATIONS CORP /DE/",
+      "mappedCompany": "COMTECH TELECOMMUNICATIONS CORP /DE/",
+      "ticker": "CMTL",
+      "exchange": "Nasdaq",
+      "form": "10-K",
+      "filingDate": "2026-10-14",
+      "accession": "0000023197-26-000114",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/23197/0000023197-26-000114.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 7,
+      "currentAiMentions": 7,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "cloud, hybrid, private and edge deployment models while integrating directly with our NG9-1-1 infrastructure. As agencies continue modernizing emergency communications environments, we believe cloud-native applications, artificial intelligence and closer integration between networks and operational software will become increasingly important components of fu",
+          "documentType": "10-K",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "exity of delivering our services. Our costs to comply with the GDPR as well any other similar laws and regulations that emerge may negatively impact our business. In addition, privacy legislation may regulate the use of artificial intelligence and machine learning within our product development, testing, deployment, or other business functions, including the",
+          "documentType": "10-K",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "hat may divert resources away from our development efforts, any of which could adversely affect our business, results of operations, and financial condition. We may face infringement claims in connection with our use of artificial intelligence and machine learning within our product development, testing, and deployment, or other business functions. Such clai",
+          "documentType": "10-K",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-08-01",
+        "periodEnd": "2026-07-31",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 38.93066466890747,
+        "operatingMarginPct": -7.283675129099847,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 249613000,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2025-08-01",
+            "periodEnd": "2026-07-31",
+            "filed": "2026-10-14",
+            "form": "10-K",
+            "accession": "0000023197-26-000114",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/23197/000002319726000114/0000023197-26-000114.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 97176000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2025-08-01",
+            "periodEnd": "2026-07-31",
+            "filed": "2026-10-14",
+            "form": "10-K",
+            "accession": "0000023197-26-000114",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/23197/000002319726000114/0000023197-26-000114.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -18181000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-08-01",
+            "periodEnd": "2026-07-31",
+            "filed": "2026-10-14",
+            "form": "10-K",
+            "accession": "0000023197-26-000114",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/23197/000002319726000114/0000023197-26-000114.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -36169000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-08-01",
+            "periodEnd": "2026-07-31",
+            "filed": "2026-10-14",
+            "form": "10-K",
+            "accession": "0000023197-26-000114",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/23197/000002319726000114/0000023197-26-000114.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 34978000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-07-31",
+            "filed": "2026-10-14",
+            "form": "10-K",
+            "accession": "0000023197-26-000114",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/23197/000002319726000114/0000023197-26-000114.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000093751",
+      "company": "STATE STREET CORP",
+      "mappedCompany": "STATE STREET CORP",
+      "ticker": "STT, STT-PG",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0000093751-26-000592",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/93751/0000093751-26-000592.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 6,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "specific markets; • Our development and completion of new products and services, including State Street Alpha ® and those related to wealth servicing, alternative investment management or digital assets or incorporating artificial intelligence, may impose costs on us, involve dependencies on third parties and may expose us to increased risks; • Our business ",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "ncreased risks; • Our business may be negatively affected by risks associated with strategic initiatives we are undertaking to enhance the effectiveness, including the adoption or integration of new technologies such as artificial intelligence, and efficiency of our operations and of our cybersecurity and technology infrastructure or by our failure to meet t",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "rized access to our or our business partners' or clients' information technology systems or facilities, such as cyber-attacks or other disruptions to our or their operations, including attacks leveraging advanced or new artificial intelligence models that are continuously evolving and presenting heightened risks, could result in significant costs, reputation",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": null,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 4048000000,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-07-30",
+            "form": "10-Q",
+            "accession": "0000093751-26-000397",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/93751/000009375126000397/0000093751-26-000397.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": null,
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 1084000000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-07-30",
+            "form": "10-Q",
+            "accession": "0000093751-26-000397",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/93751/000009375126000397/0000093751-26-000397.txt"
+          },
+          "cash": null,
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000887028",
+      "company": "RIO TINTO LTD",
+      "mappedCompany": "RIO TINTO LTD",
+      "ticker": "RTNTF",
+      "exchange": "OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0000863064-26-000041",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/887028/0000863064-26-000041.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "s by 25 basis points in September. Copper • London Metal Exchange (LME) copper reached a record high of $6.74/lb ($14,850/t) in mid-August, supported by constrained mine supply, strong investor flows and optimism around AI-driven electricity demand. Prices averaged $6.40/lb ($14,110/t) for the quarter. • Copper mine supply remained constrained during Q3, wit",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-related",
+          "text": "production grew 5% YoY, driven by a 17% YoY increase in high-tech manufacturing. Policy support remained focused on infrastructure, including grid and AI development. US economy: growth remained resilient, supported by AI-related investment, broader business spending and consumer demand. Inflation remained elevated, prompting the Federal Reserve to raise int",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": null,
+      "operatingBridgeStatus": "No standardized facts available by the filing date",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001498148",
+      "company": "Artificial Intelligence Technology Solutions Inc.",
+      "mappedCompany": "Artificial Intelligence Technology Solutions Inc.",
+      "ticker": "AITX",
+      "exchange": "OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001062993-26-005318",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1498148/0001062993-26-005318.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 10,
+      "currentAiMentions": 11,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "revised financial accounting standards provided pursuant to Section 13(a) of the Exchange Act. ☐ When used in this Current Report on Form 8-K, unless otherwise indicated, the terms the \"Company,\" \"our,\" or \"we\" refer to Artificial Intelligence Technology Solutions Inc. and its subsidiaries. Item 8.01 Other Events On October 14, 2026, we will be issuing a pre",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "Artificial Intelligence Technology Solutions, Inc.: Exhibit 99.1 - Filed by newsfilecorp.com Exhibit 99.1 AITX's RAD Adds Another Municipal Customer with Seven ROSA Unit Order New Order Extends RAD's Support of Municipalities and Improvement D",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "lecorp.com Exhibit 99.1 AITX's RAD Adds Another Municipal Customer with Seven ROSA Unit Order New Order Extends RAD's Support of Municipalities and Improvement Districts Nationwide Detroit, Michigan, October 14, 2026 -- Artificial Intelligence Technology Solutions, Inc. (the \"Company\") ( OTCID:AITX ), a developer and operator of AI-driven security and produc",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-03-01",
+        "periodEnd": "2026-05-31",
+        "durationDays": 92,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 64.6473736922524,
+        "operatingMarginPct": -147.95549589832254,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 1831202,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-03-01",
+            "periodEnd": "2026-05-31",
+            "filed": "2026-07-17",
+            "form": "10-Q/A",
+            "accession": "0001493152-26-033603",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1498148/000149315226033603/0001493152-26-033603.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 1183824,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-03-01",
+            "periodEnd": "2026-05-31",
+            "filed": "2026-07-17",
+            "form": "10-Q/A",
+            "accession": "0001493152-26-033603",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1498148/000149315226033603/0001493152-26-033603.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -2709364,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-03-01",
+            "periodEnd": "2026-05-31",
+            "filed": "2026-07-17",
+            "form": "10-Q/A",
+            "accession": "0001493152-26-033603",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1498148/000149315226033603/0001493152-26-033603.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -5715838,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-03-01",
+            "periodEnd": "2026-05-31",
+            "filed": "2026-07-17",
+            "form": "10-Q/A",
+            "accession": "0001493152-26-033603",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1498148/000149315226033603/0001493152-26-033603.txt"
+          },
+          "cash": null,
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 27769326,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtCurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-05-31",
+            "filed": "2026-07-17",
+            "form": "10-Q/A",
+            "accession": "0001493152-26-033603",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1498148/000149315226033603/0001493152-26-033603.txt"
+          },
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001109138",
+      "company": "CAMTEK LTD",
+      "mappedCompany": "CAMTEK LTD",
+      "ticker": "CAMT",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001178913-26-004769",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1109138/0001178913-26-004769.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "AI data centers",
+          "text": "T $ 0,5 T $ 0,0 T $ 2,0 T $ 2,5 T $ 3,0 T $ 3,5 T 2024 2026 F 2028 F 2030 F 2026 E 2027 E Target in ~ 3 years Our Path to Double Our Revenues Organic growth targets $ 1.2 B in annual revenue in ~ 3 years GROWTH ENGINES AI data centers & accelerated computing Compute for AI training and inference Camtek ’ s primary market Physical & edge AI Robotics, autonomo",
+          "documentType": "6-K",
+          "reviewCues": [
+            "financial-results wording"
+          ]
+        },
+        {
+          "term": "AI data centers",
+          "text": "transfer AI demands drive new packaging technologies, and with them more complexity WHAT AI DEMANDS HOW PACKAGING RESPONDS 2.5 D Platforms Finer pitch Hybrid bonding Photonics High - end advanced packaging Technologies AI data centers require GPU's, CPUs & Memory on one interposer Foveros + EMIB, CoWoS and variants Over 100 M smaller bumps per wafer Bumpless",
+          "documentType": "6-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-01-01",
+        "periodEnd": "2025-12-31",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 50.45981228531342,
+        "operatingMarginPct": 25.84362753793804,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 496072000,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-19",
+            "form": "20-F",
+            "accession": "0001178913-26-001561",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1109138/000117891326001561/0001178913-26-001561.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 250317000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-19",
+            "form": "20-F",
+            "accession": "0001178913-26-001561",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1109138/000117891326001561/0001178913-26-001561.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 128203000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-19",
+            "form": "20-F",
+            "accession": "0001178913-26-001561",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1109138/000117891326001561/0001178913-26-001561.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 50722000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-19",
+            "form": "20-F",
+            "accession": "0001178913-26-001561",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1109138/000117891326001561/0001178913-26-001561.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 177848000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-19",
+            "form": "20-F",
+            "accession": "0001178913-26-001561",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1109138/000117891326001561/0001178913-26-001561.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001015650",
+      "company": "SK TELECOM CO LTD",
+      "mappedCompany": "SK TELECOM CO LTD",
+      "ticker": "SKM",
+      "exchange": "NYSE",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001193125-26-420931",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1015650/0001193125-26-420931.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (2 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 16,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "eviously disclosed, in a current report on Form 6-K entitled “Future Business and Management Plan (Fair Disclosure)” furnished by the Company on June 30, 2026, that it was reviewing a plan to pursue a phased buildout of artificial intelligence (“AI”) data centers (“AIDCs”) with a mid- to long-term total capacity target of 15 gigawatts (“GW”). Other than what",
+          "documentType": "6-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI Data Center",
+          "text": "r Form 40-F. Form 20-F ☒ Form 40-F ☐ Clarification Regarding Rumors or Media Reports On October 13, 2026, certain media outlets, including the Electronic Times, published an article titled “SK Telecom Seeks 5GW Overseas AI Data Center Expansion for Asian Hub.” SK Telecom Co., Ltd. (the “Company”) previously disclosed, in a current report on Form 6-K entitled",
+          "documentType": "6-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2024-01-01",
+        "periodEnd": "2024-12-31",
+        "durationDays": 366,
+        "unit": "KRW",
+        "taxonomy": "ifrs-full",
+        "grossMarginPct": null,
+        "operatingMarginPct": null,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 17940609000000,
+            "taxonomy": "ifrs-full",
+            "tag": "Revenue",
+            "unit": "KRW",
+            "periodStart": "2024-01-01",
+            "periodEnd": "2024-12-31",
+            "filed": "2025-04-29",
+            "form": "20-F",
+            "accession": "0001193125-25-101730",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1015650/000119312525101730/0001193125-25-101730.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": null,
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 1387095000000,
+            "taxonomy": "ifrs-full",
+            "tag": "ProfitLoss",
+            "unit": "KRW",
+            "periodStart": "2024-01-01",
+            "periodEnd": "2024-12-31",
+            "filed": "2025-04-29",
+            "form": "20-F",
+            "accession": "0001193125-25-101730",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1015650/000119312525101730/0001193125-25-101730.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 2023721000000,
+            "taxonomy": "ifrs-full",
+            "tag": "CashAndCashEquivalents",
+            "unit": "KRW",
+            "periodStart": "",
+            "periodEnd": "2024-12-31",
+            "filed": "2025-04-29",
+            "form": "20-F",
+            "accession": "0001193125-25-101730",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1015650/000119312525101730/0001193125-25-101730.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002012383",
+      "company": "BlackRock, Inc.",
+      "mappedCompany": "BlackRock, Inc.",
+      "ticker": "BLK",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001193125-26-420979",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2012383/0001193125-26-420979.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI Infrastructure",
+          "text": "ck’s ability to originate and structure at scale is leading to premier financing relationships and sourcing opportunities for our clients. We’ve raised $68 billion in private markets over the last twelve months, and our AI Infrastructure Partnership made its first deployment this quarter. “BlackRock is in a differentiated position as both a trusted advisor a",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": 34.74025974025974,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 7084000000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001193125-26-337177",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2012383/000119312526337177/0001193125-26-337177.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 2461000000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001193125-26-337177",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2012383/000119312526337177/0001193125-26-337177.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 1914000000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001193125-26-337177",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2012383/000119312526337177/0001193125-26-337177.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 10492000000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001193125-26-337177",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2012383/000119312526337177/0001193125-26-337177.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000866374",
+      "company": "FLEX LTD.",
+      "mappedCompany": "FLEX LTD.",
+      "ticker": "FLEX",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001193125-26-421058",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/866374/0001193125-26-421058.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "AI Data Centers",
+          "text": "EX-99.1 Exhibit 99.1 Flex Completes Acquisition of EPC Power, Expanding Power Conversion Capabilities for AI Data Centers and Grid Applications Acquisition strengthens Flex’s Cloud and Power Infrastructure portfolio with differentiated grid-forming and power conversion technology AUSTIN, Texas, October 14, 2026 /PRNewswire/ — Flex (NASDAQ:",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "a center and grid applications. EPC Power is now part of Flex’s Cloud and Power Infrastructure segment, expanding the company’s capabilities across power, cooling and compute to address growing demand for higher-density AI infrastructure and next-generation 800V data center power architectures. “We are pleased to welcome the EPC Power team to Flex,” said Rev",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "ve Officer of Flex. “EPC Power adds differentiated power conversion and grid-forming technology to our capabilities across power, cooling and compute. Together, we can help customers address the growing power demands of AI infrastructure with more efficient, resilient and integrated solutions.” EPC Power combines proprietary hardware, software and controls w",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-26",
+        "durationDays": 87,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 9.422300706357214,
+        "operatingMarginPct": 4.944500504540867,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 7928000000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-26",
+            "filed": "2026-07-31",
+            "form": "10-Q",
+            "accession": "0000866374-26-000030",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/866374/000086637426000030/0000866374-26-000030.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 747000000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-26",
+            "filed": "2026-07-31",
+            "form": "10-Q",
+            "accession": "0000866374-26-000030",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/866374/000086637426000030/0000866374-26-000030.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 392000000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-26",
+            "filed": "2026-07-31",
+            "form": "10-Q",
+            "accession": "0000866374-26-000030",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/866374/000086637426000030/0000866374-26-000030.txt"
+          },
+          "netIncome": null,
+          "cash": {
+            "metric": "cash",
+            "value": 2840000000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-26",
+            "filed": "2026-07-31",
+            "form": "10-Q",
+            "accession": "0000866374-26-000030",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/866374/000086637426000030/0000866374-26-000030.txt"
+          },
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 0,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtCurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-26",
+            "filed": "2026-07-31",
+            "form": "10-Q",
+            "accession": "0000866374-26-000030",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/866374/000086637426000030/0000866374-26-000030.txt"
+          },
+          "longTermDebt": {
+            "metric": "longTermDebt",
+            "value": 5219000000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtNoncurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-26",
+            "filed": "2026-07-31",
+            "form": "10-Q",
+            "accession": "0000866374-26-000030",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/866374/000086637426000030/0000866374-26-000030.txt"
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001805521",
+      "company": "FARADAY FUTURE INTELLIGENT ELECTRIC INC.",
+      "mappedCompany": "FARADAY FUTURE INTELLIGENT ELECTRIC INC.",
+      "ticker": "FFAI",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109222",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1805521/0001213900-26-109222.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (3 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 3,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "AI systems",
+          "text": "pleted by the end of October. Upon completion of the transaction, FFAI will announce its next-stage strategy and business plan. &ldquo;This agreement will help us grow the business, develop our technology, and build our AI systems,&rdquo; said YT Jia, Founder and Global Chief Executive Officer of Faraday Future. &ldquo;This marks a new beginning for both com",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "llection, use, storage, transmission and protection of personal information, including images and any biometric or biometric-adjacent data captured in the course of robot deployments, and evolving privacy, biometric and artificial intelligence laws and regulations across the jurisdictions in which we operate or intend to operate; our ability to obtain, maint",
+          "documentType": "EX-99.2",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "large language model",
+          "text": "serve the broader market Brain licensing and an open-source developer platform License EAI Brain capabilities to partners and attract developers Open Data Factory Data sales and training services for data collection and large language model companies Open Industry Productivity Solutions Open to solution providers and system integrators Sources and as-of date",
+          "documentType": "EX-99.2",
+          "reviewCues": [
+            "financial-results wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": -1280.1435406698565,
+        "operatingMarginPct": -4165.909090909091,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 836000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001628280-26-056740",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1805521/000162828026056740/0001628280-26-056740.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": -10702000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001628280-26-056740",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1805521/000162828026056740/0001628280-26-056740.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -34827000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001628280-26-056740",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1805521/000162828026056740/0001628280-26-056740.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -36029000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001628280-26-056740",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1805521/000162828026056740/0001628280-26-056740.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 11196000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001628280-26-056740",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1805521/000162828026056740/0001628280-26-056740.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002047273",
+      "company": "BUUU Group Ltd",
+      "mappedCompany": "BUUU Group Ltd",
+      "ticker": "BUUU",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109233",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2047273/0001213900-26-109233.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (5 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 9,
+      "currentAiMentions": 7,
+      "evidence": [
+        {
+          "term": "AI Data Center",
+          "text": "Exhibit 99.1 Brightray Signs Letter of Intent for Planned 10MW AI Data Center Project in the United States Brightray expands into the world&rsquo;s largest data center market with its first U.S. project letter of intent, targeting delivery within one year with Brightray prefabricated data center",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI data center",
+          "text": "bsidiary, Brightray Veridian Pte. Ltd., entered into a letter of intent (the &ldquo;LOI&rdquo;) on October 6, 2026 with a U.S.-based mission critical infrastructure partner (the &ldquo;Partner&rdquo;) for a planned 10MW AI data center project in Indiana, United States. The LOI is Brightray&rsquo;s first project letter of intent signed in the United States an",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "ent supply. Entering the World&rsquo;s Largest Data Center Market, Capturing AI Build-Out Demand Through Delivery Capability The United States is the world&rsquo;s largest data center market and a major center of global AI infrastructure investment and construction. According to JLL&rsquo;s 2026 Global Data Center Outlook , the Americas account for approxima",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2024-07-01",
+        "periodEnd": "2025-06-30",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 31.026898477899316,
+        "operatingMarginPct": 16.252069037714755,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 6328425,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2024-07-01",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-10-31",
+            "form": "20-F",
+            "accession": "0001213900-25-104702",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2047273/000121390025104702/0001213900-25-104702.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 1963514,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2024-07-01",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-10-31",
+            "form": "20-F",
+            "accession": "0001213900-25-104702",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2047273/000121390025104702/0001213900-25-104702.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 1028500,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2024-07-01",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-10-31",
+            "form": "20-F",
+            "accession": "0001213900-25-104702",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2047273/000121390025104702/0001213900-25-104702.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 793420,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2024-07-01",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-10-31",
+            "form": "20-F",
+            "accession": "0001213900-25-104702",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2047273/000121390025104702/0001213900-25-104702.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 101535,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-10-31",
+            "form": "20-F",
+            "accession": "0001213900-25-104702",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2047273/000121390025104702/0001213900-25-104702.txt"
+          },
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 432101,
+            "taxonomy": "us-gaap",
+            "tag": "ShortTermBorrowings",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-10-31",
+            "form": "20-F",
+            "accession": "0001213900-25-104702",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2047273/000121390025104702/0001213900-25-104702.txt"
+          },
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001848275",
+      "company": "TOP Financial Group Ltd",
+      "mappedCompany": "TOP Financial Group Ltd",
+      "ticker": "TOP",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109242",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1848275/0001213900-26-109242.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "ptions products, assets and funds management services, trading solutions services, money lending services, trust services, investor relations and public relations services. In addition, the Company has also entered into artificial intelligence (AI) business segments. The operating subsidiaries, Zhong Yang Securities Limited and Zhong Yang Capital Limited are",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": -35.9388873409492,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 1076700,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-17",
+            "form": "10-Q",
+            "accession": "0001213900-26-090479",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1848275/000121390026090479/0001213900-26-090479.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -386954,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-17",
+            "form": "10-Q",
+            "accession": "0001213900-26-090479",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1848275/000121390026090479/0001213900-26-090479.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -113433,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-17",
+            "form": "10-Q",
+            "accession": "0001213900-26-090479",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1848275/000121390026090479/0001213900-26-090479.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 10407367,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-17",
+            "form": "10-Q",
+            "accession": "0001213900-26-090479",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1848275/000121390026090479/0001213900-26-090479.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001999261",
+      "company": "StageWise Strategies Corp.",
+      "mappedCompany": "StageWise Strategies Corp.",
+      "ticker": "STWI",
+      "exchange": "OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109249",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1999261/0001213900-26-109249.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "g and algorithmic preferences. Designed to deliver real-time updates, it generates posts that reflect the latest social media trends, supporting brands in increasing their visibility and fostering viral engagement. This AI-powered solution represents a significant expansion of the Company&rsquo;s service offerings in the area of digital marketing and content",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 100,
+        "operatingMarginPct": -66.18024232776156,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 11307,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001213900-26-090158",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1999261/000121390026090158/0001213900-26-090158.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 11307,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001213900-26-090158",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1999261/000121390026090158/0001213900-26-090158.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -7483,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001213900-26-090158",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1999261/000121390026090158/0001213900-26-090158.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -7483,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001213900-26-090158",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1999261/000121390026090158/0001213900-26-090158.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 44485,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001213900-26-090158",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1999261/000121390026090158/0001213900-26-090158.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001951222",
+      "company": "SEALSQ Corp",
+      "mappedCompany": "SEALSQ Corp",
+      "ticker": "LAES",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109266",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1951222/0001213900-26-109266.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 13,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "er and Qualification 31 Section 3.2 Subsidiaries; Capitalization 32 Section 3.3 Due Authorization 33 Section 3.4 Financial Statements 34 Section 3.5 Material Contracts 36 Section 3.6 Intellectual Property 37 Section 3.7 Artificial Intelligence 39 Section 3.8 Title to Properties and Assets; Liens 40 Section 3.9 Real Property 40 Section 3.10 Environmental Matt",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "deployment or use of AI Technology, in each case as published or promulgated by a recognized industry body or standards-setting organization. &ldquo; AI Technology &rdquo; means deep learning, machine learning or other artificial intelligence technologies. &ldquo;AI Tool&rdquo; has the meaning set forth in Section 3.7 . &ldquo;Ancillary Agreements&rdquo; mea",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "y or any of its Subsidiaries to disclose, distribute or license any Owned IP in source code form or on a royalty-free basis. The Company is in compliance with all licenses governing the Open Source Software. Section 3.7 Artificial Intelligence. (a) Section 3.7of the Company Disclosure Letter sets forth a true, correct and complete list of all third-party AI ",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-01-01",
+        "periodEnd": "2025-12-31",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 47.282489590181896,
+        "operatingMarginPct": -218.0528161297392,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 18252000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-31",
+            "form": "20-F",
+            "accession": "0001104659-26-037706",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/0001104659-26-037706.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 8630000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-31",
+            "form": "20-F",
+            "accession": "0001104659-26-037706",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/0001104659-26-037706.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -39799000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-31",
+            "form": "20-F",
+            "accession": "0001104659-26-037706",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/0001104659-26-037706.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -34194000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-31",
+            "form": "20-F",
+            "accession": "0001104659-26-037706",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/0001104659-26-037706.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 417657000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-31",
+            "form": "20-F",
+            "accession": "0001104659-26-037706",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/0001104659-26-037706.txt"
+          },
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 689000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtCurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-31",
+            "form": "20-F",
+            "accession": "0001104659-26-037706",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/0001104659-26-037706.txt"
+          },
+          "longTermDebt": {
+            "metric": "longTermDebt",
+            "value": 989000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtNoncurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-31",
+            "form": "20-F",
+            "accession": "0001104659-26-037706",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1951222/000110465926037706/0001104659-26-037706.txt"
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001738699",
+      "company": "WISeQey Corp.",
+      "mappedCompany": "WISeQey Corp.",
+      "ticker": "WKEY, WSKEF",
+      "exchange": "Nasdaq, OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109271",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1738699/0001213900-26-109271.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 13,
+      "evidence": [
+        {
+          "term": "Artificial Intelligence",
+          "text": "er and Qualification 31 Section 3.2 Subsidiaries; Capitalization 32 Section 3.3 Due Authorization 33 Section 3.4 Financial Statements 34 Section 3.5 Material Contracts 36 Section 3.6 Intellectual Property 37 Section 3.7 Artificial Intelligence 39 Section 3.8 Title to Properties and Assets; Liens 40 Section 3.9 Real Property 40 Section 3.10 Environmental Matt",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "deployment or use of AI Technology, in each case as published or promulgated by a recognized industry body or standards-setting organization. &ldquo; AI Technology &rdquo; means deep learning, machine learning or other artificial intelligence technologies. &ldquo;AI Tool&rdquo; has the meaning set forth in Section 3.7 . &ldquo;Ancillary Agreements&rdquo; mea",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        },
+        {
+          "term": "Artificial Intelligence",
+          "text": "y or any of its Subsidiaries to disclose, distribute or license any Owned IP in source code form or on a royalty-free basis. The Company is in compliance with all licenses governing the Open Source Software. Section 3.7 Artificial Intelligence. (a) Section 3.7of the Company Disclosure Letter sets forth a true, correct and complete list of all third-party AI ",
+          "documentType": "EX-99.2",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-01-01",
+        "periodEnd": "2025-12-31",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 47.89258126393281,
+        "operatingMarginPct": -247.26009642801597,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 19289000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001104659-26-053033",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1738699/000110465926053033/0001104659-26-053033.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 9238000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001104659-26-053033",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1738699/000110465926053033/0001104659-26-053033.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -47694000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001104659-26-053033",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1738699/000110465926053033/0001104659-26-053033.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -6072000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001104659-26-053033",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1738699/000110465926053033/0001104659-26-053033.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 429244000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001104659-26-053033",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1738699/000110465926053033/0001104659-26-053033.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": {
+            "metric": "longTermDebt",
+            "value": 2371000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtNoncurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001104659-26-053033",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1738699/000110465926053033/0001104659-26-053033.txt"
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002060016",
+      "company": "Agencia Comercial Spirits Ltd.",
+      "mappedCompany": "Agencia Comercial Spirits Ltd.",
+      "ticker": "AGCC",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109300",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2060016/0001213900-26-109300.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (3 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 21,
+      "currentAiMentions": 10,
+      "evidence": [
+        {
+          "term": "AI Computing",
+          "text": "dicate by check mark whether the registrant files or will file annual reports under cover of Form 20-F or Form 40-F. Form 20-F ☒ Form 40-F ☐ Information Contained in this Form 6-K Report Conditional Land Acquisition for AI Computing Infrastructure in Indonesia On October 8, 2026, Agencia Comercial Spirits Ltd (the &ldquo;Company&rdquo;), through an Indonesia",
+          "documentType": "6-K",
+          "reviewCues": []
+        },
+        {
+          "term": "AI computing",
+          "text": "seven hectares of land in West Java, Indonesia. Held under an Indonesian Right to Build (Hak Guna Bangunan, or &ldquo;HGB&rdquo;) title, the land is designated for the planned development of high-performance computing, AI computing infrastructure, and data center facilities alongside the Company&rsquo;s core whisky business. The aggregate land purchase consi",
+          "documentType": "6-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI Computing",
+          "text": "Exhibit 99.1 Agencia Comercial Spirits Ltd Announces Conditional Land Acquisition for AI Computing Infrastructure in Indonesia TAICHUNG, Taiwan, Oct. 14, 2026 (GLOBE NEWSWIRE) &mdash; Agencia Comercial Spirits Ltd (the &ldquo;Company&rdquo;) today announced that on October 8, 2026, its Indonesian subsidiary (the &ldq",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-01-01",
+        "periodEnd": "2025-12-31",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 30.432208035283555,
+        "operatingMarginPct": 12.63304081835874,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 6206178,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001213900-26-050040",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2060016/000121390026050040/0001213900-26-050040.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 1888677,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001213900-26-050040",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2060016/000121390026050040/0001213900-26-050040.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 784029,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001213900-26-050040",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2060016/000121390026050040/0001213900-26-050040.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 609382,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001213900-26-050040",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2060016/000121390026050040/0001213900-26-050040.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 15824906,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001213900-26-050040",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2060016/000121390026050040/0001213900-26-050040.txt"
+          },
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 18498,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtCurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-04-30",
+            "form": "20-F",
+            "accession": "0001213900-26-050040",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/2060016/000121390026050040/0001213900-26-050040.txt"
+          },
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001951229",
+      "company": "Reitar Logtech Holdings Ltd",
+      "mappedCompany": "Reitar Logtech Holdings Ltd",
+      "ticker": "RITRF",
+      "exchange": "OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109407",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1951229/0001213900-26-109407.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "in Hong Kong. The Company is one of the market leaders in Hong Kong&rsquo;s smart logistics and automated warehousing sector, committed to innovating the logistics industry through the integration of advanced robotics, artificial intelligence, and data-driven analytics to enhance operational efficiency and create value for its clients across the supply chain",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": null,
+      "operatingBridgeStatus": "No standardized facts available by the filing date",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001956741",
+      "company": "Zone Frontier Inc.",
+      "mappedCompany": "Zone Frontier Inc.",
+      "ticker": "ZONE",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001213900-26-109483",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1956741/0001213900-26-109483.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (9 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 4,
+      "currentAiMentions": 12,
+      "evidence": [
+        {
+          "term": "AI infrastructure",
+          "text": "cease use of the “CleanCore” and “CleanCore Solutions” names. Excluded Assets . The Company retained all of its cash and cash equivalents in excess of $500,000, its digital asset holdings, and all of its data center and AI infrastructure interests, including its 79% membership interest in the joint venture developing the Company’s Minnesota data center campu",
+          "documentType": "8-K",
+          "reviewCues": [
+            "customer or contract wording",
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "infrastructure. The Company previously announced it sold all its Dogecoin holdings and exited the Treasury strategy on July 20, 2026. Following the Dispositions, the Company's operations consist of its data centers and AI infrastructure business. Item 7.01 Regulation FD Disclosure. On October 8, 2026, the Company issued a press release announcing the complet",
+          "documentType": "8-K",
+          "reviewCues": []
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "99.2 Zone Frontier Sells Legacy Cleaning Products Business, Eliminating Approximately $3 Million in Annual Cash Burn While Retaining Significant Potential Upside ● Completes Zone&rsquo;s transformation into a pure-play AI infrastructure developer ● Ends approximately $3 million annual cash burn and preserves capital for AI infrastructure platform ● $3.35 mil",
+          "documentType": "EX-99.2",
+          "reviewCues": [
+            "funding or dilution wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-07-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 37.80924568038013,
+        "operatingMarginPct": -1702.035618479618,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 3406434,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2025-07-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-09-28",
+            "form": "10-K",
+            "accession": "0001213900-26-104157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026104157/0001213900-26-104157.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 1287947,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2025-07-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-09-28",
+            "form": "10-K",
+            "accession": "0001213900-26-104157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026104157/0001213900-26-104157.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -57978720,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-07-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-09-28",
+            "form": "10-K",
+            "accession": "0001213900-26-104157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026104157/0001213900-26-104157.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -174160864,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-07-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-09-28",
+            "form": "10-K",
+            "accession": "0001213900-26-104157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026104157/0001213900-26-104157.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 15435213,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-09-28",
+            "form": "10-K",
+            "accession": "0001213900-26-104157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026104157/0001213900-26-104157.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001997403",
+      "company": "ZenaTech, Inc.",
+      "mappedCompany": "ZenaTech, Inc.",
+      "ticker": "ZENA",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001376474-26-000646",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1997403/0001376474-26-000646.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 21,
+      "evidence": [
+        {
+          "term": "AI-Powered",
+          "text": "rceptor Toward Flight Testing for Counter-UAS and Maritime Defense 99.3 ZenaTech’s ZenaDrone Initiates Mobile Drone Operations Trailer to Boost Productivity and Scale Drone as a Service 99.4 ZenaTech Unveils Stacklens™, AI-Powered Smart Safety Glasses Built for Field Technicians and Industrial Workers 99.5 ZenaTech Reports Over 27% Organic Growth Across Exis",
+          "documentType": "6-K",
+          "reviewCues": []
+        },
+        {
+          "term": "machine learning",
+          "text": "capture long-term opportunities in key markets through its R&D initiatives. About ZenaDrone ZenaDrone , a subsidiary of ZenaTech, develops and manufactures AI-powered multifunction autonomous drone solutions integrating machine learning, predictive analytics, and advanced computing technologies, for government, defense, and industrial applications. This incl",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-powered",
+          "text": "dvanced its defense technology portfolio Vancouver, British Columbia (October 1, 2026) — ZenaTech, Inc. (Nasdaq: ZENA) (FSE: 49Q) (BMV: ZENA) (\"ZenaTech\" or the \"Company\"), a technology solution provider specializing in AI-powered drones, Drone as a Service (DaaS), enterprise SaaS and Quantum Computing solutions, today provides a business update and future o",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2024-01-01",
+        "periodEnd": "2024-12-31",
+        "durationDays": 366,
+        "unit": "CAD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": -153.50572034599628,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 1963605,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "CAD",
+            "periodStart": "2024-01-01",
+            "periodEnd": "2024-12-31",
+            "filed": "2026-02-27",
+            "form": "20-F/A",
+            "accession": "0001376474-26-000218",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1997403/000137647426000218/0001376474-26-000218.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -3014246,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "CAD",
+            "periodStart": "2024-01-01",
+            "periodEnd": "2024-12-31",
+            "filed": "2026-05-04",
+            "form": "20-F/A",
+            "accession": "0001376474-26-000330",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1997403/000137647426000330/0001376474-26-000330.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -4481751,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "CAD",
+            "periodStart": "2024-01-01",
+            "periodEnd": "2024-12-31",
+            "filed": "2026-05-04",
+            "form": "20-F/A",
+            "accession": "0001376474-26-000330",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1997403/000137647426000330/0001376474-26-000330.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 3754075,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "CAD",
+            "periodStart": "",
+            "periodEnd": "2024-12-31",
+            "filed": "2026-05-04",
+            "form": "20-F/A",
+            "accession": "0001376474-26-000330",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1997403/000137647426000330/0001376474-26-000330.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001716621",
+      "company": "Flyte Aviation, Inc.",
+      "mappedCompany": "Flyte Aviation, Inc.",
+      "ticker": "VJET, VTAK",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001437749-26-032622",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1716621/0001437749-26-032622.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI technology",
+          "text": "ple. A New Chapter for Flyte The partnership is implemented during a period of Flyte's significant growth and transformation. The Company is building a differentiated private aviation platform combining aircraft access, AI technology, data, digital customer acquisition and a growing portfolio of strategic partnerships. Flyte believes these capabilities can h",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 9.617271835132483,
+        "operatingMarginPct": -388.12561334641805,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 1019000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001437749-26-028024",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1716621/000143774926028024/0001437749-26-028024.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 98000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001437749-26-028024",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1716621/000143774926028024/0001437749-26-028024.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -3955000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001437749-26-028024",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1716621/000143774926028024/0001437749-26-028024.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -3295000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001437749-26-028024",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1716621/000143774926028024/0001437749-26-028024.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 643000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001437749-26-028024",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1716621/000143774926028024/0001437749-26-028024.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001460702",
+      "company": "FF EAI Robotics Ecosystem Inc.",
+      "mappedCompany": "FF EAI Robotics Ecosystem Inc.",
+      "ticker": "FFR",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001493152-26-046927",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1460702/0001493152-26-046927.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "llection, use, storage, transmission and protection of personal information, including images and any biometric or biometric-adjacent data captured in the course of robot deployments, and evolving privacy, biometric and artificial intelligence laws and regulations across the jurisdictions in which we operate or intend to operate; our ability to obtain, maint",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2023-04-01",
+        "periodEnd": "2023-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": -221.3671405154542,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 1627031,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2023-04-01",
+            "periodEnd": "2023-06-30",
+            "filed": "2023-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-23-028465",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1460702/000149315223028465/0001493152-23-028465.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -3601712,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2023-04-01",
+            "periodEnd": "2023-06-30",
+            "filed": "2024-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-24-032161",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1460702/000149315224032161/0001493152-24-032161.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -3464205,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2023-04-01",
+            "periodEnd": "2023-06-30",
+            "filed": "2024-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-24-032161",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1460702/000149315224032161/0001493152-24-032161.txt"
+          },
+          "cash": null,
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 965155,
+            "taxonomy": "us-gaap",
+            "tag": "ShortTermBorrowings",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2023-06-30",
+            "filed": "2023-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-23-028465",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1460702/000149315223028465/0001493152-23-028465.txt"
+          },
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001068689",
+      "company": "Data443 Risk Mitigation, Inc.",
+      "mappedCompany": "Data443 Risk Mitigation, Inc.",
+      "ticker": "ATDS",
+      "exchange": "OTC",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001493152-26-046936",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1068689/0001493152-26-046936.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (4 distinct phrases)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 3,
+      "currentAiMentions": 5,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "&rsquo;s history of losses, limited cash resources, need for additional financing and any substantial doubt about its ability to continue as a going concern; the early stage of commercial adoption of the Company&rsquo;s artificial intelligence products and the possibility that Vaikora does not achieve market acceptance; the possibility that Vaikora does not ",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "s not achieve market acceptance; the possibility that Vaikora does not perform as designed, fails to detect, block or record actions, or contains defects or vulnerabilities; the Company&rsquo;s dependence on third-party artificial intelligence models, platforms and providers, whose products and terms may change; the Company&rsquo;s ability to attract and ret",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "artificial intelligence",
+          "text": "ability to attract and retain strategic partners and resellers; rapid technological change and intense competition, including from larger and better-capitalized companies; the evolving legal and regulatory treatment of artificial intelligence, data privacy and cybersecurity; the Company&rsquo;s ability to integrate acquired assets and technologies; the Compa",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 0.13788199278047958,
+        "operatingMarginPct": -67.45044865884452,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 829695,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-26-038395",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1068689/000149315226038395/0001493152-26-038395.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 1144,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-26-038395",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1068689/000149315226038395/0001493152-26-038395.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -559633,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-26-038395",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1068689/000149315226038395/0001493152-26-038395.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -944481,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-14",
+            "form": "10-Q",
+            "accession": "0001493152-26-038395",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1068689/000149315226038395/0001493152-26-038395.txt"
+          },
+          "cash": null,
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001982448",
+      "company": "BeLive Holdings",
+      "mappedCompany": "BeLive Holdings",
+      "ticker": "BLIV",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001493152-26-046951",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1982448/0001493152-26-046951.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "entify consumer needs and product marketing opportunities. In 2025, we entered into a strategic partnership with Insight Lab, which we believe is one of Japan’s leading data strategy firms, to bring real-time analytics, artificial intelligence (“AI”), and personalized viewer engagement to the next level. Through this partnership, Insight Lab serves as our of",
+          "documentType": "6-K",
+          "reviewCues": []
+        },
+        {
+          "term": "machine learning",
+          "text": "research project titled “BeLive Audience Sentiment Engine (B.A.S.E.)” with an aim to allow businesses hosting livestreams to obtain useful insight and analytics on viewers’ sentiment. Such audience sentiment engine is a machine learning algorithm that is integrated, at the request of our clients, into our BeLive White Label Solution. It detects and processes",
+          "documentType": "6-K",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": null,
+      "operatingBridgeStatus": "No standardized facts available by the filing date",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001537435",
+      "company": "TECOGEN INC.",
+      "mappedCompany": "TECOGEN INC.",
+      "ticker": "TGEN",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001537435-26-000092",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1537435/0001537435-26-000092.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI data center",
+          "text": "8 - Other Events Item 8.01. Other Events. On October 14, 2026, Tecogen Inc., a Delaware corporation (the “Company”), issued the attached press release regarding a customer testimonial from Cloudsmart, Inc., a Cloud and AI data center in Connecticut. The press release describes Cloudsmart’s use of the Company’s InVerde cogeneration system at Cloudsmart’s data",
+          "documentType": "8-K",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI data center",
+          "text": "CA, MA / ACCESS Newswire / October 14, 2026 / Tecogen Inc. (NYSE American:TGEN) is pleased share a recent data center customer testimonial. Robyn Sullivan, CEO and President of Cloudsmart Inc, a Tier 3, SOC 2, Cloud and AI data center in Connecticut said, \"For a few months now, we have been creating our own power with Tecogen Inc.'s InVerde and we're glad we",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 37.832414687017504,
+        "operatingMarginPct": -37.419267486881616,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 5746136,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001537435-26-000066",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1537435/000153743526000066/0001537435-26-000066.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 2173902,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001537435-26-000066",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1537435/000153743526000066/0001537435-26-000066.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -2150162,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001537435-26-000066",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1537435/000153743526000066/0001537435-26-000066.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -2148603,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001537435-26-000066",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1537435/000153743526000066/0001537435-26-000066.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 6782573,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-13",
+            "form": "10-Q",
+            "accession": "0001537435-26-000066",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1537435/000153743526000066/0001537435-26-000066.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001563190",
+      "company": "Compass, Inc.",
+      "mappedCompany": "Compass, Inc.",
+      "ticker": "COMP",
+      "exchange": "NYSE",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001563190-26-000157",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1563190/0001563190-26-000157.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "generative AI",
+          "text": "ecades of experience building and leading consumer technology businesses. During her nearly 20-year tenure at Google, she drove major product innovations, including leading the development of the Gemini app and applying generative AI, natural language, and speech technologies across Google’s consumer products. Previously, she served as Vice President and Gen",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI platform",
+          "text": "ompany’s tremendous journey from pre-IPO planning to becoming the largest real estate brokerage in the world. Compass is well positioned to earn strong returns for shareholders by leveraging HOME, the industry’s leading AI platform for real estate professionals and their clients. Robert and his leadership team have done a terrific job building a great compan",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": 2.8797027403622852,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 4306000000,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001563190-26-000143",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563190/000156319026000143/0001563190-26-000143.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 124000000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001563190-26-000143",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563190/000156319026000143/0001563190-26-000143.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 92000000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001563190-26-000143",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563190/000156319026000143/0001563190-26-000143.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 694000000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001563190-26-000143",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563190/000156319026000143/0001563190-26-000143.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": {
+            "metric": "longTermDebt",
+            "value": 3140000000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtNoncurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-06",
+            "form": "10-Q",
+            "accession": "0001563190-26-000143",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563190/000156319026000143/0001563190-26-000143.txt"
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000937966",
+      "company": "ASML HOLDING NV",
+      "mappedCompany": "ASML HOLDING NV",
+      "ticker": "ASML, ASMLF",
+      "exchange": "Nasdaq, OTC",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001628280-26-065813",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/937966/0001628280-26-065813.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-related",
+          "text": "ades. This drove the gross margin above guidance at 57.5%. \"Our customers continue to increase their short- and medium-term equipment demand forecasts with us, driven primarily by their views on the size and duration of AI-related investments. In light of their demand visibility, some customers are expressing an interest in placing orders with us for 2029 an",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-01-01",
+        "periodEnd": "2025-12-31",
+        "durationDays": 365,
+        "unit": "EUR",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 52.82958799778371,
+        "operatingMarginPct": 34.595451720833985,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 32667300000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "EUR",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-02-25",
+            "form": "20-F",
+            "accession": "0001628280-26-011378",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/0001628280-26-011378.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 17258000000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "EUR",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-02-25",
+            "form": "20-F",
+            "accession": "0001628280-26-011378",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/0001628280-26-011378.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 11301400000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "EUR",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-02-25",
+            "form": "20-F",
+            "accession": "0001628280-26-011378",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/0001628280-26-011378.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 9609400000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "EUR",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-02-25",
+            "form": "20-F",
+            "accession": "0001628280-26-011378",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/0001628280-26-011378.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 12916000000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "EUR",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-02-25",
+            "form": "20-F",
+            "accession": "0001628280-26-011378",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/0001628280-26-011378.txt"
+          },
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 1681900000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtCurrent",
+            "unit": "EUR",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-02-25",
+            "form": "20-F",
+            "accession": "0001628280-26-011378",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/0001628280-26-011378.txt"
+          },
+          "longTermDebt": {
+            "metric": "longTermDebt",
+            "value": 2709000000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtNoncurrent",
+            "unit": "EUR",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-02-25",
+            "form": "20-F",
+            "accession": "0001628280-26-011378",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/0001628280-26-011378.txt"
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001706431",
+      "company": "Vir Biotechnology, Inc.",
+      "mappedCompany": "Vir Biotechnology, Inc.",
+      "ticker": "VIR",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001628280-26-065826",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1706431/0001628280-26-065826.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-enabled",
+          "text": "ogram Collaboration and License Agreement with Gilead Sciences to Discover and Develop Novel PRO-XTEN ® Dual-masked T-cell Engagers for Solid Tumors - Collaboration combines Vir Biotechnology’s T-cell engager discovery, AI-enabled protein engineering and clinically-validated PRO-XTEN ® masking technology with Gilead’s oncology development and commercializati",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-04-01",
+        "periodEnd": "2026-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": 30.746277401588646,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 238946000,
+            "taxonomy": "us-gaap",
+            "tag": "Revenues",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-05",
+            "form": "10-Q",
+            "accession": "0001628280-26-053549",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1706431/000162828026053549/0001628280-26-053549.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 73467000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-05",
+            "form": "10-Q",
+            "accession": "0001628280-26-053549",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1706431/000162828026053549/0001628280-26-053549.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 80080000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-04-01",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-05",
+            "form": "10-Q",
+            "accession": "0001628280-26-053549",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1706431/000162828026053549/0001628280-26-053549.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 278729000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-06-30",
+            "filed": "2026-08-05",
+            "form": "10-Q",
+            "accession": "0001628280-26-053549",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1706431/000162828026053549/0001628280-26-053549.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001549084",
+      "company": "ChronoScale Holdings Corp",
+      "mappedCompany": "ChronoScale Holdings Corp",
+      "ticker": "CHRN",
+      "exchange": "Nasdaq",
+      "form": "10-Q",
+      "filingDate": "2026-10-14",
+      "accession": "0001628280-26-065876",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1549084/0001628280-26-065876.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 9,
+      "evidence": [
+        {
+          "term": "artificial intelligence",
+          "text": "\") operates an integrated platform of cloud computing infrastructure and advanced technology solutions. The Company’s cloud business (“the Cloud Business”) provides cloud-based computing services to customers, including artificial intelligence (“AI”) and machine learning (“ML”) developers, by delivering access to high-performance computing infrastructure at ",
+          "documentType": "10-Q",
+          "reviewCues": []
+        },
+        {
+          "term": "machine learning",
+          "text": "of cloud computing infrastructure and advanced technology solutions. The Company’s cloud business (“the Cloud Business”) provides cloud-based computing services to customers, including artificial intelligence (“AI”) and machine learning (“ML”) developers, by delivering access to high-performance computing infrastructure at third-party colocation facilities. ",
+          "documentType": "10-Q",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-driven",
+          "text": "since May 2026. The sale of the Legacy Ekso Business was completed during the second quarter of fiscal year 2027. As of September 30, 2026, the Company operates as a cloud services provider supporting data-intensive and AI-driven workloads. Refer to Note 19. Subsequent Events for additional information regarding the sale of the Legacy Ekso Business. Basis of",
+          "documentType": "10-Q",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2026-06-01",
+        "periodEnd": "2026-08-31",
+        "durationDays": 92,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": -59.99469649486524,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 41482000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-06-01",
+            "periodEnd": "2026-08-31",
+            "filed": "2026-10-14",
+            "form": "10-Q",
+            "accession": "0001628280-26-065876",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1549084/000162828026065876/0001628280-26-065876.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": -24887000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-06-01",
+            "periodEnd": "2026-08-31",
+            "filed": "2026-10-14",
+            "form": "10-Q",
+            "accession": "0001628280-26-065876",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1549084/000162828026065876/0001628280-26-065876.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -42484000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-06-01",
+            "periodEnd": "2026-08-31",
+            "filed": "2026-10-14",
+            "form": "10-Q",
+            "accession": "0001628280-26-065876",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1549084/000162828026065876/0001628280-26-065876.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 15221000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-08-31",
+            "filed": "2026-10-14",
+            "form": "10-Q",
+            "accession": "0001628280-26-065876",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1549084/000162828026065876/0001628280-26-065876.txt"
+          },
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 10539000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtCurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-08-31",
+            "filed": "2026-10-14",
+            "form": "10-Q",
+            "accession": "0001628280-26-065876",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1549084/000162828026065876/0001628280-26-065876.txt"
+          },
+          "longTermDebt": {
+            "metric": "longTermDebt",
+            "value": 151000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtNoncurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-08-31",
+            "filed": "2026-10-14",
+            "form": "10-Q",
+            "accession": "0001628280-26-065876",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1549084/000162828026065876/0001628280-26-065876.txt"
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001835856",
+      "company": "Better Home & Finance Holding Co",
+      "mappedCompany": "Better Home & Finance Holding Co",
+      "ticker": "BETR, BETRW",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001628280-26-065879",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1835856/0001628280-26-065879.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 4,
+      "currentAiMentions": 3,
+      "evidence": [
+        {
+          "term": "AI-native",
+          "text": "of sale in Q1 2027, is expected to generate an additional $65 million of cash to the Company NEW YORK, NY — October 14, 2026 — Better Home & Finance Holding Company (Nasdaq: BETR; BETRW) (“Better” or the “Company”), the AI-native mortgage and home equity finance company, today announced select unaudited preliminary financial and operating results for the qua",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI-native",
+          "text": "companies. The additional presentation excluding proxy-related expenses is supplemental to the Company’s preliminary Adjusted EBITDA result. About Better Better Home & Finance Holding Company (Nasdaq: BETR) is the first AI-native mortgage and home equity finance platform, and first fintech to fund more than $110 billion in loan volume. Better has leveraged i",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        },
+        {
+          "term": "AI platform",
+          "text": "Home & Finance Holding Company (Nasdaq: BETR) is the first AI-native mortgage and home equity finance platform, and first fintech to fund more than $110 billion in loan volume. Better has leveraged its industry-leading AI platform, Tinman®, to achieve its singular mission of making homeownership cheaper, faster, and easier for all Americans. Tinman® allows c",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-01-01",
+        "periodEnd": "2025-12-31",
+        "durationDays": 365,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": null,
+        "operatingMarginPct": null,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 164872000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-13",
+            "form": "10-K",
+            "accession": "0001628280-26-017747",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1835856/000162828026017747/0001628280-26-017747.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": null,
+          "netIncome": {
+            "metric": "netIncome",
+            "value": -165872000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2025-01-01",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-03-13",
+            "form": "10-K",
+            "accession": "0001628280-26-017747",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1835856/000162828026017747/0001628280-26-017747.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 79357000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-12-31",
+            "filed": "2026-08-11",
+            "form": "10-Q",
+            "accession": "0001628280-26-055745",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1835856/000162828026055745/0001628280-26-055745.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001844450",
+      "company": "Electrovaya Inc.",
+      "mappedCompany": "Electrovaya Inc.",
+      "ticker": "ELVA",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001654954-26-008942",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1844450/0001654954-26-008942.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 2,
+      "evidence": [
+        {
+          "term": "AI Data Center",
+          "text": "esident, Data Center Sales. Dr. Kuzniewski brings more than 15 years of sales and business development experience across data center infrastructure, colocation, cloud and critical power. Most recently, as Director, U.S. AI Data Center Sales at Sinexcel, he led the company’s U.S. AI data center sales of medium-voltage UPS and battery energy storage system (BE",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording",
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI data center",
+          "text": "15 years of sales and business development experience across data center infrastructure, colocation, cloud and critical power. Most recently, as Director, U.S. AI Data Center Sales at Sinexcel, he led the company’s U.S. AI data center sales of medium-voltage UPS and battery energy storage system (BESS) solutions, closing hundreds of megawatts of medium-volta",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "financial-results wording",
+            "asset, capacity, or deployment wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-10-14",
+        "periodStart": "2025-04-01",
+        "periodEnd": "2025-06-30",
+        "durationDays": 91,
+        "unit": "USD",
+        "taxonomy": "ifrs-full",
+        "grossMarginPct": 30.80021012081947,
+        "operatingMarginPct": null,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 17133000,
+            "taxonomy": "ifrs-full",
+            "tag": "Revenue",
+            "unit": "USD",
+            "periodStart": "2025-04-01",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-08-15",
+            "form": "6-K",
+            "accession": "0001654954-25-009726",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1844450/000165495425009726/0001654954-25-009726.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 5277000,
+            "taxonomy": "ifrs-full",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2025-04-01",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-08-15",
+            "form": "6-K",
+            "accession": "0001654954-25-009726",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1844450/000165495425009726/0001654954-25-009726.txt"
+          },
+          "operatingIncome": null,
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 907000,
+            "taxonomy": "ifrs-full",
+            "tag": "ProfitLoss",
+            "unit": "USD",
+            "periodStart": "2025-04-01",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-08-15",
+            "form": "6-K",
+            "accession": "0001654954-25-009726",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1844450/000165495425009726/0001654954-25-009726.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 1290000,
+            "taxonomy": "ifrs-full",
+            "tag": "CashAndCashEquivalents",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2025-06-30",
+            "filed": "2025-08-15",
+            "form": "6-K",
+            "accession": "0001654954-25-009726",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1844450/000165495425009726/0001654954-25-009726.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001680637",
+      "company": "Nuran Wireless Inc.",
+      "mappedCompany": "Nuran Wireless Inc.",
+      "ticker": "NUR",
+      "exchange": "Nasdaq",
+      "form": "6-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001753926-26-001931",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1680637/0001753926-26-001931.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "New AI-business wording versus prior same-form filing (1 distinct phrase)",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 1,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI computing",
+          "text": "requirements, diesel consumption and exposure to power interruptions while creating contracted recurring revenue for NuEnergy. 2 PRESS RELEASE NuEnergy also intends to evaluate power infrastructure for distributed EDGE AI computing nodes. Industry estimates indicate that Africa&rsquo;s edge data-centre market could grow from approximately US$1.7 billion in 2",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "operatingBridge": null,
+      "operatingBridgeStatus": "No standardized facts available by the filing date",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0002040381",
+      "company": "Pioneer Acquisition I Corp",
+      "mappedCompany": "Pioneer Acquisition I Corp",
+      "ticker": "PACH, PACHU, PACHW",
+      "exchange": "Nasdaq",
+      "form": "8-K",
+      "filingDate": "2026-10-14",
+      "accession": "0001829126-26-011096",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/2040381/0001829126-26-011096.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "automated lead; human review required",
+      "label": "AI language first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 11,
+      "evidence": [
+        {
+          "term": "AI data center",
+          "text": "ss Combination Agreement with Green AI Cloud, a Clean Energy Super Compute AI Platform in Europe Green AI Cloud, Inc. (the “Company”), a clean energy super compute AI platform in Europe, is positioned where accelerating AI data center demand meets a scarcity of power-secured capacity. The Company is a pioneer in clean energy compute and its data centers are ",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording"
+          ]
+        },
+        {
+          "term": "AI infrastructure",
+          "text": "ness combination values the Company at a pre-money equity value of $300 million. Brooklyn, NY and Stockholm, Sweden., October 8, 2026 (PRNewswire) &ndash; Green AI Cloud, Inc. (“ Green AI Cloud ” or the “ Company ”), an AI infrastructure company focused on designing, building, and operating high-performance AI data centers with a focus on environmental susta",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording",
+            "forward-looking wording"
+          ]
+        },
+        {
+          "term": "AI data centers",
+          "text": ", NY and Stockholm, Sweden., October 8, 2026 (PRNewswire) &ndash; Green AI Cloud, Inc. (“ Green AI Cloud ” or the “ Company ”), an AI infrastructure company focused on designing, building, and operating high-performance AI data centers with a focus on environmental sustainability and data sovereignty, and Pioneer Acquisition I Corp (Nasdaq: PACH ) (“ Pioneer",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "customer or contract wording",
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "operatingBridge": null,
+      "operatingBridgeStatus": "No standardized facts available by the filing date",
+      "reviewedByHuman": false
+    },
     {
       "cik": "0000731766",
       "company": "UNITEDHEALTH GROUP INC",
@@ -13807,6 +16972,257 @@
     "0001968487-26-000036",
     "0001999371-26-022578",
     "0002001557-26-000194",
-    "0000731766-26-000255"
+    "0000731766-26-000255",
+    "0001193125-26-419146",
+    "0001193125-26-419605",
+    "0000023197-26-000111",
+    "0000023197-26-000113",
+    "0000023197-26-000114",
+    "0000056978-26-000036",
+    "0000070858-26-000481",
+    "0000080661-26-000367",
+    "0000093751-26-000592",
+    "0000315852-26-000022",
+    "0000795266-26-000076",
+    "0000815556-26-000046",
+    "0000863064-26-000041",
+    "0000893538-26-000137",
+    "0000895421-26-000288",
+    "0000908315-26-000038",
+    "0000908315-26-000040",
+    "0000909832-26-000096",
+    "0000933034-26-000006",
+    "0000950103-26-015545",
+    "0000950103-26-015548",
+    "0000950103-26-015568",
+    "0000950103-26-015583",
+    "0000950103-26-015594",
+    "0000950103-26-015597",
+    "0001003078-26-000104",
+    "0001062993-26-005311",
+    "0001062993-26-005318",
+    "0001062993-26-005326",
+    "0001062993-26-005341",
+    "0001074828-26-000084",
+    "0001101302-26-000154",
+    "0001104659-26-115672",
+    "0001104659-26-115678",
+    "0001104659-26-115687",
+    "0001104659-26-115709",
+    "0001104659-26-115723",
+    "0001104659-26-115736",
+    "0001104659-26-115741",
+    "0001104659-26-115742",
+    "0001104659-26-115744",
+    "0001104659-26-115745",
+    "0001104659-26-115751",
+    "0001104659-26-115753",
+    "0001104659-26-115755",
+    "0001104659-26-115761",
+    "0001104659-26-115765",
+    "0001104659-26-115770",
+    "0001104659-26-115771",
+    "0001104659-26-115773",
+    "0001104659-26-115791",
+    "0001104659-26-115802",
+    "0001104659-26-115843",
+    "0001104659-26-115847",
+    "0001104659-26-115848",
+    "0001104659-26-115855",
+    "0001104659-26-115864",
+    "0001104659-26-115866",
+    "0001104659-26-115871",
+    "0001104659-26-115874",
+    "0001104659-26-115880",
+    "0001104659-26-115885",
+    "0001104659-26-115886",
+    "0001129928-26-000072",
+    "0001140361-26-039522",
+    "0001140361-26-039551",
+    "0001140361-26-039602",
+    "0001171520-26-000304",
+    "0001171520-26-000305",
+    "0001171843-26-006615",
+    "0001171843-26-006616",
+    "0001171843-26-006617",
+    "0001171843-26-006624",
+    "0001171843-26-006626",
+    "0001175680-26-000035",
+    "0001177609-26-000072",
+    "0001178913-26-004767",
+    "0001178913-26-004769",
+    "0001185185-26-004727",
+    "0001185185-26-004736",
+    "0001185185-26-004750",
+    "0001185185-26-004752",
+    "0001193125-26-420684",
+    "0001193125-26-420840",
+    "0001193125-26-420929",
+    "0001193125-26-420931",
+    "0001193125-26-420933",
+    "0001193125-26-420934",
+    "0001193125-26-420979",
+    "0001193125-26-420980",
+    "0001193125-26-421013",
+    "0001193125-26-421018",
+    "0001193125-26-421024",
+    "0001193125-26-421025",
+    "0001193125-26-421035",
+    "0001193125-26-421043",
+    "0001193125-26-421058",
+    "0001193125-26-421066",
+    "0001193125-26-421071",
+    "0001193125-26-421076",
+    "0001193125-26-421079",
+    "0001193125-26-421080",
+    "0001193125-26-421155",
+    "0001193125-26-421662",
+    "0001193125-26-421701",
+    "0001193125-26-421732",
+    "0001193125-26-421733",
+    "0001193125-26-421751",
+    "0001193125-26-421761",
+    "0001193125-26-421789",
+    "0001193125-26-421807",
+    "0001193125-26-421808",
+    "0001193125-26-421810",
+    "0001193125-26-421820",
+    "0001193125-26-421830",
+    "0001205613-26-000073",
+    "0001206774-26-000559",
+    "0001210708-26-000086",
+    "0001213900-26-109217",
+    "0001213900-26-109218",
+    "0001213900-26-109222",
+    "0001213900-26-109227",
+    "0001213900-26-109230",
+    "0001213900-26-109233",
+    "0001213900-26-109240",
+    "0001213900-26-109242",
+    "0001213900-26-109249",
+    "0001213900-26-109266",
+    "0001213900-26-109271",
+    "0001213900-26-109300",
+    "0001213900-26-109308",
+    "0001213900-26-109385",
+    "0001213900-26-109407",
+    "0001213900-26-109408",
+    "0001213900-26-109411",
+    "0001213900-26-109415",
+    "0001213900-26-109419",
+    "0001213900-26-109421",
+    "0001213900-26-109426",
+    "0001213900-26-109430",
+    "0001213900-26-109456",
+    "0001213900-26-109457",
+    "0001213900-26-109462",
+    "0001213900-26-109469",
+    "0001213900-26-109472",
+    "0001213900-26-109483",
+    "0001279569-26-000974",
+    "0001289308-26-000018",
+    "0001292814-26-004912",
+    "0001292814-26-004914",
+    "0001292814-26-004916",
+    "0001292814-26-004918",
+    "0001292814-26-004920",
+    "0001292814-26-004922",
+    "0001292814-26-004924",
+    "0001292814-26-004926",
+    "0001292814-26-004928",
+    "0001292814-26-004930",
+    "0001292814-26-004932",
+    "0001317861-26-000051",
+    "0001331520-26-000117",
+    "0001376474-26-000646",
+    "0001386278-26-000048",
+    "0001398733-26-000056",
+    "0001437071-26-000076",
+    "0001437749-26-032599",
+    "0001437749-26-032600",
+    "0001437749-26-032601",
+    "0001437749-26-032602",
+    "0001437749-26-032620",
+    "0001437749-26-032622",
+    "0001437749-26-032624",
+    "0001437749-26-032627",
+    "0001437749-26-032631",
+    "0001437749-26-032635",
+    "0001437749-26-032638",
+    "0001467373-26-000042",
+    "0001477932-26-006216",
+    "0001477932-26-006218",
+    "0001493152-26-046901",
+    "0001493152-26-046927",
+    "0001493152-26-046928",
+    "0001493152-26-046929",
+    "0001493152-26-046931",
+    "0001493152-26-046932",
+    "0001493152-26-046935",
+    "0001493152-26-046936",
+    "0001493152-26-046938",
+    "0001493152-26-046939",
+    "0001493152-26-046942",
+    "0001493152-26-046949",
+    "0001493152-26-046951",
+    "0001493152-26-046953",
+    "0001493152-26-046961",
+    "0001493152-26-046969",
+    "0001493152-26-046971",
+    "0001493152-26-047004",
+    "0001493152-26-047006",
+    "0001493152-26-047018",
+    "0001493152-26-047023",
+    "0001493152-26-047031",
+    "0001493152-26-047032",
+    "0001493152-26-047033",
+    "0001493152-26-047034",
+    "0001493152-26-047063",
+    "0001493152-26-047064",
+    "0001493712-26-000014",
+    "0001517022-26-000071",
+    "0001537435-26-000092",
+    "0001554855-26-002124",
+    "0001563190-26-000157",
+    "0001564708-26-000221",
+    "0001570585-26-000139",
+    "0001575515-26-000051",
+    "0001575872-26-000700",
+    "0001575872-26-000701",
+    "0001580670-26-000080",
+    "0001628280-26-065813",
+    "0001628280-26-065816",
+    "0001628280-26-065826",
+    "0001628280-26-065833",
+    "0001628280-26-065837",
+    "0001628280-26-065842",
+    "0001628280-26-065872",
+    "0001628280-26-065876",
+    "0001628280-26-065879",
+    "0001628280-26-065893",
+    "0001654954-26-008931",
+    "0001654954-26-008935",
+    "0001654954-26-008939",
+    "0001654954-26-008942",
+    "0001654954-26-008946",
+    "0001654954-26-008950",
+    "0001654954-26-008952",
+    "0001683168-26-007830",
+    "0001683168-26-007834",
+    "0001683168-26-007845",
+    "0001689375-26-000057",
+    "0001709048-26-000252",
+    "0001753926-26-001931",
+    "0001753926-26-001935",
+    "0001819994-26-000067",
+    "0001828316-26-000045",
+    "0001829126-26-011096",
+    "0001829126-26-011104",
+    "0001829126-26-011125",
+    "0001867096-26-000091",
+    "0002004711-26-000018",
+    "0002029118-26-000117",
+    "0002065708-26-000003",
+    "0002076765-26-000015"
   ]
 }
