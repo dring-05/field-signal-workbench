@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T01:17:11.721Z",
+  "generatedAt": "2026-10-15T01:20:14.247Z",
   "coverage": "SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.",
   "scanWindowStart": "2026-10-08",
   "scanWindowEnd": "2026-10-15",
@@ -35,12 +35,6 @@
       "priorSameFormAiMentions": 0,
       "currentAiMentions": 4,
       "evidence": [
-        {
-          "term": "artificial intelligence",
-          "text": "ntial changes in tax laws and regulations; increases in costs and other liabilities associated with litigation, government investigations, audits or reviews; risks and uncertainties associated with our increasing use of artificial intelligence and other emerging technologies; failure to complete, manage or integrate strategic transactions; risks and uncertai",
-          "documentType": "EX-99.1",
-          "reviewCues": []
-        },
         {
           "term": "AI-enabled",
           "text": "25. The year-over-year increase was driven by strengthened operational discipline and medical cost management initiatives across its value-based care markets. Optum Insight • Optum Insight continues to develop and bring AI-enabled solutions to market that enhance services and reduce administrative burden across the health system, including capabilities that ",
@@ -6269,103 +6263,6 @@
             "form": "10-Q",
             "accession": "0001493152-26-046279",
             "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1673481/000149315226046279/0001493152-26-046279.txt"
-          },
-          "currentDebt": null,
-          "longTermDebt": null
-        }
-      },
-      "operatingBridgeStatus": "Available"
-    },
-    {
-      "cik": "0000839923",
-      "company": "VODAFONE GROUP PUBLIC LTD CO",
-      "mappedCompany": "VODAFONE GROUP PUBLIC LTD CO",
-      "ticker": "VOD, VODPF",
-      "exchange": "Nasdaq, OTC",
-      "form": "6-K",
-      "filingDate": "2026-10-08",
-      "accession": "0001654954-26-008837",
-      "filingUrl": "https://www.sec.gov/Archives/edgar/data/839923/0001654954-26-008837.txt",
-      "leadType": "ai-language-change",
-      "reviewStatus": "automated lead; human review required",
-      "label": "AI language first detected versus prior same-form filing",
-      "legalNameChange": null,
-      "nameChangeTextCorroborated": false,
-      "priorSameFormAiMentions": 0,
-      "currentAiMentions": 1,
-      "evidence": [
-        {
-          "term": "artificial intelligence",
-          "text": "and outlook for VodafoneThree, including its network investment plans, cost and capital expenditure synergy targets and expected returns, and the development and commercialisation of new technology offerings, including artificial intelligence (AI), which are subject to risks and uncertainties because they relate to future events. All statements other than st",
-          "documentType": "6-K",
-          "reviewCues": [
-            "forward-looking wording"
-          ]
-        }
-      ],
-      "reviewedByHuman": false,
-      "operatingBridge": {
-        "asOfDate": "2026-10-08",
-        "periodStart": "2025-04-01",
-        "periodEnd": "2025-09-30",
-        "durationDays": 183,
-        "unit": "EUR",
-        "taxonomy": "ifrs-full",
-        "grossMarginPct": 32.536080371258095,
-        "operatingMarginPct": null,
-        "facts": {
-          "revenue": {
-            "metric": "revenue",
-            "value": 19609000000,
-            "taxonomy": "ifrs-full",
-            "tag": "Revenue",
-            "unit": "EUR",
-            "periodStart": "2025-04-01",
-            "periodEnd": "2025-09-30",
-            "filed": "2025-11-14",
-            "form": "6-K",
-            "accession": "0001193125-25-281366",
-            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/839923/000119312525281366/0001193125-25-281366.txt"
-          },
-          "grossProfit": {
-            "metric": "grossProfit",
-            "value": 6380000000,
-            "taxonomy": "ifrs-full",
-            "tag": "GrossProfit",
-            "unit": "EUR",
-            "periodStart": "2025-04-01",
-            "periodEnd": "2025-09-30",
-            "filed": "2025-11-14",
-            "form": "6-K",
-            "accession": "0001193125-25-281366",
-            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/839923/000119312525281366/0001193125-25-281366.txt"
-          },
-          "operatingIncome": null,
-          "netIncome": {
-            "metric": "netIncome",
-            "value": 1052000000,
-            "taxonomy": "ifrs-full",
-            "tag": "ProfitLoss",
-            "unit": "EUR",
-            "periodStart": "2025-04-01",
-            "periodEnd": "2025-09-30",
-            "filed": "2025-11-14",
-            "form": "6-K",
-            "accession": "0001193125-25-281366",
-            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/839923/000119312525281366/0001193125-25-281366.txt"
-          },
-          "cash": {
-            "metric": "cash",
-            "value": 7087000000,
-            "taxonomy": "ifrs-full",
-            "tag": "CashAndCashEquivalents",
-            "unit": "EUR",
-            "periodStart": "",
-            "periodEnd": "2025-09-30",
-            "filed": "2025-11-14",
-            "form": "6-K",
-            "accession": "0001193125-25-281366",
-            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/839923/000119312525281366/0001193125-25-281366.txt"
           },
           "currentDebt": null,
           "longTermDebt": null
