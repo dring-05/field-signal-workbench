@@ -72,6 +72,10 @@ assert.equal(analyzeText(executiveBio).length, 0, 'AI references in executive bi
 const executiveBioWithExperienceSpan = 'She serves as senior vice president and chief operating officer of Global HP Solutions for HP Inc., where she leads operations and strategic execution across HP’s global Solutions portfolio, enabling intelligent platforms, AI-powered insights and collaboration across all HP global businesses. Her experience with HP spans over two decades during which she has held a number of leadership positions.';
 assert.equal(isLikelyBiographyEvidence(executiveBioWithExperienceSpan), true);
 assert.equal(analyzeText(executiveBioWithExperienceSpan).length, 0, 'AI references in filed executive biographies should not create operating leads');
+const riskBoilerplate = 'Risks and uncertainties associated with our increasing use of artificial intelligence and other emerging technologies may affect the company\'s business operations.';
+assert.equal(analyzeText(riskBoilerplate).length, 0, 'AI mentions inside an explicit risk-list sentence should not create operating leads');
+const mixedRiskAndBusiness = 'Risks and uncertainties associated with our increasing use of artificial intelligence and other emerging technologies may affect results. Separately, we launched an AI-enabled claims processing product for customers this quarter.';
+assert.ok(analyzeText(mixedRiskAndBusiness).some(hit => hit.term.toLowerCase() === 'ai-enabled'), 'risk boilerplate in one sentence should not suppress an operational AI hit elsewhere in the filing');
 assert.ok(analyzeText('We launched an AI-powered analytics product for customers in September.').length, 'issuer product language should remain eligible');
 const verifiedNameChange = legalNameChangeFromSubmissions(formerNamesFixture, '2026-10-10', '123');
 assert.deepEqual(verifiedNameChange, {
