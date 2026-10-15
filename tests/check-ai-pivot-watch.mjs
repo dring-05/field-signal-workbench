@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { analyzeText, aiDeltaLabel, aiPivotLeadType, attachListedIssuer, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, reviewCues, selfTest } from '../automation/sec-filing-screen.mjs';
+import { analyzeText, aiDeltaLabel, aiPivotLeadType, attachListedIssuer, isLikelyBiographyEvidence, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, reviewCues, selfTest } from '../automation/sec-filing-screen.mjs';
 
 const moduleSource = await readFile(new URL('../public/ai-pivot-watch.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
@@ -66,6 +66,10 @@ assert.deepEqual(reviewCues('AI data center capacity for customers under a propo
   'financial-results wording', 'customer or contract wording', 'asset, capacity, or deployment wording', 'funding or dilution wording', 'forward-looking wording'
 ]);
 assert.ok(analyzeText('The company sells machine learning services to enterprise customers.').length, 'machine-learning business wording should be screened');
+const executiveBio = 'The board appointed Ms. Example as a director. She previously served as COO at HP, where she led AI-powered insights for enterprise customers. Her biography describes her career in technology.';
+assert.equal(isLikelyBiographyEvidence(executiveBio), true);
+assert.equal(analyzeText(executiveBio).length, 0, 'AI references in executive biographies should not create operating leads');
+assert.ok(analyzeText('We launched an AI-powered analytics product for customers in September.').length, 'issuer product language should remain eligible');
 const verifiedNameChange = legalNameChangeFromSubmissions(formerNamesFixture, '2026-10-10', '123');
 assert.deepEqual(verifiedNameChange, {
   oldName: 'Beta Manufacturing Inc.',

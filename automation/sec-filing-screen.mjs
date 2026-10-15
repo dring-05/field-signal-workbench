@@ -25,6 +25,7 @@ const OPERATIONAL_CONTEXT = /\b(?:customer|commercial|revenue|product|service|bu
 const RISK_HEADING = /\b(?:risk factors|risks related to|forward-looking statements|cautionary statement)\b/i;
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
 const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
+const BIOGRAPHY_CONTEXT = /\b(?:biograph(?:y|ical)|professional background|career history|previously served|formerly served|prior to joining|before joining|appointed to the board|director nominee|board nominee|served as.{0,100}\b(?:at|for)\b)\b/i;
 const OPERATING_FACTS = {
   'us-gaap': {
     revenue: ['RevenueFromContractWithCustomerExcludingAssessedTax', 'Revenues', 'SalesRevenueNet'],
@@ -91,7 +92,8 @@ export function analyzeText(text) {
       const end = Math.min(normalized.length, match.index + match[0].length + 220);
       const context = normalized.slice(start, end);
       const before = normalized.slice(Math.max(0, match.index - 1200), match.index);
-      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500))) continue;
+      const issuerContext = normalized.slice(Math.max(0, match.index - 700), Math.min(normalized.length, match.index + 700));
+      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500)) || BIOGRAPHY_CONTEXT.test(issuerContext)) continue;
       hits.push({ term: match[0], context: context.trim(), sentence: sentenceAt(normalized, match.index, match[0].length) });
       if (hits.length >= 30) return hits;
     }
@@ -104,6 +106,10 @@ function sentenceAt(text, index, length) {
   const ends = ['.', '!', '?', ';'].map(mark => text.indexOf(mark, index + length)).filter(position => position >= 0);
   const right = ends.length ? Math.min(...ends) : text.length;
   return text.slice(left, right).trim();
+}
+
+export function isLikelyBiographyEvidence(text) {
+  return BIOGRAPHY_CONTEXT.test(String(text ?? ''));
 }
 
 const EVIDENCE_STOPWORDS = new Set([
@@ -588,7 +594,10 @@ async function scan(options) {
     if (!mappedByCik.has(item.cik)) mappedByCik.set(item.cik, []);
     mappedByCik.get(item.cik).push(item);
   }
-  const retained = (options.feed.leads ?? []).map(item => {
+  const retained = (options.feed.leads ?? []).filter(item => {
+    const evidence = Array.isArray(item.evidence) ? item.evidence : [];
+    return !evidence.length || evidence.some(hit => !isLikelyBiographyEvidence(hit.text));
+  }).map(item => {
     const mapped = mappedByCik.get(String(item.cik ?? '').padStart(10, '0'));
     return {
       ...item,
