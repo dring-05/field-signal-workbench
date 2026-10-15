@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T01:20:14.247Z",
+  "generatedAt": "2026-10-15T01:23:09.243Z",
   "coverage": "SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.",
   "scanWindowStart": "2026-10-08",
   "scanWindowEnd": "2026-10-15",
@@ -33,7 +33,7 @@
       "legalNameChange": null,
       "nameChangeTextCorroborated": false,
       "priorSameFormAiMentions": 0,
-      "currentAiMentions": 4,
+      "currentAiMentions": 2,
       "evidence": [
         {
           "term": "AI-enabled",
@@ -13620,7 +13620,6 @@
     "0000314489-26-000063",
     "0000721994-26-000069",
     "0000730263-26-000030",
-    
     "0000736772-26-000085",
     "0000763744-26-000089",
     "0000772406-26-000047",
@@ -13997,6 +13996,7 @@
     "0001929980-26-000542",
     "0001968487-26-000036",
     "0001999371-26-022578",
-    "0002001557-26-000194"
+    "0002001557-26-000194",
+    "0000731766-26-000255"
   ]
 }
