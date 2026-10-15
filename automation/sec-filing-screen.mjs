@@ -27,6 +27,8 @@ const EXPLICIT_RISK_LIST = /\b(?:risks?\s+and\s+uncertainties|uncertainties\s+an
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
 const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
 const BIOGRAPHY_CONTEXT = /\b(?:biograph(?:y|ical)|professional background|career history|previously served|formerly served|prior to joining|before joining|appointed to the board|director nominee|board nominee|served as.{0,100}\b(?:at|for)\b|experience\s+(?:with|at)\s+.{1,100}\bspans?\s+over\s+.{1,30}\b(?:years?|decades?)|held\s+(?:a number of\s+)?leadership positions|career\s+(?:at|with)\s+.{1,100}\bover\s+.{1,30}\b(?:years?|decades?))\b/i;
+const COMMODITY_AI_DEMAND = /\b(?:critical minerals?|silver|antimony|copper|lithium|nickel|cobalt|rare earths?|semiconductors?|chips?)\b[\s\S]{0,160}\b(?:support(?:s|ing)?|needed to|supply(?:ing|ies)?|meet(?:ing)?|benefit(?:s|ing)? from|driven by|fuel(?:ing|s)?)\b[\s\S]{0,120}\b(?:artificial intelligence|AI)\b/i;
+const SEC_TIME_ZONE = 'America/New_York';
 const OPERATING_FACTS = {
   'us-gaap': {
     revenue: ['RevenueFromContractWithCustomerExcludingAssessedTax', 'Revenues', 'SalesRevenueNet'],
@@ -94,8 +96,9 @@ export function analyzeText(text) {
       const context = normalized.slice(start, end);
       const before = normalized.slice(Math.max(0, match.index - 1200), match.index);
       const issuerContext = normalized.slice(Math.max(0, match.index - 700), Math.min(normalized.length, match.index + 700));
-      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500)) || EXPLICIT_RISK_LIST.test(sentenceAt(normalized, match.index, match[0].length)) || BIOGRAPHY_CONTEXT.test(issuerContext)) continue;
-      hits.push({ term: match[0], context: context.trim(), sentence: sentenceAt(normalized, match.index, match[0].length) });
+      const sentence = sentenceAt(normalized, match.index, match[0].length);
+      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500)) || EXPLICIT_RISK_LIST.test(sentence) || BIOGRAPHY_CONTEXT.test(issuerContext) || COMMODITY_AI_DEMAND.test(sentence)) continue;
+      hits.push({ term: match[0], context: context.trim(), sentence });
       if (hits.length >= 30) return hits;
     }
   }
@@ -242,6 +245,59 @@ export function relevantDocuments(raw, form) {
 }
 
 function dateString(date) { return date.toISOString().slice(0, 10); }
+function addCalendarDays(day, amount) {
+  const date = new Date(`${day}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + amount);
+  return dateString(date);
+}
+function dateInTimeZone(date, timeZone = SEC_TIME_ZONE) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone, year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+function weekdayOf(day) { return new Date(`${day}T00:00:00Z`).getUTCDay(); }
+function observedFixedHoliday(year, month, day) {
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCDay() === 6) date.setUTCDate(date.getUTCDate() - 1);
+  if (date.getUTCDay() === 0) date.setUTCDate(date.getUTCDate() + 1);
+  return dateString(date);
+}
+function nthWeekdayOfMonth(year, month, weekday, nth) {
+  const first = new Date(Date.UTC(year, month - 1, 1));
+  const delta = (weekday - first.getUTCDay() + 7) % 7;
+  return dateString(new Date(Date.UTC(year, month - 1, 1 + delta + 7 * (nth - 1))));
+}
+function lastWeekdayOfMonth(year, month, weekday) {
+  const last = new Date(Date.UTC(year, month, 0));
+  const delta = (last.getUTCDay() - weekday + 7) % 7;
+  last.setUTCDate(last.getUTCDate() - delta);
+  return dateString(last);
+}
+export function secFederalHolidays(year) {
+  return new Set([
+    observedFixedHoliday(year, 1, 1),
+    nthWeekdayOfMonth(year, 1, 1, 3),
+    nthWeekdayOfMonth(year, 2, 1, 3),
+    lastWeekdayOfMonth(year, 5, 1),
+    observedFixedHoliday(year, 6, 19),
+    observedFixedHoliday(year, 7, 4),
+    nthWeekdayOfMonth(year, 9, 1, 1),
+    nthWeekdayOfMonth(year, 10, 1, 2),
+    observedFixedHoliday(year, 11, 11),
+    nthWeekdayOfMonth(year, 11, 4, 4),
+    observedFixedHoliday(year, 12, 25),
+  ]);
+}
+export function expectedIndexSkipReason(day, currentEasternDate) {
+  const weekday = weekdayOf(day);
+  if (weekday === 0 || weekday === 6) return 'weekend';
+  const year = Number(day.slice(0, 4));
+  if (secFederalHolidays(year).has(day) || secFederalHolidays(year - 1).has(day) || secFederalHolidays(year + 1).has(day)) return 'SEC federal holiday';
+  if (day === currentEasternDate) return 'current ET date; daily index is published after the filing day closes';
+  return null;
+}
 function qtr(date) { return Math.ceil((date.getUTCMonth() + 1) / 3); }
 function submissionUrl(cik) { return `${DATA}/submissions/CIK${String(cik).padStart(10, '0')}.json`; }
 function filingUrl(filename) { return `${SEC}/Archives/${filename}`; }
@@ -485,6 +541,7 @@ async function scan(options) {
     throw new Error('Set SEC_USER_AGENT to an identifying name plus a real contact email, for example "Field Signals research your.name@example.com".');
   }
   const now = new Date();
+  const easternToday = dateInTimeZone(now);
   const tickerResponse = await secFetch(TICKER_EXCHANGE_URL, userAgent);
   if (tickerResponse.status !== 200) throw new Error('SEC ticker and exchange map could not be loaded');
   const tickerRows = parseTickerExchange(JSON.parse(tickerResponse.body));
@@ -492,20 +549,32 @@ async function scan(options) {
   const seen = new Set((options.feed.checkedAccessions ?? []).map(normalizeAccession).filter(Boolean));
   const filings = new Map();
   const unavailableIndexDays = [];
+  const indexCoverage = [];
   let readableIndexDays = 0;
   for (let offset = options.lookbackDays; offset >= 0; offset--) {
-    const day = new Date(now);
-    day.setUTCDate(day.getUTCDate() - offset);
-    const dayText = dateString(day);
-    const response = await secFetch(dailyIndexUrl(dayText), userAgent);
-    if (response.status === 404 || response.status === 403 || /<Code>AccessDenied<\/Code>/i.test(response.body)) {
-      unavailableIndexDays.push(dayText);
+    const dayText = addCalendarDays(easternToday, -offset);
+    const expectedSkip = expectedIndexSkipReason(dayText, easternToday);
+    if (expectedSkip) {
+      indexCoverage.push({date: dayText, status: 'expected-skip', reason: expectedSkip});
       continue;
     }
-    readableIndexDays++;
-    for (const row of parseMasterIndex(response.body)) {
-      if (seen.has(row.accession)) continue;
-      filings.set(row.accession, row);
+    try {
+      const response = await secFetch(dailyIndexUrl(dayText), userAgent);
+      if (response.status !== 200 || /<Code>AccessDenied<\/Code>/i.test(response.body)) {
+        unavailableIndexDays.push(dayText);
+        indexCoverage.push({date: dayText, status: 'request-failed', httpStatus: response.status, reason: response.status === 404 ? 'No index returned for an expected SEC business day; coverage could not be confirmed.' : 'SEC did not return a readable index; coverage could not be confirmed.'});
+        continue;
+      }
+      const rows = parseMasterIndex(response.body);
+      readableIndexDays++;
+      indexCoverage.push({date: dayText, status: 'readable'});
+      for (const row of rows) {
+        if (seen.has(row.accession)) continue;
+        filings.set(row.accession, row);
+      }
+    } catch (error) {
+      unavailableIndexDays.push(dayText);
+      indexCoverage.push({date: dayText, status: 'request-failed', reason: String(error.message ?? error).slice(0, 240)});
     }
   }
   if (!readableIndexDays) throw new Error('No SEC daily indexes were readable in the scan window; the existing feed was left unchanged.');
@@ -631,9 +700,10 @@ async function scan(options) {
     schemaVersion: 1,
     generatedAt: now.toISOString(),
     coverage: 'SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.',
-    scanWindowStart: dateString(new Date(now.getTime() - options.lookbackDays * 86400000)),
-    scanWindowEnd: dateString(now),
+    scanWindowStart: addCalendarDays(easternToday, -options.lookbackDays),
+    scanWindowEnd: easternToday,
     unavailableIndexDays,
+    indexCoverage: {timeZone: SEC_TIME_ZONE, checkedDays: indexCoverage},
     sources: ['https://www.sec.gov/Archives/edgar/daily-index/', 'https://data.sec.gov/submissions/', TICKER_EXCHANGE_URL],
     leads,
     checkedAccessions,
@@ -659,6 +729,10 @@ export function selfTest() {
   const ai = analyzeText('The company plans to launch an artificial intelligence data center business for customers.');
   if (!ai.length) throw new Error('AI phrase screen self-test failed');
   if (analyzeText('Risk Factors: our artificial intelligence product may not succeed.').length) throw new Error('risk-section suppression self-test failed');
+  if (analyzeText('Americas Gold and Silver Corp., a producer of silver and other critical minerals supporting artificial intelligence, is increasing production.').length) throw new Error('commodity demand mention should not create an AI operating lead');
+  if (!analyzeText('The company is launching an AI data center business and will provide compute capacity to customers.').length) throw new Error('issuer AI operating business language should remain eligible');
+  if (expectedIndexSkipReason('2026-10-10', '2026-10-14') !== 'weekend' || expectedIndexSkipReason('2026-10-12', '2026-10-14') !== 'SEC federal holiday' || expectedIndexSkipReason('2026-10-14', '2026-10-14')?.startsWith('current ET date') !== true) throw new Error('SEC index expected-skip calendar self-test failed');
+  if (expectedIndexSkipReason('2026-10-13', '2026-10-14') !== null) throw new Error('prior SEC business day should be checked');
   const longRisk = `Item 1A. Risk Factors. ${'Disclosure text without AI terms. '.repeat(80)} Our artificial intelligence data center business will serve customers.`;
   if (analyzeText(longRisk).length) throw new Error('long risk-section suppression self-test failed');
   const afterRisk = `${longRisk} Item 2. Properties. We launched an artificial intelligence data center for customers.`;

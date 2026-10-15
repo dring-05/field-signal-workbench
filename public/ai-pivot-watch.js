@@ -137,10 +137,20 @@
         const date = new Date(data.generatedAt);
         const ageDays = (Date.now() - date.getTime()) / 86400000;
         const status = `<div class="card card-pad"><p><strong>Last scan:</strong> ${esc(date.toLocaleString())} · window ${esc(data.scanWindowStart)} to ${esc(data.scanWindowEnd)} · ${Array.isArray(data.leads) ? data.leads.length : 0} retained leads</p><p class="footnote">${ageDays > 2 ? 'Feed may be stale. ' : ''}${esc(data.coverage || '')}</p></div>`;
-        const unavailableDays = Array.isArray(data.unavailableIndexDays) ? data.unavailableIndexDays : [];
-        const indexNotice = unavailableDays.length
-          ? `<p class="callout">SEC daily indexes were unavailable for ${unavailableDays.map(esc).join(', ')}. Results do not cover those dates.</p>`
+        const checkedIndexDays = Array.isArray(data.indexCoverage?.checkedDays) ? data.indexCoverage.checkedDays : [];
+        const expectedSkips = checkedIndexDays.filter(day => day.status === 'expected-skip');
+        const indexFailures = checkedIndexDays.filter(day => day.status === 'request-failed');
+        const legacyUnavailableDays = Array.isArray(data.unavailableIndexDays) ? data.unavailableIndexDays : [];
+        const expectedNotice = expectedSkips.length
+          ? `<p class="footnote">Expected index skips: ${expectedSkips.map(day => `${esc(day.date)} (${esc(day.reason)})`).join(', ')}. These are not counted as failed requests.</p>`
           : '';
+        const failedNotice = indexFailures.length
+          ? `<p class="callout">The SEC index could not be confirmed for ${indexFailures.map(day => `${esc(day.date)}${day.httpStatus ? ` (HTTP ${esc(day.httpStatus)})` : ''}`).join(', ')}. Coverage for these dates is unverified. This does not establish that filings were missed.</p>`
+          : '';
+        const legacyNotice = !checkedIndexDays.length && legacyUnavailableDays.length
+          ? `<p class="callout">An earlier scan listed ${legacyUnavailableDays.map(esc).join(', ')} without recording why. Coverage for those dates cannot be confirmed from that scan.</p>`
+          : '';
+        const indexNotice = expectedNotice + failedNotice + legacyNotice;
         const leads = Array.isArray(data.leads) ? data.leads : [];
         target.innerHTML = status + indexNotice + (leads.length ? leads.map(leadCard).join('') : '<p class="empty-receipts">No matches in the completed scan window. This is a keyword screen, so it can miss events and does not establish that filings contain no AI activity.</p>');
       } catch (error) {

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { analyzeText, aiDeltaLabel, aiPivotLeadType, attachListedIssuer, isLikelyBiographyEvidence, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, reviewCues, selfTest } from '../automation/sec-filing-screen.mjs';
+import { analyzeText, aiDeltaLabel, aiPivotLeadType, attachListedIssuer, expectedIndexSkipReason, isLikelyBiographyEvidence, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, reviewCues, secFederalHolidays, selfTest } from '../automation/sec-filing-screen.mjs';
 
 const moduleSource = await readFile(new URL('../public/ai-pivot-watch.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
@@ -38,6 +38,11 @@ const feedTarget = {innerHTML: ''};
 context.document = {querySelector: () => feedTarget};
 context.fetch = async () => ({ok: true, json: async () => ({
   generatedAt: '2026-10-13T12:00:00Z', scanWindowStart: '2026-10-06', scanWindowEnd: '2026-10-13', coverage: 'test feed', unavailableIndexDays: [],
+  indexCoverage: {timeZone: 'America/New_York', checkedDays: [
+    {date: '2026-10-10', status: 'expected-skip', reason: 'weekend'},
+    {date: '2026-10-12', status: 'expected-skip', reason: 'SEC federal holiday'},
+    {date: '2026-10-13', status: 'request-failed', httpStatus: 403, reason: 'SEC did not return a readable index; coverage could not be confirmed.'}
+  ]},
   leads: [{cik: '0000000123', company: 'Example Co', mappedCompany: 'Example Co', ticker: 'EXMP', exchange: 'Nasdaq', form: '8-K', filingDate: '2026-10-13', filingUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt', label: 'New AI-business wording', evidence: [], operatingBridge: {asOfDate: '2026-10-13', periodStart: '2026-04-01', periodEnd: '2026-06-30', durationDays: 91, unit: 'USD', taxonomy: 'us-gaap', grossMarginPct: 40, operatingMarginPct: 10, facts: {revenue: {value: 100, unit: 'USD', taxonomy: 'us-gaap', tag: 'RevenueFromContractWithCustomerExcludingAssessedTax', form: '10-Q', filed: '2026-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt'}, grossProfit: {value: 40, unit: 'USD', taxonomy: 'us-gaap', tag: 'GrossProfit', form: '10-Q', filed: '2026-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt'}, operatingIncome: null, netIncome: null}}}]
 })});
 await context.window.AIPivotWatch.loadFeed();
@@ -45,6 +50,18 @@ assert.match(feedTarget.innerHTML, /Reported operating metrics/);
 assert.match(feedTarget.innerHTML, /RevenueFromContractWithCustomerExcludingAssessedTax/);
 assert.match(feedTarget.innerHTML, /Gross margin:<\/strong> 40%/);
 assert.match(feedTarget.innerHTML, /Unavailable/);
+assert.match(feedTarget.innerHTML, /Expected index skips: 2026-10-10 \(weekend\), 2026-10-12 \(SEC federal holiday\)/);
+assert.match(feedTarget.innerHTML, /Coverage for these dates is unverified/);
+assert.match(feedTarget.innerHTML, /does not establish that filings were missed/);
+assert.doesNotMatch(feedTarget.innerHTML, /Results do not cover those dates/);
+context.fetch = async () => ({ok: true, json: async () => ({
+  generatedAt: '2026-10-13T12:00:00Z', scanWindowStart: '2026-10-06', scanWindowEnd: '2026-10-13',
+  unavailableIndexDays: ['2026-10-10', '2026-10-11'], leads: []
+})});
+await context.window.AIPivotWatch.loadFeed();
+assert.match(feedTarget.innerHTML, /An earlier scan listed 2026-10-10, 2026-10-11 without recording why/);
+assert.match(feedTarget.innerHTML, /Coverage for those dates cannot be confirmed from that scan/);
+assert.doesNotMatch(feedTarget.innerHTML, /Results do not cover those dates/);
 for (const href of [
   'https://www.sec.gov/Archives/edgar/data/1711786/000121390026090048/ea0300119-10q_rocket.htm',
   'https://www.sec.gov/Archives/edgar/data/1653909/000143774926028446/bird20260630_10q.htm',
@@ -55,6 +72,12 @@ assert.match(rendered, /Manual review · not a live feed/);
 assert.match(rendered, /or make a stock a short/);
 assert.match(rendered, /company-ticker-exchange association file/);
 assert.match(moduleSource, /repository Actions secret SEC_USER_AGENT/);
+assert.equal(expectedIndexSkipReason('2026-10-10', '2026-10-14'), 'weekend');
+assert.equal(expectedIndexSkipReason('2026-10-11', '2026-10-14'), 'weekend');
+assert.equal(expectedIndexSkipReason('2026-10-12', '2026-10-14'), 'SEC federal holiday');
+assert.match(expectedIndexSkipReason('2026-10-14', '2026-10-14'), /current ET date/);
+assert.equal(expectedIndexSkipReason('2026-10-13', '2026-10-14'), null);
+assert.ok(secFederalHolidays(2026).has('2026-10-12'), 'SEC holiday calendar must include Columbus Day 2026');
 selfTest();
 assert.equal(isNameChangeLead('Item 5.03. The company changed its corporate name from Old Co to New Co.', '8-K'), true);
 assert.equal(isNameChangeLead('Item 5.03. No name change occurred.', '8-K'), false);
@@ -77,6 +100,9 @@ assert.equal(analyzeText(riskBoilerplate).length, 0, 'AI mentions inside an expl
 const mixedRiskAndBusiness = 'Risks and uncertainties associated with our increasing use of artificial intelligence and other emerging technologies may affect results. Separately, we launched an AI-enabled claims processing product for customers this quarter.';
 assert.ok(analyzeText(mixedRiskAndBusiness).some(hit => hit.term.toLowerCase() === 'ai-enabled'), 'risk boilerplate in one sentence should not suppress an operational AI hit elsewhere in the filing');
 assert.ok(analyzeText('We launched an AI-powered analytics product for customers in September.').length, 'issuer product language should remain eligible');
+assert.equal(analyzeText('Americas Gold and Silver Corporation, a North American producer of silver and other critical minerals supporting artificial intelligence, is increasing silver and antimony production.').length, 0, 'commodity demand exposure to AI should not be mistaken for an issuer AI business');
+assert.equal(analyzeText('The company will increase silver and antimony output while supplying critical minerals needed to support the next generation of AI infrastructure.').length, 0, 'critical-mineral demand wording should not create an AI pivot lead');
+assert.ok(analyzeText('The company is launching an AI data center business and will provide compute capacity to customers.').length, 'issuer-operated AI business language should remain eligible');
 const verifiedNameChange = legalNameChangeFromSubmissions(formerNamesFixture, '2026-10-10', '123');
 assert.deepEqual(verifiedNameChange, {
   oldName: 'Beta Manufacturing Inc.',
