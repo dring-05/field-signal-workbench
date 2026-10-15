@@ -116,6 +116,15 @@ export function isLikelyBiographyEvidence(text) {
   return BIOGRAPHY_CONTEXT.test(String(text ?? ''));
 }
 
+export function cleanStoredEvidence(evidence) {
+  return (Array.isArray(evidence) ? evidence : []).filter(hit => {
+    const text = String(hit?.text ?? '');
+    return !isLikelyBiographyEvidence(text)
+      && !EXPLICIT_RISK_LIST.test(text)
+      && !COMMODITY_AI_DEMAND.test(text);
+  });
+}
+
 const EVIDENCE_STOPWORDS = new Set([
   'about', 'after', 'also', 'among', 'been', 'being', 'company', 'companies', 'could', 'during',
   'each', 'from', 'have', 'into', 'more', 'most', 'other', 'over', 'their', 'there', 'these',
@@ -666,8 +675,8 @@ async function scan(options) {
   }
   const retained = (options.feed.leads ?? []).filter(item => {
     const evidence = Array.isArray(item.evidence) ? item.evidence : [];
-    if (evidence.length) item.evidence = evidence.filter(hit => !isLikelyBiographyEvidence(hit.text) && !EXPLICIT_RISK_LIST.test(String(hit.text ?? '')));
-    return !evidence.length || item.evidence.length > 0;
+    if (evidence.length) item.evidence = cleanStoredEvidence(evidence);
+    return !evidence.length || item.evidence.length > 0 || Boolean(item.legalNameChange && item.nameChangeTextCorroborated);
   }).map(item => {
     const mapped = mappedByCik.get(String(item.cik ?? '').padStart(10, '0'));
     return {
@@ -730,6 +739,8 @@ export function selfTest() {
   if (!ai.length) throw new Error('AI phrase screen self-test failed');
   if (analyzeText('Risk Factors: our artificial intelligence product may not succeed.').length) throw new Error('risk-section suppression self-test failed');
   if (analyzeText('Americas Gold and Silver Corp., a producer of silver and other critical minerals supporting artificial intelligence, is increasing production.').length) throw new Error('commodity demand mention should not create an AI operating lead');
+  if (cleanStoredEvidence([{text: 'The company supplies silver and critical minerals supporting artificial intelligence infrastructure.'}]).length) throw new Error('commodity demand evidence should be removed from retained leads');
+  if (cleanStoredEvidence([{text: 'The issuer is launching an AI data center business for customers.'}]).length !== 1) throw new Error('operating AI evidence should remain in retained leads');
   if (!analyzeText('The company is launching an AI data center business and will provide compute capacity to customers.').length) throw new Error('issuer AI operating business language should remain eligible');
   if (expectedIndexSkipReason('2026-10-10', '2026-10-14') !== 'weekend' || expectedIndexSkipReason('2026-10-12', '2026-10-14') !== 'SEC federal holiday' || expectedIndexSkipReason('2026-10-14', '2026-10-14')?.startsWith('current ET date') !== true) throw new Error('SEC index expected-skip calendar self-test failed');
   if (expectedIndexSkipReason('2026-10-13', '2026-10-14') !== null) throw new Error('prior SEC business day should be checked');
