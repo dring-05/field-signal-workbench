@@ -1,16 +1,51 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T01:23:09.243Z",
+  "generatedAt": "2026-10-15T01:49:37.015Z",
   "coverage": "SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.",
-  "scanWindowStart": "2026-10-08",
-  "scanWindowEnd": "2026-10-15",
-  "unavailableIndexDays": [
-    "2026-10-10",
-    "2026-10-11",
-    "2026-10-12",
-    "2026-10-14",
-    "2026-10-15"
-  ],
+  "scanWindowStart": "2026-10-07",
+  "scanWindowEnd": "2026-10-14",
+  "unavailableIndexDays": [],
+  "indexCoverage": {
+    "timeZone": "America/New_York",
+    "checkedDays": [
+      {
+        "date": "2026-10-07",
+        "status": "readable"
+      },
+      {
+        "date": "2026-10-08",
+        "status": "readable"
+      },
+      {
+        "date": "2026-10-09",
+        "status": "readable"
+      },
+      {
+        "date": "2026-10-10",
+        "status": "expected-skip",
+        "reason": "weekend"
+      },
+      {
+        "date": "2026-10-11",
+        "status": "expected-skip",
+        "reason": "weekend"
+      },
+      {
+        "date": "2026-10-12",
+        "status": "expected-skip",
+        "reason": "SEC federal holiday"
+      },
+      {
+        "date": "2026-10-13",
+        "status": "readable"
+      },
+      {
+        "date": "2026-10-14",
+        "status": "expected-skip",
+        "reason": "current ET date; daily index is published after the filing day closes"
+      }
+    ]
+  },
   "sources": [
     "https://www.sec.gov/Archives/edgar/daily-index/",
     "https://data.sec.gov/submissions/",
