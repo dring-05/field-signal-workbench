@@ -23,6 +23,7 @@ const NAME_CHANGE = /\b(?:changed|change|changing|changes)\s+(?:(?:its|the compa
 const NAME_CHANGE_EXPLICIT = /\b(?:name change|change of name|changed\s+(?:(?:its|the company's|the issuer's)\s+)?(?:corporate\s+)?name|renamed\s+(?:itself\s+)?(?:as|to))\b/i;
 const OPERATIONAL_CONTEXT = /\b(?:customer|commercial|revenue|product|service|business|segment|launch|contract|facility|data cent(?:er|re)|compute|GPU|operations?|strategy|plan|license|licen[cs]e|acquisition|manufactur|deploy|capital|financ)\w*\b/i;
 const RISK_HEADING = /\b(?:risk factors|risks related to|forward-looking statements|cautionary statement)\b/i;
+const EXPLICIT_RISK_LIST = /\b(?:risks?\s+and\s+uncertainties|uncertainties\s+and\s+risks?)\b/i;
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
 const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
 const BIOGRAPHY_CONTEXT = /\b(?:biograph(?:y|ical)|professional background|career history|previously served|formerly served|prior to joining|before joining|appointed to the board|director nominee|board nominee|served as.{0,100}\b(?:at|for)\b|experience\s+(?:with|at)\s+.{1,100}\bspans?\s+over\s+.{1,30}\b(?:years?|decades?)|held\s+(?:a number of\s+)?leadership positions|career\s+(?:at|with)\s+.{1,100}\bover\s+.{1,30}\b(?:years?|decades?))\b/i;
@@ -93,7 +94,7 @@ export function analyzeText(text) {
       const context = normalized.slice(start, end);
       const before = normalized.slice(Math.max(0, match.index - 1200), match.index);
       const issuerContext = normalized.slice(Math.max(0, match.index - 700), Math.min(normalized.length, match.index + 700));
-      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500)) || BIOGRAPHY_CONTEXT.test(issuerContext)) continue;
+      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500)) || EXPLICIT_RISK_LIST.test(sentenceAt(normalized, match.index, match[0].length)) || BIOGRAPHY_CONTEXT.test(issuerContext)) continue;
       hits.push({ term: match[0], context: context.trim(), sentence: sentenceAt(normalized, match.index, match[0].length) });
       if (hits.length >= 30) return hits;
     }
