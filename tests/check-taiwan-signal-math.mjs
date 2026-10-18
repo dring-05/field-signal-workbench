@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const source = await readFile(new URL('../automation/taiwan-sheets-importer.gs', import.meta.url), 'utf8');
 const context = {};
-vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, marginDependencySignatures_, issuerIdentityKey_, monthlyMarketPriority_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, normalizeMonthlyPeriod_, monthDistance_, mopsHistoryDataKey_, writeLog_};`, context, {timeout: 1000});
+vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, marginDependencySignatures_, issuerIdentityKey_, monthlyMarketPriority_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, contiguousMonthlyObservations_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, normalizeMonthlyPeriod_, monthDistance_, mopsHistoryDataKey_, writeLog_};`, context, {timeout: 1000});
 const h = context.helpers;
 assert.equal(h.feedHeaders[1], 'Issuer series key');
 assert.equal(h.issuerIdentityKey_('2330', '台積電股份有限公司'), h.issuerIdentityKey_('2330', '台積電 股份有限公司'), 'identity matching should normalize spacing without dropping issuer-name evidence');
@@ -108,6 +108,8 @@ assert.equal(h.quarterIndex_('2025-Q1') - h.quarterIndex_('2024-Q1'), 4);
 assert.deepEqual({...h.finiteDifferencesAtEnd_([10, 12], 2)}, {d1: 2, d2: '', d3: ''});
 assert.deepEqual({...h.finiteDifferencesAtEnd_([10, 12, 16], 3)}, {d1: 4, d2: 2, d3: ''});
 assert.deepEqual({...h.finiteDifferencesAtEnd_([10, 12, 16, 22], 4)}, {d1: 6, d2: 2, d3: 0});
+assert.equal(h.contiguousMonthlyObservations_(['2026-06', '2026-07', '2026-08', '2026-09'], [10, 12, '', 22], 3), 1, 'a month with missing YoY growth must break the usable observation run');
+assert.equal(h.contiguousMonthlyObservations_(['2026-06', '2026-07', '2026-09', '2026-10'], [10, 12, 16, 22], 3), 2, 'a missing calendar month must break the usable observation run');
 
 const margins = [20, 21, 22, 23, 21, 23, 26, 30];
 const series = margins.map((gross, i) => ({key: h.quarterIndex_('2024-Q1') + i, gross, operating: gross / 2}));
@@ -139,7 +141,7 @@ assert.equal(generated.length, 1);
 assert.equal(generated[0].length, 33);
 assert.deepEqual(Array.from(generated[0].slice(8, 11)), [6, 2, 0]);
 assert.deepEqual(Array.from(generated[0].slice(27, 33)), [93, 83, 10, 1003, 903, 11.1], 'the public feed should carry the reported monthly and YTD revenue comparison bases');
-assert.match(generated[0][23], /Revenue Δ3 available/);
+assert.match(generated[0][23], /Revenue Δ1\/Δ2\/Δ3 available/);
 assert.equal(generated[0][1], 'TW|1234|exampleco');
 
 // Sheets returns a real Date for date-formatted YYYY-MM cells. The actual
@@ -157,6 +159,17 @@ h.rebuildSiteFeed_(dateBackfillBook);
 assert.equal(dateBackfillGenerated[0][5], '2026-09', 'the public feed should use a stable YYYY-MM period');
 assert.equal(dateBackfillGenerated[0][11], 4, 'date-formatted Sheet rows should produce four contiguous monthly observations');
 assert.deepEqual(Array.from(dateBackfillGenerated[0].slice(8, 11)), [6, 2, 0]);
+
+const missingYoyRows = dateBackfillRows.map(row => row.slice());
+missingYoyRows[2][9] = '';
+let missingYoyGenerated = [];
+const missingYoySheet = {getLastRow: () => 4 + missingYoyRows.length, getRange: () => ({getValues: () => missingYoyRows})};
+const missingYoyFeed = {getLastRow: () => 4, getRange: () => ({setValues: rows => {missingYoyGenerated = rows}})};
+const missingYoyBook = {getSheetByName: name => ({'Taiwan Monthly': missingYoySheet, 'Raw Statements': rawSheet, SiteFeed: missingYoyFeed, 'Margin Signals': marginAuditSheet}[name])};
+h.rebuildSiteFeed_(missingYoyBook);
+assert.equal(missingYoyGenerated[0][11], 1, 'the feed should report only consecutive months with a usable YoY observation');
+assert.deepEqual(Array.from(missingYoyGenerated[0].slice(8, 11)), ['', '', ''], 'a missing YoY observation must prevent derivatives from bridging across the gap');
+assert.match(missingYoyGenerated[0][23], /Revenue trend history: 1\/4/);
 
 const multiMarketMonthlyRows = [];
 for (const [market, yields, name] of [['Listed (TWSE)', [1, 2, 4, 7], 'Example Co.'], ['OTC (TPEx)', [10, 14, 19, 25], 'Other Issuer Ltd.'], ['Publicly issued (MOPS)', [20, 30, 40, 50], 'Example Co.']]) {

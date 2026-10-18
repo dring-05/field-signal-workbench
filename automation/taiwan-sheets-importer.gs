@@ -413,7 +413,7 @@ function rebuildSiteFeed_(book) {
     const periods = history.map(r => String(r[4]));
     const index = periods.length - 1;
     const y = history.map(r => number_(r[9]));
-    const continuous = contiguousMonths_(periods, index);
+    const continuous = contiguousMonthlyObservations_(periods, y, index);
     const diffs = finiteDifferencesAtEnd_(y, continuous);
     // Prefer the exact name match. The code-only fallback is populated only
     // when the quarterly source has one verified issuer identity for that code.
@@ -424,7 +424,7 @@ function rebuildSiteFeed_(book) {
       margin.status = 'Generic gross and operating margins are not comparable for financial-sector issuers; use sector-specific indicators instead';
     }
     const status = [
-      diffs.d3 !== '' ? 'Revenue Δ3 available' : 'Revenue Δ3 needs 4 consecutive monthly YoY observations',
+      diffs.d1 !== '' && diffs.d2 !== '' && diffs.d3 !== '' ? 'Revenue Δ1/Δ2/Δ3 available' : `Revenue trend history: ${continuous}/4 consecutive monthly YoY observations`,
       mergeVerified ? '' : 'Issuer code appears with different names across sources or dates; histories are split until the issuer identity is verified',
       margin.matched === false ? 'Quarterly issuer name did not match monthly feed; margin series left blank' : '',
       margin.status
@@ -631,10 +631,11 @@ function finiteDifferencesAtEnd_(values, contiguousCount) {
   return {d1, d2, d3};
 }
 
-function contiguousMonths_(periods, index) {
-  let count = 1;
-  for (let i = index; i > 0; i--) {
-    if (monthDistance_(periods[i - 1], periods[i]) !== 1) break;
+function contiguousMonthlyObservations_(periods, values, index) {
+  let count = 0;
+  for (let i = index; i >= 0; i--) {
+    if (i < index && monthDistance_(periods[i], periods[i + 1]) !== 1) break;
+    if (typeof values[i] !== 'number' || !Number.isFinite(values[i])) break;
     count++;
   }
   return count;

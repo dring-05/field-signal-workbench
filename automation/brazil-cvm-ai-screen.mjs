@@ -13,6 +13,7 @@ const CVM_ARCHIVE = year => `https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/IPE/D
 const MAX_ARCHIVE_BYTES = 20 * 1024 * 1024;
 const MAX_UNCOMPRESSED_BYTES = 60 * 1024 * 1024;
 const MAX_DOC_BYTES = 16 * 1024 * 1024;
+const MAX_PDF_TEXT_BYTES = 2 * 1024 * 1024;
 const AI_PATTERNS = [
   /\bartificial intelligence\b/gi, /\bgenerative\s+AI\b/gi, /\blarge language models?\b/gi,
   /\bmachine learning\b/gi, /\bIA generativa\b/gi, /\bintelig[eê]ncia artificial\b/gi,
@@ -22,6 +23,28 @@ const BUSINESS_CONTEXT = /customer|commercial|revenue|product|service|business|s
 const NAME_AI = /\b(?:AI|IA)\b|intelig[eê]ncia artificial|artificial intelligence/i;
 const DATE_FIELDS = ['data_entrega', 'data_entrega_doc', 'dt_entrega', 'data_entrega_documento'];
 const TEXT_EXTENSIONS = /\.(?:html?|xhtml|xml|txt|htm)$/i;
+const PDF_PYTHON = String.raw`
+import sys
+from io import BytesIO
+from pypdf import PdfReader
+
+raw = sys.stdin.buffer.read()
+reader = PdfReader(BytesIO(raw), strict=False)
+if reader.is_encrypted:
+    raise SystemExit("encrypted PDF")
+if len(reader.pages) > 100:
+    raise SystemExit("PDF exceeds 100-page extraction limit")
+parts = []
+size = 0
+for page in reader.pages:
+    text = page.extract_text() or ""
+    encoded = text.encode("utf-8", errors="replace")
+    size += len(encoded)
+    if size > 2 * 1024 * 1024:
+        raise SystemExit("PDF text exceeds 2 MB extraction limit")
+    parts.append(text)
+sys.stdout.write("\n".join(parts))
+`;
 
 const decodeBytes = bytes => {
   const head = Buffer.from(bytes).subarray(0, 512).toString('ascii');
@@ -162,6 +185,26 @@ export function findAiEvidence(text) {
   return found;
 }
 
+/** Extract text with pdftotext first and a bounded pypdf fallback. */
+export function extractPdfText(bytes, { execFile = execFileSync, python = process.env.PYTHON || 'python3' } = {}) {
+  try {
+    const text = execFile('pdftotext', ['-layout', '-', '-'], {
+      input: bytes, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], timeout: 15000,
+      maxBuffer: MAX_PDF_TEXT_BYTES,
+    });
+    if (text?.trim()) return text;
+  } catch { /* Try the portable Python fallback below. */ }
+  try {
+    const text = execFile(python, ['-c', PDF_PYTHON], {
+      input: bytes, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], timeout: 20000,
+      maxBuffer: MAX_PDF_TEXT_BYTES,
+    });
+    return text?.trim() ? text : '';
+  } catch {
+    return '';
+  }
+}
+
 function probableName(text) {
   const value = plainText(text);
   const matches = [...value.matchAll(/(?:denominacao social|nome empresarial|companhia|empresa)\s*[:\-]?\s*([A-Z0-9][A-Z0-9 .,&()/-]{2,120})/gi)];
@@ -207,7 +250,7 @@ async function get(fetchImpl, url, { maxBytes = MAX_ARCHIVE_BYTES } = {}) {
   return { contentType: response.headers.get('content-type') ?? '', bytes: data };
 }
 
-export async function scan({ fetchImpl = fetch, feed = {}, from, to, year = new Date().getUTCFullYear(), maxDocs = 500, download = true } = {}) {
+export async function scan({ fetchImpl = fetch, feed = {}, from, to, year = new Date().getUTCFullYear(), maxDocs = 500, download = true, pdfTextExtractor = extractPdfText } = {}) {
   if (!Number.isInteger(year) || year < 2003 || year > 2100) throw new Error('year must be a valid IPE archive year');
   if (from?.slice(0, 4) !== String(year) || to?.slice(0, 4) !== String(year)) throw new Error('from and to must fall within the selected IPE archive year');
   const archiveUrl = CVM_ARCHIVE(year);
@@ -245,8 +288,7 @@ export async function scan({ fetchImpl = fetch, feed = {}, from, to, year = new 
         let text = '';
         if (isPdf) {
           pdfDocuments++;
-          try { text = execFileSync('pdftotext', ['-layout', '-', '-'], { input: result.bytes, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], timeout: 15000 }); }
-          catch { text = ''; }
+          text = pdfTextExtractor(result.bytes);
           if (!text) unparsedPdf++;
         } else if (TEXT_EXTENSIONS.test(new URL(row.url).pathname) || /(?:text\/|html|xml|json)/i.test(result.contentType)) {
           text = decodeBytes(result.bytes);

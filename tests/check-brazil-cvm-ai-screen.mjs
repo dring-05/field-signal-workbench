@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { createLeads, findAiEvidence, normalizeIpeRows, parseDelimited, scan, selfTest, unzipFiles } from '../automation/brazil-cvm-ai-screen.mjs';
+import { createLeads, extractPdfText, findAiEvidence, normalizeIpeRows, parseDelimited, scan, selfTest, unzipFiles } from '../automation/brazil-cvm-ai-screen.mjs';
 
 function checksum(bytes) {
   let crc = 0xffffffff;
@@ -41,6 +41,25 @@ assert.equal(rows.length, 1);
 assert.equal(rows[0].protocol, '123IPE2026101201');
 const extracted = unzipFiles(makeStoredZip([['ipe.csv', indexText]]));
 assert.equal(extracted.length, 1);
+
+// When pdftotext is missing, the scanner passes the bounded PDF to pypdf.
+const pdfCommands = [];
+const fallbackText = extractPdfText(Buffer.from('%PDF-test'), {
+  python: '/test/python',
+  execFile: (command, args, options) => {
+    pdfCommands.push({ command, args, options });
+    if (command === 'pdftotext') throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+    assert.equal(command, '/test/python');
+    assert.deepEqual(args.slice(0, 2), ['-c', args[1]]);
+    assert.match(args[1], /from pypdf import PdfReader/);
+    assert.match(args[1], /len\(reader\.pages\) > 100/);
+    assert.match(args[1], /2 \* 1024 \* 1024/);
+    assert.equal(options.input.toString(), '%PDF-test');
+    return 'Artificial intelligence product for customers';
+  },
+});
+assert.match(fallbackText, /Artificial intelligence/);
+assert.deepEqual(pdfCommands.map(call => call.command), ['pdftotext', '/test/python']);
 
 const indexArchive = makeStoredZip([['ipe_cia_aberta_2026.csv', indexText]]);
 const html = await readFile(new URL('./fixtures/cvm-ipe-document-reconstructed.html', import.meta.url), 'utf8');
@@ -93,4 +112,25 @@ assert.equal(capped.scanStats.selectedDocuments, 1);
 assert.equal(capped.scanStats.truncated, true);
 assert.equal(capped.companyNames['00.000.000/0001-00'], 'LATEST AI S.A.');
 assert.equal(capped.leads[0].company, 'LATEST AI S.A.');
+
+// A PDF extracted by the fallback must flow through the ordinary lead screen.
+const pdfFetch = async url => {
+  const source = String(url);
+  const bytes = source.endsWith('.zip') ? indexArchive : Buffer.from('%PDF-test-document');
+  return {
+    ok: true, status: 200,
+    headers: { get: key => key.toLowerCase() === 'content-type' ? (source.endsWith('.zip') ? 'application/zip' : 'application/pdf') : null },
+    arrayBuffer: async () => Uint8Array.from(bytes).buffer,
+  };
+};
+const pdfResult = await scan({
+  fetchImpl: pdfFetch, year: 2026, from: '2026-10-12', to: '2026-10-12', feed: {}, maxDocs: 10,
+  pdfTextExtractor: bytes => {
+    assert.equal(bytes.toString(), '%PDF-test-document');
+    return 'Artificial intelligence product for customers';
+  },
+});
+assert.equal(pdfResult.scanStats.pdfDocuments, 1);
+assert.equal(pdfResult.scanStats.readableDocuments, 1);
+assert.equal(pdfResult.leads.length, 1);
 console.log('Brazil CVM AI screen tests passed');
