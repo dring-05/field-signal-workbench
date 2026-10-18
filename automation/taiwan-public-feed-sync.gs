@@ -41,8 +41,13 @@ function syncTaiwanPublicFeed() {
     if (target.getMaxRows() < values.length + 3) target.insertRowsAfter(target.getMaxRows(), values.length + 3 - target.getMaxRows());
 
     const previousRows = Math.max(0, target.getLastRow() - 3);
-    if (previousRows) target.getRange(4, 1, previousRows, width).clearContent();
+    // Write the complete replacement before clearing any rows left over from a
+    // larger prior snapshot. If setValues fails, the currently published feed
+    // stays available instead of being emptied first.
     target.getRange(4, 1, values.length, width).setValues(values);
+    if (previousRows > values.length) {
+      target.getRange(4 + values.length, 1, previousRows - values.length, width).clearContent();
+    }
     writeLog_('Public feed synced', '', Math.max(0, values.length - 1), Math.max(0, values.length - 1), 0,
       'Copied the approved SiteFeed columns to the separate public-only workbook.',
       'Rows including header: ' + values.length + '; source tab: SiteFeed; public fields: ' + width);

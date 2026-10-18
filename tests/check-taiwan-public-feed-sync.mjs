@@ -22,8 +22,9 @@ assert.equal(sourceHeaders.length, 33);
 const copied = [sourceHeaders, ['Listed (TWSE)', 'TW|2330|台積電', '2330', '台積電', 'Semiconductors', '2026-09', 1, 20, 0, 1, 2, 4, '', '', '', '', '', '', '', '', '', '', '', 'status', 'https://example.test', 'TSMC', 'https://translate.google.com', 1, 2, 3, 4, 5, 6]];
 let written = [];
 let cleared = null;
+let failWrite = false;
 const source = {getLastRow: () => 5, getSheetByName: () => null, getRange: (row, col, rows, cols) => ({getValues: () => rows === 1 ? [sourceHeaders] : copied,})};
-const target = {getLastRow: () => 8, getMaxColumns: () => 33, getMaxRows: () => 3000, getSheetByName: () => null, getRange: (row, col, rows, cols) => ({clearContent: () => {cleared = [row, col, rows, cols]}, setValues: values => {written = values}})};
+const target = {getLastRow: () => 8, getMaxColumns: () => 33, getMaxRows: () => 3000, getSheetByName: () => null, getRange: (row, col, rows, cols) => ({clearContent: () => {cleared = [row, col, rows, cols]}, setValues: values => {if (failWrite) throw new Error('simulated write failure'); written = values}})};
 const book = id => id === '1qNrg6QhGKBai0jOa6teL1WNsiCazZQQmRVA4Po5fuIY' ? {getSheetByName: () => source} : {getSheetByName: () => target};
 const context = {
   LockService: {getScriptLock: () => ({tryLock: () => true, releaseLock: () => {}})},
@@ -36,9 +37,15 @@ assert.deepEqual(JSON.parse(JSON.stringify(result)), {result: 'success', rows: 1
 assert.equal(written.length, 2, 'copy the schema header and current source rows');
 assert.equal(written[0][2], 'Company code');
 assert.equal(written[1][2], '2330');
-assert.deepEqual(cleared, [4, 1, 5, 33], 'clear stale public rows before writing the latest feed');
+assert.deepEqual(cleared, [6, 1, 3, 33], 'clear only stale rows after writing the latest feed');
 assert.equal(context.publicConfig.targetSpreadsheetId, '1bdq1OZ4-lcNMMWNqpGdAIqb3CM1oGDmdIOY1e5KN0cg');
 assert.match(context.log[0], /Public feed synced/);
+
+failWrite = true;
+cleared = null;
+assert.throws(() => context.runSync(), /simulated write failure/, 'surface a failed public-feed write');
+assert.equal(cleared, null, 'keep the prior public feed intact when replacement writing fails');
+failWrite = false;
 
 const alteredHeaders = [...sourceHeaders];
 alteredHeaders[19] = 'Unapproved source field';

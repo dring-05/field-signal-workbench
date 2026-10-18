@@ -20,6 +20,11 @@
 
 ## 2026-10-17
 
+### Public Taiwan feed write safety
+
+- Updated the local Apps Script feed-sync source to write the complete new snapshot before clearing rows left over from a larger prior snapshot. A failed replacement write therefore does not clear the existing public feed first.
+- Added a failure-path test that confirms the old public rows are not cleared when the replacement write fails. This is a repository change only. The current personal Apps Script project has not been updated with this source.
+
 ### Taiwan monthly automation audit
 
 - The live Dashboard loaded the published Taiwan feed with 2,621 issuer rows and a latest report month of September 2026. The underlying MOPS history has June through September observations, enough for revenue growth differences where each issuer has four consecutive months.
