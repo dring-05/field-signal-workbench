@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
-const syncSource = await readFile(new URL('../automation/taiwan-public-feed-sync.gs', import.meta.url), 'utf8');
+const importerSource = await readFile(new URL('../automation/taiwan-sheets-importer.gs', import.meta.url), 'utf8');
+const feedSource = await readFile(new URL('../automation/taiwan-public-feed-sync.gs', import.meta.url), 'utf8');
 const appSource = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
 const helperSource = appSource.match(/function taiwanAccelerationValue\(row\)[\s\S]*?function renderTaiwanRows\(query\)/)?.[0];
 assert.ok(helperSource, 'Taiwan acceleration sort helpers must remain available to the dashboard');
@@ -19,43 +20,36 @@ assert.ok(appSource.includes("base '+esc(taiwanMetric(r['Revenue year-ago month'
 
 const sourceHeaders = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL', 'English company name or official abbreviation', 'Mandarin pronunciation lookup', 'Revenue prior month', 'Revenue year-ago month', 'Revenue MoM %', 'Revenue YTD', 'Revenue prior-year YTD', 'Revenue YTD growth %'];
 assert.equal(sourceHeaders.length, 33);
-const copied = [sourceHeaders, ['Listed (TWSE)', 'TW|2330|台積電', '2330', '台積電', 'Semiconductors', '2026-09', 1, 20, 0, 1, 2, 4, '', '', '', '', '', '', '', '', '', '', '', 'status', 'https://example.test', 'TSMC', 'https://translate.google.com', 1, 2, 3, 4, 5, 6]];
-let written = [];
-let cleared = null;
-let failWrite = false;
-const source = {getLastRow: () => 5, getSheetByName: () => null, getRange: (row, col, rows, cols) => ({getValues: () => rows === 1 ? [sourceHeaders] : copied,})};
-const target = {getLastRow: () => 8, getMaxColumns: () => 33, getMaxRows: () => 3000, getSheetByName: () => null, getRange: (row, col, rows, cols) => ({clearContent: () => {cleared = [row, col, rows, cols]}, setValues: values => {if (failWrite) throw new Error('simulated write failure'); written = values}})};
-const book = id => id === '1qNrg6QhGKBai0jOa6teL1WNsiCazZQQmRVA4Po5fuIY' ? {getSheetByName: () => source} : {getSheetByName: () => target};
+const row = ['Listed (TWSE)', 'TW|2330|台積電', '2330', '台積電', 'Semiconductors', '2026-09', 1, 20, 0, 1, 2, 4, '', '', '', '', '', '', '', '', '', '', '', 'status', 'https://example.test', 'TSMC', 'https://translate.google.com', 1, 2, 3, 4, 5, 6];
+const validRows = [sourceHeaders, ...Array.from({length: 4}, () => row)];
+let activeBook = null;
 const context = {
-  LockService: {getScriptLock: () => ({tryLock: () => true, releaseLock: () => {}})},
-  SpreadsheetApp: {openById: book},
-  writeLog_: (...args) => { context.log = args; }
+  SpreadsheetApp: {getActiveSpreadsheet: () => activeBook}
 };
-vm.runInNewContext(`${syncSource}\nglobalThis.runSync = syncTaiwanPublicFeed; globalThis.publicConfig = PUBLIC_TAIWAN_FEED;`, context);
-const result = context.runSync();
-assert.deepEqual(JSON.parse(JSON.stringify(result)), {result: 'success', rows: 1, columns: 33});
-assert.equal(written.length, 2, 'copy the schema header and current source rows');
-assert.equal(written[0][2], 'Company code');
-assert.equal(written[1][2], '2330');
-assert.deepEqual(cleared, [6, 1, 3, 33], 'clear only stale rows after writing the latest feed');
-assert.equal(context.publicConfig.targetSpreadsheetId, '1bdq1OZ4-lcNMMWNqpGdAIqb3CM1oGDmdIOY1e5KN0cg');
-assert.match(context.log[0], /Public feed synced/);
-
-failWrite = true;
-cleared = null;
-assert.throws(() => context.runSync(), /simulated write failure/, 'surface a failed public-feed write');
-assert.equal(cleared, null, 'keep the prior public feed intact when replacement writing fails');
-failWrite = false;
+vm.runInNewContext(`${importerSource}\n${feedSource}\nglobalThis.validate = validateTaiwanPublicFeed; globalThis.feedHeaders = FEED_HEADERS;`, context);
+const makeBook = (values, lastRow = values.length + 3) => ({
+  getSheetByName: () => ({
+    getLastRow: () => lastRow,
+    getRange: (startRow, startColumn, rowCount, columnCount) => ({
+      getValues: () => values.slice(startRow - 4, startRow - 4 + rowCount).map(item => item.slice(0, columnCount))
+    })
+  })
+});
+activeBook = makeBook(validRows);
+const result = context.validate();
+assert.deepEqual(JSON.parse(JSON.stringify(result)), {result: 'ready to publish', tab: 'SiteFeed', rows: 4, columns: 33, note: 'Publish only the SiteFeed tab as CSV. Keep all other tabs private.'});
 
 const alteredHeaders = [...sourceHeaders];
 alteredHeaders[19] = 'Unapproved source field';
-const badBook = id => id === context.publicConfig.sourceSpreadsheetId ? {getSheetByName: () => ({getLastRow: () => 4, getRange: () => ({getValues: () => [alteredHeaders]})})} : {getSheetByName: () => target};
-context.SpreadsheetApp.openById = badBook;
-assert.throws(() => context.runSync(), /header does not match/, 'refuse to copy even a single unexpected source column');
+activeBook = makeBook([alteredHeaders, row], 6);
+assert.throws(() => context.validate(), /does not match the approved public schema/, 'refuse an unapproved public column');
 
-const emptyBook = id => id === context.publicConfig.sourceSpreadsheetId ? {getSheetByName: () => ({getLastRow: () => 4, getRange: () => ({getValues: () => [sourceHeaders]})})} : {getSheetByName: () => target};
-context.SpreadsheetApp.openById = emptyBook;
-cleared = null;
-assert.throws(() => context.runSync(), /no complete issuer records/, 'do not overwrite a populated public feed with an empty source');
-assert.equal(cleared, null, 'keep existing public rows when the source feed is empty');
-console.log('Taiwan public feed sync and zero-safe acceleration sort checks passed');
+activeBook = makeBook([sourceHeaders], 4);
+assert.throws(() => context.validate(), /does not contain a header and issuer rows/, 'do not publish an empty feed');
+
+activeBook = makeBook([sourceHeaders, ['Listed (TWSE)', 'TW|2330|台積電', '', '台積電', 'Semiconductors', '2026-09', 1]], 6);
+assert.throws(() => context.validate(), /no complete issuer row/, 'require a ticker and report month before publish');
+
+activeBook = null;
+assert.throws(() => context.validate(), /Bind this script to the private Taiwan Monthly Signals workbook/, 'refuse to check a feed without the private workbook');
+console.log('Taiwan public feed validation and zero-safe acceleration sort checks passed');

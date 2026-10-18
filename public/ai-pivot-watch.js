@@ -145,8 +145,13 @@
     const evidenceClassLabel = evidenceClass => ({
       'operating-disclosure': 'Issuer operating disclosure wording. Verify the underlying activity and financial impact.',
       'planned-operating-disclosure': 'Issuer plan or expected activity. This is not evidence that operations began.',
+      'governance-or-oversight': 'Governance or oversight reference. This does not establish an operating pivot.',
+      'third-party-tool-use': 'Third-party tool use or contract language. This does not establish an AI product or AI revenue.',
+      'disposed-or-former-asset': 'Disposed or former asset reference. This does not establish a current AI business.',
+      'risk-boilerplate': 'Risk or compliance language. This does not establish an operating pivot.',
     }[evidenceClass] || 'AI-language match. Classification unavailable in this saved feed.');
-    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${nameReceipt}${item.evidence?.length ? `<details><summary>Matched filing text and nearby review cues</summary>${item.evidence.map(e => `<blockquote class="footnote"><strong>${esc(evidenceClassLabel(e.evidenceClass))}</strong><br>${esc(e.text)}${e.reviewCues?.length ? `<br><strong>Nearby wording to check:</strong> ${e.reviewCues.map(esc).join(', ')}. These are text matches, not verified operating facts.` : ''}</blockquote>`).join('')}</details>` : ''}${operatingBridge(item)}<p class="footnote">${screenNote}</p></article>`;
+    const reviewStatus = item.reviewStatus ? `<p class="footnote"><strong>Screen status:</strong> ${esc(item.reviewStatus)}</p>` : '';
+    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${nameReceipt}${reviewStatus}${item.evidence?.length ? `<details><summary>Matched filing text and nearby review cues</summary>${item.evidence.map(e => `<blockquote class="footnote"><strong>${esc(evidenceClassLabel(e.evidenceClass))}</strong><br>${esc(e.text)}${e.reviewCues?.length ? `<br><strong>Nearby wording to check:</strong> ${e.reviewCues.map(esc).join(', ')}. These are text matches, not verified operating facts.` : ''}</blockquote>`).join('')}</details>` : ''}${operatingBridge(item)}<p class="footnote">${screenNote}</p></article>`;
   }
 
   window.AIPivotWatch = {
@@ -166,7 +171,15 @@
         }
         const date = new Date(data.generatedAt);
         const ageDays = (Date.now() - date.getTime()) / 86400000;
-        const status = `<div class="card card-pad"><p><strong>Last scan:</strong> ${esc(date.toLocaleString())} · window ${esc(data.scanWindowStart)} to ${esc(data.scanWindowEnd)} · ${Array.isArray(data.leads) ? data.leads.length : 0} retained leads</p><p class="footnote">${ageDays > 2 ? 'Feed may be stale. ' : ''}${esc(data.coverage || '')}</p></div>`;
+        const successfulScan = data.lastSuccessfulScan;
+        const scanCoverage = successfulScan
+          ? `<p class="footnote">${Number(successfulScan.readableIndexDays) || 0} filing index days read; ${(Array.isArray(successfulScan.unavailableIndexDays) ? successfulScan.unavailableIndexDays.length : 0)} could not be confirmed.</p>`
+          : '';
+        const status = `<div class="card card-pad"><p><strong>Last scan:</strong> ${esc(date.toLocaleString())} · window ${esc(data.scanWindowStart)} to ${esc(data.scanWindowEnd)} · ${Array.isArray(data.leads) ? data.leads.length : 0} retained leads</p><p class="footnote">${ageDays > 2 ? 'Feed may be stale. ' : ''}${esc(data.coverage || '')}</p>${scanCoverage}</div>`;
+        const qualityReview = data.qualityReview;
+        const reviewNotice = qualityReview?.reviewedAt && qualityReview.newFilingScan === false
+          ? `<div class="card card-pad"><p><strong>Saved-evidence review:</strong> ${esc(new Date(qualityReview.reviewedAt).toLocaleString())}</p><p class="footnote">${esc(qualityReview.scope || 'Saved evidence was reviewed without fetching new filings.')}${Number.isFinite(qualityReview.archivedForReview) ? ` Moved ${qualityReview.archivedForReview} records to the archive for review.` : ''}</p></div>`
+          : '';
         const checkedIndexDays = Array.isArray(data.indexCoverage?.checkedDays) ? data.indexCoverage.checkedDays : [];
         const expectedSkips = checkedIndexDays.filter(day => day.status === 'expected-skip');
         const indexFailures = checkedIndexDays.filter(day => day.status === 'request-failed');
@@ -182,7 +195,11 @@
           : '';
         const indexNotice = expectedNotice + failedNotice + legacyNotice;
         const leads = Array.isArray(data.leads) ? data.leads : [];
-        target.innerHTML = status + indexNotice + (leads.length ? leads.map(leadCard).join('') : '<p class="empty-receipts">No matches in the completed scan window. This is a keyword screen, so it can miss events and does not establish that filings contain no AI activity.</p>');
+        const archived = Array.isArray(data.archivedLeads) ? data.archivedLeads : [];
+        const archivedNotice = archived.length
+          ? `<section class="card card-pad"><h2>Archived after a full filing recheck</h2><p class="footnote">These records are kept for auditability and are excluded from active leads.</p><details><summary>${archived.length} archived record${archived.length === 1 ? '' : 's'}</summary><ul>${archived.map(item => `<li>${esc(item.company || item.mappedCompany || item.cik)} · ${esc(item.form)} · ${esc(item.filingDate)}: ${esc(item.archiveReason || 'No longer passes the current screen.')}${item.filingUrl ? ` · <a href="${esc(item.filingUrl)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</li>`).join('')}</ul></details></section>`
+          : '';
+        target.innerHTML = status + reviewNotice + indexNotice + (leads.length ? leads.map(leadCard).join('') : '<p class="empty-receipts">No matches in the completed scan window. This is a keyword screen, so it can miss events and does not establish that filings contain no AI activity.</p>') + archivedNotice;
       } catch (error) {
         target.innerHTML = `<p class="callout">Could not load the SEC feed: ${esc(error.message)}. The current manual examples remain available below.</p>`;
       }

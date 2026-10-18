@@ -23,6 +23,7 @@ const NAME_CHANGE = /\b(?:changed|change|changing|changes)\s+(?:(?:its|the compa
 const NAME_CHANGE_EXPLICIT = /\b(?:name change|change of name|changed\s+(?:(?:its|the company's|the issuer's)\s+)?(?:corporate\s+)?name|renamed\s+(?:itself\s+)?(?:as|to))\b/i;
 const OPERATIONAL_CONTEXT = /\b(?:customer|commercial|revenue|product|service|business|segment|launch|contract|facility|data cent(?:er|re)|compute|GPU|operations?|strategy|plan|license|licen[cs]e|acquisition|manufactur|deploy|capital|financ)\w*\b/i;
 const RISK_HEADING = /\b(?:risk factors|risks related to|forward-looking statements|cautionary statement)\b/i;
+const RISK_LIST_HEADING = /\b(?:business and operational risks|operational risks|cybersecurity risks|technology risks|risk factors)\b/i;
 const EXPLICIT_RISK_LIST = /\b(?:risks?\s+and\s+uncertainties|uncertainties\s+and\s+risks?)\b/i;
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
 const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
@@ -30,6 +31,16 @@ const BIOGRAPHY_CONTEXT = /\b(?:biograph(?:y|ical)|professional background|caree
 const BIOGRAPHY_ROLE_CONTEXT = /\b(?:serves?|served|appointed)\s+as\b.{0,100}\b(?:chief|president|director|officer|executive|CEO|CFO|CTO|COO)\b/i;
 const COMMODITY_AI_DEMAND = /\b(?:critical minerals?|silver|antimony|copper|lithium|nickel|cobalt|rare earths?|semiconductors?|chips?)\b[\s\S]{0,160}\b(?:support(?:s|ing)?|needed to|supply(?:ing|ies)?|meet(?:ing)?|benefit(?:s|ing)? from|driven by|fuel(?:ing|s)?)\b[\s\S]{0,120}\b(?:artificial intelligence|AI)\b/i;
 const AI_GLOSSARY = /\b(?:artificial intelligence|generative AI|machine learning|AI)\s+(?:is|means|refers to|describes|includes)\b|\b(?:defined|used)\s+(?:herein\s+)?to\s+mean\b/i;
+const GLOSSARY_CONTEXT = /\bglossary of (?:defined )?terms\b|\bterm\s+definition\b|\bAI\s+artificial intelligence\b/i;
+const AI_CYBER_RISK = /\bAI[- ](?:driven|powered|enabled|based)\s+(?:cyber)?(?:attacks?|threats?|phishing|malware|ransomware)\b|\b(?:cyberattacks?|threat actors|malware|ransomware|phishing|hacking)\b.{0,100}\b(?:AI[- ](?:driven|powered|enabled|based)|artificial intelligence)\b/i;
+const AI_LEGAL_RISK = /\b(?:artificial intelligence|generative AI|machine learning|AI)\b.{0,120}\b(?:laws?|regulations?|regulatory requirements?|privacy rules?)\b/i;
+const AI_GOVERNANCE = /\b(?:AI|artificial intelligence|machine learning)\b.{0,180}\b(?:board oversight|board committee|committee oversight|governance|framework|policy|policies|oversight|risk committee|technology committee)\b|\b(?:board oversight|board committee|committee oversight|governance|framework|policy|policies|oversight|risk committee|technology committee)\b.{0,180}\b(?:AI|artificial intelligence|machine learning)\b/i;
+const AI_VENDOR_TOOL = /\b(?:third[- ]party|vendor|supplier|enterprise[- ]level license|licensed tool|external provider)\b.{0,180}\b(?:AI|artificial intelligence|machine learning|algorithmic)\s+(?:technology|tool|service|platform|model)s?\b|\b(?:AI|artificial intelligence|machine learning)\s+(?:technology|tool|service|platform|model)s?\b.{0,180}\b(?:third[- ]party|vendor|supplier|enterprise[- ]level license|licensed tool|external provider)\b/i;
+const DISPOSED_AI_ASSET = /\b(?:disposal of|disposed of|sale of|wound\s+down|ceased operations? in)\b.{0,220}\b(?:AI|artificial intelligence|machine learning)\b|\b(?:AI|artificial intelligence|machine learning|platform software|data cent(?:er|re))\b.{0,220}\b(?:asset was removed|business was sold|operations? ceased|subsidiaries? were disposed)\b/i;
+const AI_ACTIVITY_NEGATION = /\b(?:not|never|no longer|has not|have not|had not|did not|does not|will not|cannot|can't|hasn't|haven't|hadn't|didn't|doesn't|won't|not yet)\b/i;
+const AI_ACTIVITY_VERB = /\b(?:launch(?:ed|es|ing)?|introduc(?:ed|es|ing)|deploy(?:ed|s|ing)?|develop(?:ed|s|ing)?|built|build(?:s|ing)?|open(?:ed|s|ing)?|commission(?:ed|s|ing)?|operat(?:ed|es|ing)|provid(?:ed|es|ing)|offer(?:ed|s|ing)|sell|sells|sold|generat(?:ed|es|ing)|recogniz(?:ed|es|ing)|secur(?:ed|es|ing)|sign(?:ed|s|ing)|acquir(?:ed|es|ing)|invest(?:ed|s|ing)|licens(?:ed|es|ing)|manufactur(?:ed|es|ing)|produc(?:ed|es|ing)|integrat(?:ed|es|ing)|releas(?:ed|es|ing)|start(?:ed|s|ing)|began|commenc(?:ed|es|ing)|commercializ(?:ed|es|ing)|contract(?:ed|s|ing)|receiv(?:ed|es|ing)|install(?:ed|s|ing)|deliver(?:ed|s|ing)|us(?:e|es|ed|ing))\b/i;
+const INTERNAL_AI_USE = /\b(?:internally|internal(?: use| operations?| customer support)?|back[- ]office|administrative (?:tasks?|work)|employee[- ](?:facing|productivity)|for (?:our|the company'?s) own use|in[- ]house)\b/i;
+const EXTERNAL_AI_OFFERING = /\b(?:customer[- ]facing|commercially available|sold to customers|offered to customers|provided to customers|external customers?|customer revenue|third[- ]party customers?)\b/i;
 const THIRD_PARTY_ATTRIBUTION = /\b(?:according to|as reported by|quoted by|citing|the report by|a report from|the article by|our (?:customer|supplier|vendor|partner|competitor)|(?:customer|supplier|vendor|partner|competitor)'s)\b/i;
 const THIRD_PARTY_ACTION = /\b(?:customer|supplier|vendor|partner|competitor|analyst|consultant|industry|third[- ]party)\b.{0,100}\b(?:launched|uses?|used|provides?|offers?|developed|announced|plans?|expects?|claims?|invested|deployed)\b/i;
 const COMPLETED_OPERATING_ACTION = /\b(?:launched|introduced|deployed|developed|built|opened|commissioned|operates?|provided|provides|offer(?:s|ed|ing)?|sell(?:s|ing)?|sold|generated|recognized|secured|signed|acquired|invested|licensed|manufactures?|produces?|integrated|released|began|started|commenced|commercialized|contracted|received|installed|delivered|is using|are using|uses)\b/i;
@@ -115,15 +126,66 @@ export function analyzeText(text) {
 /** Classify an AI passage before it can become a changed-disclosure lead. */
 export function classifyAiEvidence(text, term = '', {fullText = text, index = null, priorText = ''} = {}) {
   const sentence = evidenceSentence(text, term);
-  const source = String(sentence ?? '');
-  if ((Number.isInteger(index) && insideRiskSection(String(fullText ?? ''), index)) || RISK_HEADING.test(priorText) || EXPLICIT_RISK_LIST.test(source)) return 'risk-boilerplate';
+  const source = evidenceClause(sentence, term);
+  const savedContext = String(text ?? '');
+  if ((Number.isInteger(index) && insideRiskSection(String(fullText ?? ''), index)) || RISK_HEADING.test(priorText) || RISK_LIST_HEADING.test(savedContext) || EXPLICIT_RISK_LIST.test(source) || EXPLICIT_RISK_LIST.test(savedContext)) return 'risk-boilerplate';
   if (isBiographySentence(source)) return 'biography';
   if (COMMODITY_AI_DEMAND.test(source)) return 'industry-demand-mention';
-  if (AI_GLOSSARY.test(source)) return 'glossary-or-definition';
+  if (AI_GLOSSARY.test(source) || GLOSSARY_CONTEXT.test(source)) return 'glossary-or-definition';
   if (THIRD_PARTY_ATTRIBUTION.test(source) || THIRD_PARTY_ACTION.test(source)) return 'third-party-mention';
+  if (isNegatedAiActivity(source, term)) return 'negative-or-not-current';
+  if (isInternalOnlyAiUse(source, term)) return 'internal-tool-use';
+  const hasIssuerSubject = /\b(?:we|our company|the company|the issuer)\b/i.test(source);
+  const hasCommercialOutcome = /\b(?:customers?|revenue|sales|products?|services?|contracts?|purchase orders?|backlog|capacity|facilit(?:y|ies)|data cent(?:er|re)|compute|production|deliveries)\b/i.test(source);
+  if (hasIssuerSubject && hasCommercialOutcome && COMPLETED_OPERATING_ACTION.test(source)) return 'operating-disclosure';
+  if (AI_CYBER_RISK.test(source) || AI_LEGAL_RISK.test(source)) return 'risk-boilerplate';
+  if (AI_GOVERNANCE.test(source)) return 'governance-or-oversight';
+  if (AI_VENDOR_TOOL.test(source)) return 'third-party-tool-use';
+  if (DISPOSED_AI_ASSET.test(source)) return 'disposed-or-former-asset';
   if (COMPLETED_OPERATING_ACTION.test(source)) return 'operating-disclosure';
   if (PLANNED_OPERATING_ACTION.test(source)) return 'planned-operating-disclosure';
   return 'low-confidence-mention';
+}
+
+/** Keep an explicit denial from becoming a current operating disclosure. */
+function isNegatedAiActivity(sentence, term = '') {
+  const source = String(sentence ?? '');
+  const segments = source.split(/[,;]|\b(?:but|though|however|although|whereas|while|except|unless)\b/i);
+  const aiTerm = /\b(?:AI|artificial intelligence|machine learning|large language models?)\b/i;
+  return segments.some(segment => {
+    const value = segment.trim();
+    if (term && !value.toLowerCase().includes(String(term).toLowerCase())) return false;
+    if (!value || !aiTerm.test(value) || !AI_ACTIVITY_NEGATION.test(value) || !AI_ACTIVITY_VERB.test(value)) return false;
+    // The negative must be close to an AI term and an activity verb. This
+    // avoids letting a separate negated clause suppress a positive disclosure.
+    const termIndex = value.toLowerCase().indexOf(String(term ?? '').toLowerCase());
+    const aiIndex = termIndex >= 0 ? termIndex : value.search(aiTerm);
+    const negation = value.match(AI_ACTIVITY_NEGATION);
+    const activity = value.match(AI_ACTIVITY_VERB);
+    if (aiIndex < 0 || !negation || !activity) return false;
+    const distance = Math.max(
+      Math.abs(aiIndex - negation.index),
+      Math.abs(aiIndex - activity.index),
+      Math.abs(negation.index - activity.index),
+    );
+    return distance <= 120;
+  });
+}
+
+/** Internal AI assistance is not evidence of a commercial AI pivot by itself. */
+function isInternalOnlyAiUse(sentence, term = '') {
+  const source = String(sentence ?? '');
+  const segments = source.split(/[,;]|\b(?:but|though|however|although|whereas|while|except|unless)\b/i);
+  const aiTerm = /\b(?:AI|artificial intelligence|machine learning|large language models?)\b/i;
+  return segments.some(segment => {
+    const value = segment.trim();
+    if (term && !value.toLowerCase().includes(String(term).toLowerCase())) return false;
+    if (!value || !aiTerm.test(value) || !INTERNAL_AI_USE.test(value) || EXTERNAL_AI_OFFERING.test(value)) return false;
+    const termIndex = value.toLowerCase().indexOf(String(term ?? '').toLowerCase());
+    const aiIndex = termIndex >= 0 ? termIndex : value.search(aiTerm);
+    const internal = value.match(INTERNAL_AI_USE);
+    return aiIndex >= 0 && internal && Math.abs(aiIndex - internal.index) <= 140;
+  });
 }
 
 function sentenceAt(text, index, length) {
@@ -145,6 +207,12 @@ function evidenceSentence(text, term = '') {
     if (index >= 0) return sentenceAt(value, index, String(term).length);
   }
   return value;
+}
+
+function evidenceClause(sentence, term = '') {
+  const value = String(sentence ?? '');
+  const clauses = value.split(/;|\b(?:but|though|however|although|whereas|while|except|unless)\b/i);
+  return clauses.find(clause => !term || clause.toLowerCase().includes(String(term).toLowerCase()))?.trim() ?? value;
 }
 
 function isBiographySentence(text) {
@@ -197,6 +265,86 @@ export function novelAiEvidence(currentHits, priorHits) {
 
 function isOperatingEvidence(hit) {
   return hit?.evidenceClass === 'operating-disclosure' || hit?.evidenceClass === 'planned-operating-disclosure';
+}
+
+/** Revalidate saved snippets whenever the classifier changes. Old feed rows can outlive their original screen. */
+export function revalidateRetainedLeads(leads) {
+  return (leads ?? []).flatMap(item => {
+    const savedEvidence = Array.isArray(item.evidence) ? item.evidence : [];
+    const evidence = savedEvidence.flatMap(hit => {
+      const evidenceClass = classifyAiEvidence(hit?.text, hit?.term);
+      return evidenceClass === 'operating-disclosure' || evidenceClass === 'planned-operating-disclosure'
+        ? [{...hit, evidenceClass}]
+        : [];
+    });
+    const verifiedAiNameChange = item.leadType === 'ai-name-change'
+      && item.legalNameChange?.newName
+      && hasAiBranding(item.legalNameChange.newName);
+    if (!evidence.length && !verifiedAiNameChange) return [];
+    return [{...item, evidence, reviewStatus: 'provisional saved excerpt; full filing context has not been re-fetched'}];
+  });
+}
+
+/** Recheck older saved leads against the whole SEC filing before retaining them as current leads. */
+export async function revalidateRetainedLeadsFromSEC(leads, userAgent, submissionsCache) {
+  const retained = [];
+  const archived = [];
+  const classifierVersion = '2026-10-18.3';
+  for (const item of leads ?? []) {
+    if (item.fullFilingClassifierVersion === classifierVersion) {
+      if (item.archiveReason) archived.push(item);
+      else retained.push(item);
+      continue;
+    }
+    if (!/^https:\/\/www\.sec\.gov\/Archives\//i.test(String(item.filingUrl || '')) || !item.form || !item.cik || !item.accession) {
+      const provisional = {...item, reviewStatus: 'provisional; SEC filing link or identity is incomplete'};
+      if (item.archiveReason) archived.push(provisional);
+      else retained.push(provisional);
+      continue;
+    }
+    try {
+      const filing = await secFetch(item.filingUrl, userAgent);
+      if (filing.status !== 200) throw new Error(`SEC filing returned HTTP ${filing.status}`);
+      const docs = relevantDocuments(filing.body, item.form);
+      const sourceDocs = docs.length ? docs : [{type: item.form, text: plainText(filing.body)}];
+      const aiHits = sourceDocs.filter(doc => !isLegalNameExhibit(doc))
+        .flatMap(doc => analyzeText(doc.text).map(hit => ({...hit, documentType: doc.type})));
+      let priorHits = null;
+      try {
+        const row = {cik: String(item.cik).replace(/^0+/, ''), accession: item.accession, filed: item.filingDate, form: item.form};
+        const prior = await previousSameForm(row, userAgent, submissionsCache);
+        if (prior) {
+          const priorUrl = `${SEC}/Archives/edgar/data/${Number(row.cik)}/${prior.accession.replaceAll('-', '')}/${prior.accession}.txt`;
+          const priorResponse = await secFetch(priorUrl, userAgent);
+          if (priorResponse.status === 200) {
+            const priorDocs = relevantDocuments(priorResponse.body, item.form);
+            priorHits = (priorDocs.length ? priorDocs : [{type: item.form, text: plainText(priorResponse.body)}])
+              .filter(doc => !isLegalNameExhibit(doc))
+              .flatMap(doc => analyzeText(doc.text).map(hit => ({...hit, documentType: doc.type})));
+          }
+        }
+      } catch (error) {
+        console.warn(`Retained lead prior filing comparison unavailable for ${item.cik}: ${error.message}`);
+      }
+      const aiLabel = aiDeltaLabel(aiHits, priorHits);
+      const legalNameChange = item.legalNameChange ?? null;
+      const leadType = aiPivotLeadType(legalNameChange, aiLabel);
+      const reviewedAt = new Date().toISOString();
+      if (!leadType) {
+        archived.push({...item, evidence: snippets(aiHits), reviewStatus: 'archived after full filing recheck', archiveReason: 'Current classifier found no new issuer operating AI evidence or AI-branded legal name change in the full filing.', fullFilingReviewedAt: reviewedAt, fullFilingClassifierVersion: classifierVersion});
+        continue;
+      }
+      const reviewed = {...item, leadType, label: [legalNameChange ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName}. This is a naming signal, not proof of operating AI activity.` : '', aiLabel].filter(Boolean).join(' '), priorSameFormAiMentions: priorHits?.length ?? null, currentAiMentions: aiHits.length, evidence: snippets(aiHits), reviewStatus: priorHits === null && aiHits.length ? 'full SEC filing screened; prior same-form comparison unavailable; human review required' : 'full SEC filing rechecked; human review required', fullFilingReviewedAt: reviewedAt, fullFilingClassifierVersion: classifierVersion};
+      if (item.archiveReason) {
+        archived.push({...reviewed, reviewStatus: 'archived; full SEC filing rechecked; existing archive status preserved'});
+      } else retained.push(reviewed);
+    } catch (error) {
+      const provisional = {...item, reviewStatus: 'provisional; full SEC filing recheck failed', revalidationError: String(error.message ?? error).slice(0, 240)};
+      if (item.archiveReason) archived.push(provisional);
+      else retained.push(provisional);
+    }
+  }
+  return {retained, archived};
 }
 
 export function isNameChangeLead(text, form) {
@@ -282,11 +430,15 @@ export function relevantDocuments(raw, form) {
     const type = block.match(/<TYPE>\s*([^\r\n<]+)/i)?.[1]?.trim() ?? '';
     const body = block.match(/<TEXT>([\s\S]*?)<\/TEXT>/i)?.[1] ?? '';
     if (!body) continue;
-    if (type.toUpperCase() === form.toUpperCase() || /^EX-99(?:\.\d+)?$/i.test(type)) {
+    if (type.toUpperCase() === form.toUpperCase() || /^EX-99(?:\.\d+)?$/i.test(type) || /^EX-3\.[12]$/i.test(type)) {
       documents.push({ type: type.toUpperCase(), text: plainText(body) });
     }
   }
   return documents;
+}
+
+export function isLegalNameExhibit(document) {
+  return /^EX-3\.[12]$/i.test(String(document?.type ?? ''));
 }
 
 function dateString(date) { return date.toISOString().slice(0, 10); }
@@ -465,8 +617,11 @@ export function hasAiBranding(name) {
 /** Retain AI-branded legal renames separately from AI-language filing leads. */
 export function aiPivotLeadType(legalNameChange, aiLabel) {
   const aiNameChange = Boolean(legalNameChange && hasAiBranding(legalNameChange.newName));
-  if (!aiLabel && !aiNameChange) return null;
-  if (aiNameChange && !aiLabel) return 'ai-name-change';
+  const comparisonUnavailable = /prior filing comparison unavailable/i.test(String(aiLabel || ''));
+  const evidenceOfChange = /(?:first detected|new AI[- ](?:operating-disclosure|business) wording|mentions increased)/i.test(String(aiLabel || ''));
+  if (!evidenceOfChange && !aiNameChange && !comparisonUnavailable) return null;
+  if (comparisonUnavailable && !evidenceOfChange && !aiNameChange) return 'ai-language-review';
+  if (aiNameChange && !evidenceOfChange) return 'ai-name-change';
   return legalNameChange ? 'name-change-and-ai-language' : 'ai-language-change';
 }
 
@@ -652,12 +807,12 @@ async function previousSameForm(row, userAgent, cache) {
   return items.find(item => item.form === row.form) ?? null;
 }
 
-async function scan(options) {
+export async function scan(options) {
   const userAgent = options.userAgent;
   if (!userAgent || !/\S+@\S+\.\S+/.test(userAgent)) {
     throw new Error('Set SEC_USER_AGENT to an identifying name plus a real contact email, for example "Field Signals research your.name@example.com".');
   }
-  const now = new Date();
+  const now = options.now ? new Date(options.now) : new Date();
   const easternToday = dateInTimeZone(now);
   const tickerResponse = await secFetch(TICKER_EXCHANGE_URL, userAgent);
   if (tickerResponse.status !== 200) throw new Error('SEC ticker and exchange map could not be loaded');
@@ -710,7 +865,8 @@ async function scan(options) {
     checked.push(row.accession);
     const relevant = relevantDocuments(primaryResponse.body, row.form);
     const mainText = relevant.find(doc => doc.type === row.form)?.text ?? plainText(primaryResponse.body);
-    const aiHits = relevant.flatMap(doc => analyzeText(doc.text).map(hit => ({ ...hit, documentType: doc.type })));
+    const aiHits = relevant.filter(doc => !isLegalNameExhibit(doc))
+      .flatMap(doc => analyzeText(doc.text).map(hit => ({ ...hit, documentType: doc.type })));
     const nameEvidence = [mainText, ...relevant.filter(doc => doc.type !== row.form).map(doc => doc.text)].join(' ');
     const nameTextCorroborated = isNameChangeLead(nameEvidence, row.form);
     // Text alone never creates a name-change lead. Confirm both legal names
@@ -733,7 +889,8 @@ async function scan(options) {
           if (priorResponse.status !== 404) {
             const previousDocs = relevantDocuments(priorResponse.body, row.form);
             const priorText = previousDocs.length ? previousDocs.map(doc => doc.text).join(' ') : plainText(priorResponse.body);
-            priorHits = analyzeText(priorText);
+            const priorAiDocs = previousDocs.filter(doc => !isLegalNameExhibit(doc));
+            priorHits = priorAiDocs.length ? priorAiDocs.flatMap(doc => analyzeText(doc.text)) : analyzeText(priorText);
             priorCount = priorHits.length;
           }
         }
@@ -764,7 +921,7 @@ async function scan(options) {
       accession: row.accession,
       filingUrl: filingUrl(row.filename),
       leadType,
-      reviewStatus: 'automated lead; human review required',
+      reviewStatus: aiLabel.includes('comparison unavailable') ? 'full SEC filing screened; prior same-form comparison unavailable; human review required' : 'full SEC filing screened; human review required',
       label: [legalNameChange ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName} (history date ${legalNameChange.effectiveDate}). ${hasAiBranding(legalNameChange.newName) ? 'The new name includes AI-related branding. This is a naming signal, not evidence of an operating AI business.' : 'The filing also meets the AI-language screen.'}` : '', aiLabel].filter(Boolean).join(' '),
       legalNameChange: legalNameChange || null,
       nameChangeTextCorroborated: Boolean(legalNameChange),
@@ -773,22 +930,19 @@ async function scan(options) {
       evidence: snippets(aiHits),
       operatingBridge,
       operatingBridgeStatus,
+      fullFilingReviewedAt: now.toISOString(),
+      fullFilingClassifierVersion: '2026-10-18.3',
       reviewedByHuman: false,
     });
   }
+  const savedLeads = [...(options.feed.leads ?? []), ...(options.feed.archivedLeads ?? [])];
+  const retainedReview = await revalidateRetainedLeadsFromSEC(savedLeads, userAgent, submissionsCache);
   const mappedByCik = new Map();
   for (const item of tickerRows) {
     if (!mappedByCik.has(item.cik)) mappedByCik.set(item.cik, []);
     mappedByCik.get(item.cik).push(item);
   }
-  const retained = (options.feed.leads ?? []).filter(item => {
-    const evidence = Array.isArray(item.evidence) ? item.evidence : [];
-    if (evidence.length) item.evidence = evidence.filter(hit => {
-      const evidenceContext = evidenceSentence(hit.text, hit.term);
-      return !isBiographySentence(evidenceContext) && !EXPLICIT_RISK_LIST.test(evidenceContext);
-    });
-    return !evidence.length || item.evidence.length > 0;
-  }).map(item => {
+  const retained = retainedReview.retained.map(item => {
     const mapped = mappedByCik.get(String(item.cik ?? '').padStart(10, '0'));
     return {
       ...item,
@@ -803,7 +957,13 @@ async function scan(options) {
   const unique = new Map([...retained, ...candidates].map(item => [item.accession, item]));
   const keepAfter = new Date(now);
   keepAfter.setUTCDate(keepAfter.getUTCDate() - 180);
-  const leads = [...unique.values()].filter(item => item.filingDate >= dateString(keepAfter)).sort((a, b) => b.filingDate.localeCompare(a.filingDate)).slice(0, 1000);
+  const cutoff = dateString(keepAfter);
+  const staleLeads = [...unique.values()].filter(item => item.filingDate < cutoff).map(item => ({...item, reviewStatus: 'archived after 180-day active window', archiveReason: 'Moved out of the active feed after 180 days. Original filing and evidence are preserved.'}));
+  const leads = [...unique.values()].filter(item => item.filingDate >= cutoff).sort((a, b) => b.filingDate.localeCompare(a.filingDate)).slice(0, 1000);
+  const activeAccessions = new Set(leads.map(item => normalizeAccession(item.accession)).filter(Boolean));
+  const archivedByAccession = new Map([...(options.feed.archivedLeads ?? []), ...retainedReview.archived, ...staleLeads].map(item => [normalizeAccession(item.accession) || item.accession, item]));
+  const archivedLeads = [...archivedByAccession.entries()].filter(([accession]) => !activeAccessions.has(normalizeAccession(accession))).map(([, item]) => item)
+    .sort((a, b) => String(b.filingDate || '').localeCompare(String(a.filingDate || '')));
   // Gradually add filing-as-of bridges to saved leads from before this feature.
   // Cap each daily run so old feed history does not create an unbounded SEC burst.
   const pendingBridges = leads.filter(item => !Object.hasOwn(item, 'operatingBridge') || item.operatingBridgeStatus === 'Retry pending' || (item.operatingBridge && !Object.hasOwn(item.operatingBridge, 'priorYearComparison'))).slice(0, 20);
@@ -822,11 +982,18 @@ async function scan(options) {
     coverage: 'SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.',
     scanWindowStart: addCalendarDays(easternToday, -options.lookbackDays),
     scanWindowEnd: easternToday,
+    lastSuccessfulScan: {
+      completedAt: now.toISOString(),
+      readableIndexDays,
+      unavailableIndexDays: [...unavailableIndexDays],
+    },
     unavailableIndexDays,
     indexCoverage: {timeZone: SEC_TIME_ZONE, checkedDays: indexCoverage},
     sources: ['https://www.sec.gov/Archives/edgar/daily-index/', 'https://data.sec.gov/submissions/', TICKER_EXCHANGE_URL],
     leads,
+    archivedLeads,
     checkedAccessions,
+    ...(options.feed.qualityReview ? {qualityReview: options.feed.qualityReview} : {}),
   };
 }
 
@@ -857,8 +1024,10 @@ export function selfTest() {
   if (analyzeText(longRisk).length) throw new Error('long risk-section suppression self-test failed');
   const afterRisk = `${longRisk} Item 2. Properties. We launched an artificial intelligence data center for customers.`;
   if (!analyzeText(afterRisk).length) throw new Error('risk-section boundary self-test failed');
-  const docs = relevantDocuments('<DOCUMENT><TYPE>8-K\n<TEXT><p>Item 5.03</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-99.1\n<TEXT><p>AI business</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-101.SCH\n<TEXT>AI taxonomy</TEXT></DOCUMENT>', '8-K');
-  if (docs.length !== 2 || docs[1].type !== 'EX-99.1') throw new Error('relevant document extraction self-test failed');
+  const docs = relevantDocuments('<DOCUMENT><TYPE>8-K\n<TEXT><p>Item 5.03</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-99.1\n<TEXT><p>AI business</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-3.1\n<TEXT>The Company changed its corporate name from Beta Manufacturing Inc. to Current AI Systems Inc.</TEXT></DOCUMENT><DOCUMENT><TYPE>EX-101.SCH\n<TEXT>AI taxonomy</TEXT></DOCUMENT>', '8-K');
+  if (docs.length !== 3 || docs[1].type !== 'EX-99.1' || docs[2].type !== 'EX-3.1') throw new Error('relevant document extraction self-test failed');
+  const filingNameEvidence = docs.filter(doc => doc.type === '8-K' || isLegalNameExhibit(doc)).map(doc => doc.text).join(' ');
+  if (!isNameChangeLead(filingNameEvidence, '8-K')) throw new Error('legal name exhibit corroboration self-test failed');
   if (aiDeltaLabel(ai, []) !== 'AI operating disclosure first detected versus prior same-form filing') throw new Error('AI delta self-test failed');
   const priorBusiness = analyzeText('The issuer sells an artificial intelligence customer-support product for banks. AI-powered translation services are also sold to travelers.');
   const currentBusiness = analyzeText('The issuer sells an artificial intelligence customer-support product for banks. AI-powered GPU data center capacity leasing for cloud customers will begin this year.');

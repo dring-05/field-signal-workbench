@@ -1,0 +1,39 @@
+[
+  {
+    "accession": "glossary-only",
+    "leadType": "ai-language-change",
+    "evidence": [
+      {"term": "artificial intelligence", "text": "Glossary of Defined Terms. Term Definition. ACL Allowance for credit losses. AI Artificial intelligence, including machine learning."}
+    ]
+  },
+  {
+    "accession": "cyber-risk-only",
+    "leadType": "ai-language-change",
+    "evidence": [
+      {"term": "AI-driven", "text": "Cybersecurity risks include hacking, phishing, malware and AI-driven cyberattacks."}
+    ]
+  },
+  {
+    "accession": "biography-only",
+    "leadType": "ai-language-change",
+    "evidence": [
+      {"term": "AI-powered", "text": "She previously served as COO at HP, where she led AI-powered insights for enterprise customers."}
+    ]
+  },
+  {
+    "accession": "mixed-survives",
+    "leadType": "ai-language-change",
+    "evidence": [
+      {"term": "AI-driven", "text": "Cybersecurity risks include hacking, phishing, malware and AI-driven cyberattacks."},
+      {"term": "AI-enabled", "text": "The issuer launched an AI-enabled claims processing product for customers this quarter."}
+    ]
+  },
+  {
+    "accession": "verified-ai-rename-survives",
+    "leadType": "ai-name-change",
+    "legalNameChange": {"oldName": "Example Widgets Inc.", "newName": "Example AI Corp.", "effectiveDate": "2026-10-01"},
+    "evidence": [
+      {"term": "artificial intelligence", "text": "Glossary of Defined Terms. Term Definition. ACL Allowance for credit losses. AI Artificial intelligence, including machine learning."}
+    ]
+  }
+]

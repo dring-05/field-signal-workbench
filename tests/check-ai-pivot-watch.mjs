@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { analyzeText, aiDeltaLabel, aiPivotLeadType, attachListedIssuer, classifyAiEvidence, expectedIndexSkipReason, isLikelyBiographyEvidence, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, reviewCues, secFederalHolidays, selfTest } from '../automation/sec-filing-screen.mjs';
+import { analyzeText, aiDeltaLabel, aiPivotLeadType, attachListedIssuer, classifyAiEvidence, expectedIndexSkipReason, isLegalNameExhibit, isLikelyBiographyEvidence, isNameChangeLead, legalNameChangeFromSubmissions, novelAiEvidence, operatingBridgeFromCompanyFacts, parseTickerExchange, relevantDocuments, revalidateRetainedLeads, revalidateRetainedLeadsFromSEC, reviewCues, scan, secFederalHolidays, selfTest } from '../automation/sec-filing-screen.mjs';
 
 const moduleSource = await readFile(new URL('../public/ai-pivot-watch.js', import.meta.url), 'utf8');
 const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8');
@@ -38,14 +38,21 @@ const feedTarget = {innerHTML: ''};
 context.document = {querySelector: () => feedTarget};
 context.fetch = async () => ({ok: true, json: async () => ({
   generatedAt: '2026-10-13T12:00:00Z', scanWindowStart: '2026-10-06', scanWindowEnd: '2026-10-13', coverage: 'test feed', unavailableIndexDays: [],
+  lastSuccessfulScan: {completedAt: '2026-10-13T12:00:00Z', readableIndexDays: 5, unavailableIndexDays: []},
+  qualityReview: {reviewedAt: '2026-10-18T17:25:41Z', scope: 'Saved SEC evidence excerpts reclassified with current filing-screen rules; this review did not fetch new filings.', newFilingScan: false, archivedForReview: 150},
   indexCoverage: {timeZone: 'America/New_York', checkedDays: [
     {date: '2026-10-10', status: 'expected-skip', reason: 'weekend'},
     {date: '2026-10-12', status: 'expected-skip', reason: 'SEC federal holiday'},
     {date: '2026-10-13', status: 'request-failed', httpStatus: 403, reason: 'SEC did not return a readable index; coverage could not be confirmed.'}
   ]},
-  leads: [{cik: '0000000123', company: 'Example Co', mappedCompany: 'Example Co', ticker: 'EXMP', exchange: 'Nasdaq', form: '8-K', filingDate: '2026-10-13', filingUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt', label: 'New AI operating-disclosure wording', evidence: [{text: 'The issuer launched an AI-enabled product for customers.', evidenceClass: 'operating-disclosure', reviewCues: ['customer or contract wording']}], operatingBridge: {asOfDate: '2026-10-13', periodStart: '2026-04-01', periodEnd: '2026-06-30', durationDays: 91, unit: 'USD', taxonomy: 'us-gaap', grossMarginPct: 40, operatingMarginPct: 10, facts: {revenue: {value: 100, unit: 'USD', taxonomy: 'us-gaap', tag: 'RevenueFromContractWithCustomerExcludingAssessedTax', form: '10-Q', filed: '2026-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt'}, grossProfit: {value: 40, unit: 'USD', taxonomy: 'us-gaap', tag: 'GrossProfit', form: '10-Q', filed: '2026-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt'}, operatingIncome: null, netIncome: null}, priorYearComparison: {periodStart: '2025-04-01', periodEnd: '2025-06-30', durationDays: 91, facts: {revenue: {value: 80, unit: 'USD', taxonomy: 'us-gaap', tag: 'RevenueFromContractWithCustomerExcludingAssessedTax', form: '10-Q', filed: '2025-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012325000003/0000000123-26-000003.txt'}}, metrics: {revenue: {change: 20, percentChange: 25, unit: 'USD'}}}}}]
+  leads: [{cik: '0000000123', company: 'Example Co', mappedCompany: 'Example Co', ticker: 'EXMP', exchange: 'Nasdaq', form: '8-K', filingDate: '2026-10-13', filingUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt', label: 'New AI operating-disclosure wording', reviewStatus: 'full SEC filing screened; human review required', evidence: [{text: 'The issuer launched an AI-enabled product for customers.', evidenceClass: 'operating-disclosure', reviewCues: ['customer or contract wording']}], operatingBridge: {asOfDate: '2026-10-13', periodStart: '2026-04-01', periodEnd: '2026-06-30', durationDays: 91, unit: 'USD', taxonomy: 'us-gaap', grossMarginPct: 40, operatingMarginPct: 10, facts: {revenue: {value: 100, unit: 'USD', taxonomy: 'us-gaap', tag: 'RevenueFromContractWithCustomerExcludingAssessedTax', form: '10-Q', filed: '2026-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt'}, grossProfit: {value: 40, unit: 'USD', taxonomy: 'us-gaap', tag: 'GrossProfit', form: '10-Q', filed: '2026-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000004/0000000123-26-000004.txt'}, operatingIncome: null, netIncome: null}, priorYearComparison: {periodStart: '2025-04-01', periodEnd: '2025-06-30', durationDays: 91, facts: {revenue: {value: 80, unit: 'USD', taxonomy: 'us-gaap', tag: 'RevenueFromContractWithCustomerExcludingAssessedTax', form: '10-Q', filed: '2025-08-01', sourceUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012325000003/0000000123-26-000003.txt'}}, metrics: {revenue: {change: 20, percentChange: 25, unit: 'USD'}}}}}],
+  archivedLeads: [{company: 'Former AI Asset Co', form: '6-K', filingDate: '2026-10-10', filingUrl: 'https://www.sec.gov/Archives/edgar/data/123/000000012326000005/0000000123-26-000005.txt', archiveReason: 'Full filing no longer supports a current AI operating lead.'}]
 })});
 await context.window.AIPivotWatch.loadFeed();
+assert.match(feedTarget.innerHTML, /Saved-evidence review/);
+assert.match(feedTarget.innerHTML, /this review did not fetch new filings/);
+assert.match(feedTarget.innerHTML, /Moved 150 records to the archive for review/);
+assert.match(feedTarget.innerHTML, /Full filing no longer supports a current AI operating lead/);
 assert.match(feedTarget.innerHTML, /Company-wide operating metrics and year-earlier comparison/);
 assert.match(feedTarget.innerHTML, /Year-earlier period/);
 assert.match(feedTarget.innerHTML, /not AI-segment results/);
@@ -57,6 +64,7 @@ assert.match(feedTarget.innerHTML, /Unavailable/);
 assert.match(feedTarget.innerHTML, /Issuer operating disclosure wording/);
 assert.match(feedTarget.innerHTML, /These are text matches, not verified operating facts/);
 assert.match(feedTarget.innerHTML, /Expected index skips: 2026-10-10 \(weekend\), 2026-10-12 \(SEC federal holiday\)/);
+assert.match(feedTarget.innerHTML, /5 filing index days read; 0 could not be confirmed/);
 assert.match(feedTarget.innerHTML, /Coverage for these dates is unverified/);
 assert.match(feedTarget.innerHTML, /does not establish that filings were missed/);
 assert.doesNotMatch(feedTarget.innerHTML, /Results do not cover those dates/);
@@ -110,9 +118,38 @@ assert.equal(classifyAiEvidence(riskBoilerplate, 'artificial intelligence'), 'ri
 const mixedRiskAndBusiness = 'Risks and uncertainties associated with our increasing use of artificial intelligence and other emerging technologies may affect results. Separately, we launched an AI-enabled claims processing product for customers this quarter.';
 assert.ok(analyzeText(mixedRiskAndBusiness).some(hit => hit.term.toLowerCase() === 'ai-enabled'), 'risk boilerplate in one sentence should not suppress an operational AI hit elsewhere in the filing');
 assert.ok(analyzeText('We launched an AI-powered analytics product for customers in September.').length, 'issuer product language should remain eligible');
+const deniedAiLaunch = 'The company has not launched an AI-enabled product for customers.';
+assert.equal(classifyAiEvidence(deniedAiLaunch, 'AI-enabled'), 'negative-or-not-current', 'an explicit denial cannot be classified as a completed AI launch');
+assert.equal(analyzeText(deniedAiLaunch).length, 0, 'explicitly denied AI activity does not create an operating lead');
+const deniedAiDeployment = 'We have not yet deployed AI-powered services for our customers.';
+assert.equal(analyzeText(deniedAiDeployment).length, 0, 'negated issuer deployments do not create operating leads');
+const deniedAiSales = 'The company does not sell AI products.';
+assert.equal(analyzeText(deniedAiSales).length, 0, 'a denied AI product sale is not treated as a current pivot');
+const internalAiUse = 'The issuer uses an AI platform for internal customer support.';
+assert.equal(classifyAiEvidence(internalAiUse, 'AI platform'), 'internal-tool-use', 'internal-only AI assistance is separated from commercial AI offerings');
+assert.equal(analyzeText(internalAiUse).length, 0, 'internal AI tools alone do not create an AI business pivot');
+const internalAndExternalAi = 'The company launched an AI-enabled claims product for customers, while it also uses AI internally for administrative work.';
+assert.ok(analyzeText(internalAndExternalAi).some(hit => hit.sentence.includes('launched an AI-enabled claims product')), 'an internal-use clause must not hide a separate external product launch');
+assert.ok(analyzeText('The company launched an AI-enabled product for customers, while a board committee oversees AI governance.').length, 'positive operating disclosures remain eligible beside governance language');
 const glossary = 'Artificial intelligence is a field of computer science that may affect many businesses.';
 assert.equal(analyzeText(glossary).length, 0, 'glossary definitions do not become operating leads');
 assert.equal(classifyAiEvidence(glossary, 'artificial intelligence'), 'glossary-or-definition');
+assert.equal(classifyAiEvidence('Glossary of Defined Terms. Term Definition. ACL Allowance for credit losses. AI Artificial intelligence, including machine learning.', 'artificial intelligence'), 'glossary-or-definition', 'table-style glossary references are classified as boilerplate');
+assert.equal(classifyAiEvidence('Cybersecurity risks include hacking, phishing, malware and AI-driven cyberattacks.', 'AI-driven'), 'risk-boilerplate', 'AI threat references in cybersecurity boilerplate are not operating signals');
+assert.equal(classifyAiEvidence('Evolving privacy, biometric and artificial intelligence laws and regulations may affect our business.', 'artificial intelligence'), 'risk-boilerplate', 'AI regulation and privacy risk language does not establish a pivot');
+assert.equal(analyzeText('Evolving privacy, biometric and artificial intelligence laws and regulations may affect our business.').length, 0);
+assert.equal(classifyAiEvidence('Governance and framework for AI Strategy focused on efficiency, productivity and client experience opportunities.', 'AI Strategy'), 'governance-or-oversight', 'board governance wording is not issuer operating evidence');
+assert.equal(analyzeText('Governance and framework for AI Strategy focused on efficiency, productivity and client experience opportunities.').length, 0);
+const governedProduct = 'The company launched an AI-powered claims service for customers, while a board committee oversees AI governance and regulatory risk.';
+assert.equal(classifyAiEvidence(governedProduct, 'AI-powered'), 'operating-disclosure', 'governance language must not suppress a concrete issuer service launch in the same sentence');
+assert.ok(analyzeText(governedProduct).length);
+assert.equal(classifyAiEvidence('The Company and its Subsidiaries have not included data in prompts into any third party AI Technology, except under enterprise level licenses.', 'AI Technology'), 'third-party-tool-use', 'internal use restrictions for third-party AI tools are not an AI business pivot');
+assert.equal(analyzeText('The Company and its Subsidiaries have not included data in prompts into any third party AI Technology, except under enterprise level licenses.').length, 0);
+assert.equal(classifyAiEvidence('Following the disposal of the subsidiaries that owned the software, the AI-Powered Travel Platform Software asset was removed from the Group.', 'AI-Powered'), 'disposed-or-former-asset', 'AI assets disposed of by the issuer are not current operating evidence');
+assert.equal(analyzeText('Following the disposal of the subsidiaries that owned the software, the AI-Powered Travel Platform Software asset was removed from the Group.').length, 0);
+const retainedProduct = 'The company launched an AI-powered logistics service for customers, while a separate AI platform it owned was sold.';
+assert.equal(classifyAiEvidence(retainedProduct, 'AI-powered'), 'operating-disclosure', 'a disposal disclosure must not suppress an unrelated current commercial product');
+assert.equal(classifyAiEvidence('Business and Operational Risks. The impact of innovation and technological change, including artificial intelligence, may affect the insurance industry.', 'artificial intelligence'), 'risk-boilerplate', 'saved snippets from a labeled risk section remain suppressed');
 const externalQuote = 'According to our customer, the vendor launched an AI-powered analytics platform for retail businesses.';
 assert.equal(analyzeText(externalQuote).length, 0, 'third-party product claims do not become issuer operating leads');
 assert.equal(classifyAiEvidence(externalQuote, 'AI-powered'), 'third-party-mention');
@@ -141,8 +178,15 @@ const verifiedNonAiNameChange = legalNameChangeFromSubmissions({
 assert.ok(verifiedNonAiNameChange, 'control case must contain a recent, independently verified legal name change');
 assert.equal(aiPivotLeadType(verifiedNonAiNameChange, ''), null, 'a verified non-AI legal rename cannot create an AI pivot lead on its own');
 assert.equal(aiPivotLeadType(verifiedNameChange, ''), 'ai-name-change', 'a verified legal rename to an AI-branded name should appear even when its filing lacks a separate AI-language match');
+const legalExhibitFiling = relevantDocuments('<DOCUMENT><TYPE>8-K</TYPE><TEXT>Item 5.03. See attached certificate.</TEXT></DOCUMENT><DOCUMENT><TYPE>EX-3.1</TYPE><TEXT>The Company changed its corporate name from Beta Manufacturing Inc. to Current AI Systems Inc. The company also launched an AI-powered customer service platform.</TEXT></DOCUMENT>', '8-K');
+assert.ok(legalExhibitFiling.some(doc => doc.type === 'EX-3.1'), 'legal name exhibit should be available for rename corroboration');
+assert.ok(isNameChangeLead(legalExhibitFiling.map(doc => doc.text).join(' '), '8-K'), 'an 8-K with name-change item and legal exhibit should be corroborated');
+assert.equal(aiPivotLeadType(verifiedNameChange, ''), 'ai-name-change', 'legal-name exhibit text is not itself an operating-language delta');
+const aiEligibleLegalExhibitDocs = legalExhibitFiling.filter(doc => !isLegalNameExhibit(doc));
+assert.ok(!aiEligibleLegalExhibitDocs.flatMap(doc => analyzeText(doc.text)).length, 'the name-exhibit filing should not create an operating-language lead from legal exhibit wording alone');
 assert.equal(aiPivotLeadType(verifiedNonAiNameChange, 'AI language first detected versus prior same-form filing'), 'name-change-and-ai-language', 'a rename can accompany a lead only when the filing independently meets the AI-language screen');
 assert.equal(aiPivotLeadType(null, 'New AI-business wording versus prior same-form filing'), 'ai-language-change', 'the AI-language screen remains sufficient when there is no verified name change');
+assert.equal(aiPivotLeadType(null, 'AI operating-disclosure lead; prior filing comparison unavailable'), 'ai-language-review', 'an operating match with an unavailable prior comparison remains a review lead, not a verified pivot');
 assert.equal(legalNameChangeFromSubmissions({name: 'Unrelated Current Inc.', formerNames: []}, '2026-10-10', '123'), null, '6-K text without a matching SEC name history cannot confirm a transition');
 assert.equal(legalNameChangeFromSubmissions(formerNamesFixture, '2026-07-01', '123'), null, 'stale SEC name transitions should not be assigned to a recent filing');
 assert.equal(legalNameChangeFromSubmissions(formerNamesFixture, '2026-11-15', '123')?.effectiveDate, '2026-10-01', 'a transition exactly 45 days before filing remains in scope');
@@ -169,7 +213,81 @@ assert.match(aiDeltaLabel(currentHits, priorHits), /^New AI operating-disclosure
 const nearPriorHits = analyzeText(deltaFixture.nearDuplicatePrior);
 const nearCurrentHits = analyzeText(deltaFixture.nearDuplicateCurrent);
 assert.equal(novelAiEvidence(nearCurrentHits, nearPriorHits).length, 0, 'a near-duplicate phrase with one wording change should not be called new');
+const retainedFixture = JSON.parse(await readFile(new URL('./fixtures/sec-ai-retained-leads.json', import.meta.url), 'utf8'));
+const revalidated = revalidateRetainedLeads(retainedFixture);
+assert.deepEqual(revalidated.map(row => row.accession), ['mixed-survives', 'verified-ai-rename-survives'], 'stale glossary, cyber-risk and biography-only leads are removed, while a surviving operating disclosure and independently verified AI rename remain');
+assert.equal(revalidated[0].evidence.length, 1, 'only the substantive operating evidence remains on a mixed saved lead');
+assert.equal(revalidated[0].evidence[0].evidenceClass, 'operating-disclosure', 'revalidated evidence stores its current classifier result');
 assert.ok(deltaFixture.sourceFilings.every(url => /^https:\/\/www\.sec\.gov\/Archives\//.test(url)));
+
+const oldFetch = globalThis.fetch;
+const currentFilingUrl = 'https://www.sec.gov/Archives/edgar/data/123/000000012326000001/0000000123-26-000001.txt';
+const priorFilingUrl = 'https://www.sec.gov/Archives/edgar/data/123/000000012326000000/0000000123-26-000000.txt';
+const submissionHistory = {filings:{recent:{accessionNumber:['0000000123-26-000001','0000000123-26-000000'],form:['8-K','8-K'],filingDate:['2026-10-10','2026-08-10'],primaryDocument:['current.htm','prior.htm']}}};
+const fullFilingLead = {cik:'0000000123',company:'Example Inc.',ticker:'EXMP',form:'8-K',filingDate:'2026-10-10',accession:'0000000123-26-000001',filingUrl:currentFilingUrl,evidence:[]};
+const filingBody = text => `<DOCUMENT><TYPE>8-K</TYPE><TEXT>${text}</TEXT></DOCUMENT>`;
+try {
+  globalThis.fetch = async url => {
+    const value = String(url);
+    if (value === currentFilingUrl) return {ok:true,status:200,text:async()=>filingBody('The company launched an AI-powered logistics service for customers, while a board committee oversees AI governance and regulatory risk.'),headers:{get:()=>null}};
+    if (value === priorFilingUrl) return {ok:true,status:200,text:async()=>filingBody('The company reported its quarterly financial results.'),headers:{get:()=>null}};
+    throw new Error(`Unexpected SEC mock URL: ${value}`);
+  };
+  const verified = await revalidateRetainedLeadsFromSEC([fullFilingLead], 'Research contact analyst@example.com', new Map([['0000000123',submissionHistory]]));
+  assert.equal(verified.retained.length, 1, 'whole-filing recheck should retain a new issuer service even when governance appears nearby');
+  assert.equal(verified.retained[0].reviewStatus, 'full SEC filing rechecked; human review required');
+  assert.equal(verified.archived.length, 0);
+
+  const archivedWithEvidence = await revalidateRetainedLeadsFromSEC([{...fullFilingLead,archiveReason:'Archived in a prior review.'}], 'Research contact analyst@example.com', new Map([['0000000123',submissionHistory]]));
+  assert.equal(archivedWithEvidence.retained.length, 0, 'a previously archived lead must not return to the active feed after a positive match');
+  assert.equal(archivedWithEvidence.archived.length, 1);
+  assert.equal(archivedWithEvidence.archived[0].archiveReason, 'Archived in a prior review.');
+  assert.equal(archivedWithEvidence.archived[0].fullFilingClassifierVersion, '2026-10-18.3');
+  assert.match(archivedWithEvidence.archived[0].reviewStatus, /archive status preserved/);
+
+  globalThis.fetch = async url => {
+    const value = String(url);
+    if (value === currentFilingUrl) return {ok:true,status:200,text:async()=>filingBody('The company launched an AI-powered logistics service for customers.'),headers:{get:()=>null}};
+    if (value === priorFilingUrl) return {ok:false,status:404,text:async()=>'',headers:{get:()=>null}};
+    throw new Error(`Unexpected SEC mock URL: ${value}`);
+  };
+  const comparisonUnknown = await revalidateRetainedLeadsFromSEC([fullFilingLead], 'Research contact analyst@example.com', new Map([['0000000123',submissionHistory]]));
+  assert.equal(comparisonUnknown.retained.length, 1, 'an unavailable prior filing must not archive an otherwise valid issuer activity match');
+  assert.equal(comparisonUnknown.retained[0].leadType, 'ai-language-review');
+  assert.match(comparisonUnknown.retained[0].reviewStatus, /comparison unavailable/);
+
+  globalThis.fetch = async url => {
+    assert.equal(String(url), currentFilingUrl);
+    return {ok:true,status:200,text:async()=>filingBody('The company operates logistics facilities and reports customer volumes.'),headers:{get:()=>null}};
+  };
+  const archivedAgain = await revalidateRetainedLeadsFromSEC([{...fullFilingLead,archiveReason:'Pending full filing recheck.'}], 'Research contact analyst@example.com', new Map());
+  assert.equal(archivedAgain.retained.length, 0);
+  assert.equal(archivedAgain.archived.length, 1, 'a fully rechecked archive remains archived when no qualifying AI evidence remains');
+  assert.equal(archivedAgain.archived[0].reviewStatus, 'archived after full filing recheck');
+
+  globalThis.fetch = async url => {
+    const value = String(url);
+    if (value === 'https://www.sec.gov/files/company_tickers_exchange.json') {
+      return new Response(JSON.stringify({fields: ['cik', 'name', 'ticker', 'exchange'], data: [[123, 'Example Inc.', 'EXMP', 'Nasdaq']]}));
+    }
+    if (value.includes('/Archives/edgar/daily-index/')) {
+      return new Response('CIK|Company Name|Form Type|Date Filed|Filename\n--------------------------------------------------------------------------------\n');
+    }
+    throw new Error(`Unexpected SEC mock URL during scan: ${value}`);
+  };
+  const reviewMetadata = {reviewedAt: '2026-10-18T17:25:41Z', scope: 'Saved excerpts only.', newFilingScan: false, archivedForReview: 150};
+  const scanResult = await scan({
+    now: '2026-10-19T15:00:00Z', lookbackDays: 3,
+    userAgent: 'Research contact analyst@example.com',
+    feed: {leads: [], archivedLeads: [], checkedAccessions: [], qualityReview: reviewMetadata},
+  });
+  assert.deepEqual(scanResult.qualityReview, reviewMetadata, 'a successful filing scan must preserve the saved-evidence review record');
+  assert.equal(scanResult.lastSuccessfulScan.completedAt, '2026-10-19T15:00:00.000Z');
+  assert.equal(scanResult.lastSuccessfulScan.readableIndexDays, 1);
+  assert.deepEqual(scanResult.lastSuccessfulScan.unavailableIndexDays, []);
+} finally {
+  globalThis.fetch = oldFetch;
+}
 
 const fact = (val, start, end, filed, form = '10-Q', accn = '0000000123-26-000004') => ({val, start, end, filed, form, accn});
 const usFacts = {facts: {'us-gaap': {

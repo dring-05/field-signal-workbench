@@ -26,9 +26,10 @@ const appsScriptTestContext = {
     archiveUrls.push(url);
     return {getResponseCode: () => url === archiveFailureUrl ? 503 : 200, getContentText: () => '<fixture>'};
   }},
-  SpreadsheetApp: {openById: () => {
+  PropertiesService: {getScriptProperties: () => ({getProperty: () => 'mock-workbook'})},
+  SpreadsheetApp: {getActiveSpreadsheet: () => {
     workbookOpened = true;
-    return {getSheetByName: () => ({
+    return {getId: () => 'mock-workbook', getSheetByName: () => ({
       getLastRow: () => 4 + mockMonthlyRows.length,
       getRange: (start, column, rowCount) => ({
         getValues: () => mockMonthlyRows.slice(start - 5, start - 5 + rowCount),
@@ -47,11 +48,12 @@ rebuildSiteFeed_ = function () {};
 refreshTaiwanCompanyNames = function () { globalThis.refreshedNames += 1; };
 writeLog_ = function () {};
 importTaiwanMopsReports_ = function (reports) { globalThis.importedReports = reports; return {result: 'imported', reports: reports.length}; };
-globalThis.testMopsSchedule = {months: recentTaiwanMopsHistoryMonths_, fetch: fetchTaiwanMopsHistory_, refresh: refreshRecentTaiwanMopsArchive, importReports: nativeImportTaiwanMopsReports};`, appsScriptTestContext, {timeout: 3000});
+globalThis.testMopsSchedule = {months: recentTaiwanMopsHistoryMonths_, backfillMonths: taiwanMopsBackfillMonths_, fetch: fetchTaiwanMopsHistory_, refresh: refreshRecentTaiwanMopsArchive, importReports: nativeImportTaiwanMopsReports};`, appsScriptTestContext, {timeout: 3000});
 const mopsSchedule = appsScriptTestContext.testMopsSchedule;
 assert.deepEqual(Array.from(mopsSchedule.months(new Date('2026-09-30T15:59:59Z'))), ['2026-07', '2026-08'], 'window follows the Asia/Taipei calendar before the month boundary');
 assert.deepEqual(Array.from(mopsSchedule.months(new Date('2026-09-30T16:00:00Z'))), ['2026-08', '2026-09'], 'window advances at midnight in Asia/Taipei');
 assert.deepEqual(Array.from(mopsSchedule.months(new Date('2026-01-01T00:00:00Z'))), ['2025-11', '2025-12'], 'window rolls back across the year boundary');
+assert.deepEqual(Array.from(mopsSchedule.backfillMonths(16, new Date('2026-10-13T12:00:00Z'))), ['2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09'], 'first backfill covers the sixteen latest completed periods');
 archiveUrls.length = 0;
 archiveSleeps.length = 0;
 const archiveReports = mopsSchedule.fetch(['2026-08', '2026-09']);
@@ -112,6 +114,10 @@ assert.deepEqual(parsed.records[0], {
   reportTitle: '上市公司114年9月份(累計與當月)營業收入統計表'
 });
 assert.equal(parsed.records[1].yearChangePct, -1.66);
+const missingYoYFixture = fixture.replace('<td>12.79</td><td>-1.66</td>', '<td>12.79</td><td>-</td>');
+const missingYoYParsed = parseMonthlyReport(missingYoYFixture, {reportMonth: '2025-09', market: 'sii', issuerType: '0'});
+assert.equal(missingYoYParsed.records[1].revenue, 6388217, 'a company row with reported revenue remains in the archive when the provider leaves YoY blank');
+assert.equal(missingYoYParsed.records[1].yearChangePct, null, 'missing YoY is preserved as unavailable instead of failing the entire report');
 const titleWithoutHeading = fixture.replace(/<title>[\s\S]*?<\/title>/i, '').replace(/<h1>[\s\S]*?<\/h1>/i, '<div>上市公司114年9月份(累計與當月)營業收入統計表</div><p>本資料由各公司提供</p>');
 assert.equal(parseMonthlyReport(titleWithoutHeading, {reportMonth: '2025-09', market: 'sii', issuerType: '0'}).records.length, 2);
 assert.equal(reportUrl('otc', '2024-01', '0'), 'https://mopsov.twse.com.tw/nas/t21/otc/t21sc03_113_1_0.html');

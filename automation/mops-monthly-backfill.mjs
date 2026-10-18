@@ -214,8 +214,8 @@ export function parseMonthlyReport(html, {reportMonth, market, issuerType}) {
         attribution: ATTRIBUTION,
         reportTitle: title
       };
-      if (record.revenue === null || record.yearChangePct === null) {
-        throw new Error(`Company row ${code} lacks revenue or YoY revenue in ${reportMonth}; refusing partial parse.`);
+      if (record.revenue === null) {
+        throw new Error(`Company row ${code} lacks current-month revenue in ${reportMonth}; refusing partial parse.`);
       }
       const prior = byCode.get(code);
       if (prior && JSON.stringify(prior) !== JSON.stringify(record)) {

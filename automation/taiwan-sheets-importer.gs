@@ -1,5 +1,4 @@
 const SIGNALS = {
-  spreadsheetId: '1qNrg6QhGKBai0jOa6teL1WNsiCazZQQmRVA4Po5fuIY',
   monthlySources: [
     {market: 'Listed (TWSE)', endpoint: 't187ap05_L', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_L.csv'},
     {market: 'OTC (TPEx)', endpoint: 't187ap05_O', csvUrl: 'https://mopsfin.twse.com.tw/opendata/t187ap05_O.csv'},
@@ -15,13 +14,45 @@ const SIGNALS = {
   market: 'Taiwan public issuers'
 };
 
+// MOPS exposes quarterly statements in separate market and industry tables.
+// L is listed, O is OTC, U is emerging, and X is public issuers. The listed
+// datasets are exposed by TWSE OpenAPI; MOPSfin publishes the other three as
+// CSV downloads. Keep this separate from monthly market codes (where emerging
+// and public-issued use R and P).
+const QUARTERLY_STATEMENT_MARKETS = [
+  {market: 'Listed (TWSE)', code: 'L', source: 'openapi'},
+  {market: 'OTC (TPEx)', code: 'O', source: 'mopsfin'},
+  {market: 'Emerging (MOPS)', code: 'U', source: 'mopsfin'},
+  {market: 'Publicly issued (MOPS)', code: 'X', source: 'mopsfin'}
+];
+const QUARTERLY_STATEMENT_INDUSTRIES = ['basi', 'bd', 'ci', 'fh', 'ins', 'mim'];
+
+function signalsWorkbook_() {
+  const book = SpreadsheetApp.getActiveSpreadsheet();
+  if (!book) throw new Error('Bind this script to your private Taiwan Monthly Signals workbook before running it.');
+  const expectedId = PropertiesService.getScriptProperties().getProperty('TAIWAN_WORKBOOK_ID');
+  if (expectedId && book.getId() !== expectedId) throw new Error('This script is locked to a different Taiwan workbook. Refusing to write to the active spreadsheet.');
+  return book;
+}
+
 const RAW_HEADERS = ['Market', 'Data area', 'Endpoint', 'Company code', 'Company name', 'Report period', 'Retrieved at', 'Raw source record', 'Source URL', 'Record signature'];
 const MARGIN_AUDIT_HEADERS = ['Market', 'Company code', 'Company name', 'Report period', 'Source endpoint', 'Retrieved at', 'Source URL', 'Source signature', 'Margin dependency signatures', 'Calculation signature', 'Source basis', 'Revenue reported YTD', 'Gross profit reported YTD', 'Operating income reported YTD', 'Prior-quarter revenue YTD', 'Prior-quarter gross profit YTD', 'Prior-quarter operating income YTD', 'Revenue standalone quarter', 'Gross profit standalone quarter', 'Operating income standalone quarter', 'Gross margin %', 'Operating margin %', 'Gross margin YoY change (pp)', 'Operating margin YoY change (pp)', 'Calculation status', 'Raw source record'];
 const LOG_HEADERS = ['Run time', 'Result', 'Monthly source period', 'Rows received', 'Rows added or revised', 'Raw records added or revised', 'Notes', 'Monthly feed status'];
 const FEED_HEADERS = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL', 'English company name or official abbreviation', 'Mandarin pronunciation lookup', 'Revenue prior month', 'Revenue year-ago month', 'Revenue MoM %', 'Revenue YTD', 'Revenue prior-year YTD', 'Revenue YTD growth %'];
 
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Taiwan Signals')
+    .addItem('Set up workbook and daily updates', 'setupTaiwanSignals')
+    .addItem('Import 16-month MOPS history', 'importTaiwanMopsHistory')
+    .addItem('Refresh current issuer snapshot', 'refreshTaiwanSignals')
+    .addItem('Check public SiteFeed tab', 'validateTaiwanPublicFeed')
+    .addToUi();
+}
+
 function setupTaiwanSignals() {
-  const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
+  const book = signalsWorkbook_();
+  const properties = PropertiesService.getScriptProperties();
+  if (!properties.getProperty('TAIWAN_WORKBOOK_ID')) properties.setProperty('TAIWAN_WORKBOOK_ID', book.getId());
   ensureHeader_(book, SIGNALS.monthlySheet, ['Market', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue current month', 'Revenue prior month', 'Revenue year-ago month', 'MoM growth %', 'YoY growth %', 'YTD revenue', 'Prior-year YTD revenue', 'YTD growth %', 'Currency / unit', 'Source URL', 'Retrieved at', 'Source record']);
   ensureHeader_(book, SIGNALS.feedSheet, FEED_HEADERS);
   ensureHeader_(book, SIGNALS.rawSheet, RAW_HEADERS);
@@ -43,7 +74,7 @@ function refreshTaiwanSignals() {
   const notes = [];
   let sourceStatus = [];
   try {
-    const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
+    const book = signalsWorkbook_();
     const monthlyFeed = fetchMonthlyRows_();
     sourceStatus = monthlyFeed.sources.map(source => `${source.market}: ${source.status}, ${source.rows} rows${source.error ? ` (${source.error})` : ''}`);
     monthlyFeed.sources.filter(source => source.status !== 'success').forEach(source => notes.push(`${source.market} monthly feed failed: ${source.error}`));
@@ -73,9 +104,24 @@ function previewTaiwanMopsHistory() {
 }
 
 function importTaiwanMopsHistory() {
-  const months = recentTaiwanMopsHistoryMonths_();
+  // A third difference of monthly YoY revenue needs sixteen monthly revenue
+  // observations: twelve months to form the first YoY point, then four
+  // consecutive YoY points. The rolling refresh remains a two-month repair.
+  const months = taiwanMopsBackfillMonths_(16);
   const reports = fetchTaiwanMopsHistory_(months);
   return importTaiwanMopsReports_(reports);
+}
+
+function taiwanMopsBackfillMonths_(monthCount, now) {
+  if (!Number.isInteger(monthCount) || monthCount < 1 || monthCount > 24) throw new Error('Taiwan MOPS backfill length must be between 1 and 24 completed months.');
+  const current = Utilities.formatDate(now || new Date(), 'Asia/Taipei', 'yyyy-MM');
+  const match = current.match(/^(\d{4})-(\d{2})$/);
+  if (!match) throw new Error('Could not determine the current Taiwan calendar month.');
+  const endIndex = Number(match[1]) * 12 + Number(match[2]) - 2;
+  return Array.from({length: monthCount}, (_, offset) => {
+    const index = endIndex - monthCount + 1 + offset;
+    return String(Math.floor(index / 12)).padStart(4, '0') + '-' + String(index % 12 + 1).padStart(2, '0');
+  });
 }
 
 function refreshRecentTaiwanMopsArchive() {
@@ -102,7 +148,7 @@ function recentTaiwanMopsHistoryMonths_(now) {
 
 function importTaiwanMopsReports_(reports) {
   const started = new Date();
-  const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
+  const book = signalsWorkbook_();
   const sheet = book.getSheetByName(SIGNALS.monthlySheet);
   if (!sheet) throw new Error('Taiwan Monthly sheet is missing.');
   const existing = sheet.getLastRow() > 4 ? sheet.getRange(5, 1, sheet.getLastRow() - 4, 17).getValues() : [];
@@ -129,7 +175,10 @@ function importTaiwanMopsReports_(reports) {
       record.ytd, record.priorYtd, record.ytdGrowth, 'TWD thousands, as published', report.url,
       new Date(), JSON.stringify(raw)]);
   }));
-  if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
+  if (additions.length) {
+    ensureSheetSize_(sheet, sheet.getLastRow() + additions.length, 17);
+    sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
+  }
   rebuildSiteFeed_(book);
   refreshTaiwanCompanyNames();
   const totalRows = reports.reduce((sum, report) => sum + report.records.length, 0);
@@ -207,7 +256,9 @@ function parseTaiwanMopsArchive_(html, month, group) {
       }
       if (!columns) return;
       const code = String(cells[columns.code] || '').trim().toUpperCase();
-      if (!/^\d{4,6}$/.test(code)) return;
+      // Some publicly issued firms use alphanumeric codes such as 0009A0.
+      // Keep the code as text so leading zeroes and suffixes remain intact.
+      if (!/^[A-Z0-9]{4,6}$/.test(code)) return;
       const name = String(cells[columns.name] || '').trim();
       const current = numberOrBlankTaiwan_(cells[columns.current]);
       if (!name || current === '') throw new Error('Malformed MOPS company row ' + code + ' in ' + month + '.');
@@ -282,9 +333,14 @@ function fetchMonthlyRows_() {
 function appendRawStatementRevisions_(book, notes) {
   const raw = book.getSheetByName(SIGNALS.rawSheet);
   const endpoints = [];
-  ['basi', 'bd', 'ci', 'fh', 'ins', 'mim'].forEach(suffix => {
-    endpoints.push({area: 'Quarterly income statement', endpoint: 't187ap06_X_' + suffix});
-    endpoints.push({area: 'Quarterly balance sheet', endpoint: 't187ap07_X_' + suffix});
+  // Margin calculations use general-industry income statements. Keep the
+  // existing broader X-family raw statement collection for compatibility.
+  QUARTERLY_STATEMENT_MARKETS.forEach(market => {
+    endpoints.push({area: 'Quarterly income statement', endpoint: 't187ap06_' + market.code + '_ci', market: market.market, source: market.source});
+  });
+  QUARTERLY_STATEMENT_INDUSTRIES.forEach(suffix => {
+    if (suffix !== 'ci') endpoints.push({area: 'Quarterly income statement', endpoint: 't187ap06_X_' + suffix, market: 'Publicly issued (MOPS)', source: 'openapi'});
+    endpoints.push({area: 'Quarterly balance sheet', endpoint: 't187ap07_X_' + suffix, market: 'Publicly issued (MOPS)', source: 'openapi'});
   });
   endpoints.push({area: 'Director and supervisor ownership', endpoint: 't187ap11_P'});
   const prior = raw.getLastRow() > 4 ? raw.getRange(5, 2, raw.getLastRow() - 4, 7).getValues() : [];
@@ -298,7 +354,7 @@ function appendRawStatementRevisions_(book, notes) {
   });
   const additions = [];
   endpoints.forEach(item => {
-    const url = SIGNALS.sourceBase + item.endpoint;
+    const url = statementSourceUrl_(item);
     try {
       fetchRecords_(url).forEach(record => {
         const code = textField_(record, ['公司代號', '公司代碼', '公司編號', 'SecuritiesCompanyCode', '公司代碼(公司代號)']);
@@ -308,13 +364,16 @@ function appendRawStatementRevisions_(book, notes) {
         const signature = [item.endpoint, code, period, stableRawRecordJson_(record)].join('|');
         if (signatures.has(signature)) return;
         signatures.add(signature);
-        additions.push([SIGNALS.market, item.area, item.endpoint, code, name, period, new Date(), rawJson, url, signature]);
+        additions.push([item.market || SIGNALS.market, item.area, item.endpoint, code, name, period, new Date(), rawJson, url, signature]);
       });
     } catch (err) {
       notes.push(item.endpoint + ': ' + String(err && err.message || err));
     }
   });
-  if (additions.length) raw.getRange(raw.getLastRow() + 1, 1, additions.length, RAW_HEADERS.length).setValues(additions);
+  if (additions.length) {
+    ensureSheetSize_(raw, raw.getLastRow() + additions.length, RAW_HEADERS.length);
+    raw.getRange(raw.getLastRow() + 1, 1, additions.length, RAW_HEADERS.length).setValues(additions);
+  }
   return additions.length;
 }
 
@@ -342,7 +401,10 @@ function appendMonthlyRevisions_(sheet, rows) {
     signatures.add(signature);
     additions.push([r.market, r.code, r.name, r.industry, r.period, r.current, r.prior, r.yearAgo, r.mom, r.yoy, r.ytd, r.priorYtd, r.ytdGrowth, 'TWD thousands, as published', r.sourceUrl, new Date(), rawJson]);
   });
-  if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
+  if (additions.length) {
+    ensureSheetSize_(sheet, sheet.getLastRow() + additions.length, 17);
+    sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
+  }
   return additions.length;
 }
 
@@ -412,12 +474,24 @@ function rebuildSiteFeed_(book) {
     const current = history[history.length - 1];
     const periods = history.map(r => String(r[4]));
     const index = periods.length - 1;
-    const y = history.map(r => number_(r[9]));
+    // Keep the source-reported YoY percentage visible, but do not treat a
+    // near-zero comparison base as a stable operating trend for derivatives.
+    const y = history.map(r => monthlyYoYBaseIsTiny_(r[5], r[7]) ? '' : number_(r[9]));
     const continuous = contiguousMonthlyObservations_(periods, y, index);
     const diffs = finiteDifferencesAtEnd_(y, continuous);
     // Prefer the exact name match. The code-only fallback is populated only
     // when the quarterly source has one verified issuer identity for that code.
-    const margin = marginMap.get(issuerIdentityKey_(current[1], current[2])) || marginMap.get(String(current[1])) || emptyMarginSignals_();
+    const identityKey = issuerIdentityKey_(current[1], current[2]);
+    const marketIdentityKey = quarterlyMarginIdentity_(current[0], identityKey);
+    const marketCodeKey = quarterlyMarginIdentity_(current[0], current[1]);
+    const exactMargin = marginMap.get(marketIdentityKey);
+    const codeMargin = marginMap.get(marketCodeKey);
+    const hasSameCodeDifferentIdentity = !exactMargin && !codeMargin && [...marginMap.keys()].some(key => key.startsWith(marketCodeKey + '|'));
+    const margin = {...(exactMargin || codeMargin || emptyMarginSignals_())};
+    if (hasSameCodeDifferentIdentity) {
+      margin.identityMismatch = true;
+      margin.status = 'Quarterly statement rows use a different issuer name for this code; margin series left blank pending identity review';
+    }
     if (/金融|保險|證券|期貨|金控|financial|insurance|securities|bank/i.test(String(current[3] || ''))) {
       margin.gross = ''; margin.grossYoY = ''; margin.grossD1 = ''; margin.grossD2 = ''; margin.grossD3 = '';
       margin.operating = ''; margin.operatingYoY = ''; margin.operatingD1 = ''; margin.operatingD2 = ''; margin.operatingD3 = '';
@@ -425,15 +499,21 @@ function rebuildSiteFeed_(book) {
     }
     const status = [
       diffs.d1 !== '' && diffs.d2 !== '' && diffs.d3 !== '' ? 'Revenue Δ1/Δ2/Δ3 available' : `Revenue trend history: ${continuous}/4 consecutive monthly YoY observations`,
+      monthlyYoYBaseIsTiny_(current[5], current[7]) ? 'YoY percentage kept as reported; year-ago revenue is zero, negative, or below 0.1% of current-month revenue, so trend derivatives are suppressed' : '',
       mergeVerified ? '' : 'Issuer code appears with different names across sources or dates; histories are split until the issuer identity is verified',
-      margin.matched === false ? 'Quarterly issuer name did not match monthly feed; margin series left blank' : '',
+      margin.identityMismatch ? 'Quarterly issuer identity did not match monthly feed; margin series left blank' : '',
       margin.status
     ].filter(Boolean).join('; ');
     output.push([current[0], issuerKey, current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14], '', '', number_(current[6]), number_(current[7]), number_(current[8]), number_(current[10]), number_(current[11]), number_(current[12])]);
   });
   output.sort((a, b) => (Number(b[7]) || -Infinity) - (Number(a[7]) || -Infinity));
-  if (feed.getLastRow() > 4) feed.getRange(5, 1, feed.getLastRow() - 4, FEED_HEADERS.length).clearContent();
-  if (output.length) feed.getRange(5, 1, output.length, FEED_HEADERS.length).setValues(output);
+  if (!output.length) throw new Error('The Taiwan source history produced no feed rows; the existing SiteFeed was left unchanged.');
+  const previousRows = Math.max(0, feed.getLastRow() - 4);
+  // Replace first, then trim. If the write fails, the last known-good source
+  // feed stays intact for the public sync and the analyst dashboard.
+  ensureSheetSize_(feed, 4 + output.length, FEED_HEADERS.length);
+  feed.getRange(5, 1, output.length, FEED_HEADERS.length).setValues(output);
+  if (previousRows > output.length) feed.getRange(5 + output.length, 1, previousRows - output.length, FEED_HEADERS.length).clearContent();
 }
 
 function monthlyMarketPriority_(market) {
@@ -445,7 +525,7 @@ function monthlyMarketPriority_(market) {
 }
 
 function emptyMarginSignals_() {
-  return {gross: '', grossYoY: '', grossD1: '', grossD2: '', grossD3: '', operating: '', operatingYoY: '', operatingD1: '', operatingD2: '', operatingD3: '', statementDate: '', status: 'Quarterly margins need matched general-industry filings', matched: false};
+  return {gross: '', grossYoY: '', grossD1: '', grossD2: '', grossD3: '', operating: '', operatingYoY: '', operatingD1: '', operatingD2: '', operatingD3: '', statementDate: '', status: 'Quarterly margin series unavailable: no matched general-industry statements in local history', identityMismatch: false};
 }
 
 function marginSignalsMap_(book) {
@@ -456,7 +536,9 @@ function marginSignalsMap_(book) {
   const byCompany = new Map();
   const latestByQuarter = new Map();
   values.forEach(row => {
-    if (String(row[2]) !== 't187ap06_X_ci') return;
+    const endpoint = String(row[2] || '').trim();
+    if (!/^t187ap06_[LOUX]_ci$/.test(endpoint)) return;
+    const market = quarterlyStatementMarket_(endpoint, row[0]);
     const companyCode = String(row[3] || '').trim();
     const companyName = String(row[4] || '').trim();
     if (!companyCode || !companyName) return;
@@ -466,12 +548,12 @@ function marginSignalsMap_(book) {
     const key = quarterIndex_(q);
     if (!Number.isFinite(key)) return;
     const companyKey = issuerIdentityKey_(companyCode, companyName);
-    const id = companyKey + '|' + q;
+    const id = market + '|' + companyKey + '|' + q;
     const retrievedAt = row[6] instanceof Date ? row[6].getTime() : new Date(row[6]).getTime() || 0;
     const prior = latestByQuarter.get(id);
     if (prior && prior.retrievedAt > retrievedAt) return;
     latestByQuarter.set(id, {
-      companyCode, companyKey, q, key,
+      market, companyCode, companyKey, q, key,
       name: companyName,
       record,
       raw: String(row[7] || '{}'),
@@ -483,18 +565,20 @@ function marginSignalsMap_(book) {
     });
   });
   latestByQuarter.forEach(item => {
-    if (!byCompany.has(item.companyKey)) byCompany.set(item.companyKey, new Map());
-    byCompany.get(item.companyKey).set(item.key, item);
+    const identity = quarterlyMarginIdentity_(item.market, item.companyKey);
+    if (!byCompany.has(identity)) byCompany.set(identity, new Map());
+    byCompany.get(identity).set(item.key, item);
   });
   const identitiesByCode = new Map();
   byCompany.forEach((_, identity) => {
-    const code = identity.split('|')[0];
-    if (!identitiesByCode.has(code)) identitiesByCode.set(code, []);
-    identitiesByCode.get(code).push(identity);
+    const [market, companyCode] = identity.split('|');
+    const key = quarterlyMarginIdentity_(market, companyCode);
+    if (!identitiesByCode.has(key)) identitiesByCode.set(key, []);
+    identitiesByCode.get(key).push(identity);
   });
   const auditRows = [];
   byCompany.forEach((quarterMap, companyIdentity) => {
-    const companyCode = companyIdentity.split('|')[0];
+    const [market, companyCode] = companyIdentity.split('|');
     const cumulative = [...quarterMap.values()].sort((a, b) => a.key - b.key);
     const series = [];
     let priorFiscalYear = '';
@@ -540,7 +624,7 @@ function marginSignalsMap_(book) {
     });
     series.forEach(item => {
       auditRows.push([
-        SIGNALS.market, companyCode, item.name, item.q, item.endpoint,
+        item.market, companyCode, item.name, item.q, item.endpoint,
         item.retrievedAtValue || '', item.sourceUrl, item.signature,
         marginDependencySignatures_(quarterMap, item),
         ['MARGIN_YTD_DIFF_V2', marginDependencySignatures_(quarterMap, item)].join('|'),
@@ -566,19 +650,43 @@ function marginSignalsMap_(book) {
       matched: true
     };
     result.set(companyIdentity, signals);
-    const identities = identitiesByCode.get(companyCode) || [];
-    if (identities.length === 1) result.set(companyCode, signals);
-    else result.delete(companyCode);
+    const marketCodeKey = quarterlyMarginIdentity_(market, companyCode);
+    result.set(quarterlyMarginIdentity_(market, issuerIdentityKey_(companyCode, last.name)), signals);
+    const identities = identitiesByCode.get(marketCodeKey) || [];
+    if (identities.length === 1) result.set(marketCodeKey, signals);
+    else result.delete(marketCodeKey);
   });
   appendMarginAudit_(book, auditRows);
   return result;
+}
+
+function statementSourceUrl_(item) {
+  const endpoint = String(item && item.endpoint || '').trim();
+  if (endpoint === 't187ap11_P') return SIGNALS.sourceBase + endpoint;
+  if (!/^t187ap0[67]_[LOUX]_(basi|bd|ci|fh|ins|mim)$/.test(endpoint)) throw new Error('Unsupported MOPS quarterly statement endpoint: ' + endpoint);
+  if (item.source === 'openapi' && endpoint.split('_')[1] === 'L') return SIGNALS.sourceBase + endpoint;
+  return 'https://mopsfin.twse.com.tw/opendata/' + endpoint + '.csv';
+}
+
+function quarterlyStatementMarket_(endpoint, fallbackMarket) {
+  const match = String(endpoint || '').match(/^t187ap0[67]_([LOUX])_/);
+  if (!match) return normalizeMonthlyMarket_(fallbackMarket || SIGNALS.market);
+  const market = QUARTERLY_STATEMENT_MARKETS.find(item => item.code === match[1]);
+  return market ? market.market : normalizeMonthlyMarket_(fallbackMarket || SIGNALS.market);
+}
+
+function quarterlyMarginIdentity_(market, companyIdentityOrCode) {
+  return normalizeMonthlyMarket_(market) + '|' + String(companyIdentityOrCode || '').trim();
 }
 
 function appendMarginAudit_(book, rows) {
   const sheet = book.getSheetByName(SIGNALS.marginAuditSheet) || ensureHeader_(book, SIGNALS.marginAuditSheet, MARGIN_AUDIT_HEADERS);
   const existing = sheet.getLastRow() > 4 ? new Set(sheet.getRange(5, 10, sheet.getLastRow() - 4, 1).getDisplayValues().flat()) : new Set();
   const additions = rows.filter(row => row[9] && !existing.has(String(row[9])));
-  if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, MARGIN_AUDIT_HEADERS.length).setValues(additions);
+  if (additions.length) {
+    ensureSheetSize_(sheet, sheet.getLastRow() + additions.length, MARGIN_AUDIT_HEADERS.length);
+    sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, MARGIN_AUDIT_HEADERS.length).setValues(additions);
+  }
 }
 
 function marginDependencySignatures_(quarterMap, item) {
@@ -641,6 +749,15 @@ function contiguousMonthlyObservations_(periods, values, index) {
   return count;
 }
 
+function monthlyYoYBaseIsTiny_(currentRevenue, yearAgoRevenue) {
+  if (yearAgoRevenue === '' || yearAgoRevenue == null) return false;
+  const current = Number(currentRevenue);
+  const base = Number(yearAgoRevenue);
+  if (!Number.isFinite(current) || !Number.isFinite(base)) return false;
+  if (base <= 0) return current > 0;
+  return current > 0 && base / current < 0.001;
+}
+
 function normalizeMonthly_(raw, sourceUrl, sourceMarket) {
   return {
     raw,
@@ -688,15 +805,23 @@ function fetchRecords_(url) {
 function ensureHeader_(book, name, headers) {
   let sheet = book.getSheetByName(name);
   if (!sheet) sheet = book.insertSheet(name);
+  ensureSheetSize_(sheet, 4, headers.length);
   sheet.getRange(4, 1, 1, headers.length).setValues([headers]);
   sheet.setFrozenRows(4);
   sheet.getRange(4, 1, 1, headers.length).setFontWeight('bold').setBackground('#DDE8F4').setWrap(true);
   return sheet;
 }
 
+function ensureSheetSize_(sheet, rows, columns) {
+  const maxRows = typeof sheet.getMaxRows === 'function' ? sheet.getMaxRows() : rows;
+  const maxColumns = typeof sheet.getMaxColumns === 'function' ? sheet.getMaxColumns() : columns;
+  if (rows > maxRows && typeof sheet.insertRowsAfter === 'function') sheet.insertRowsAfter(maxRows, rows - maxRows);
+  if (columns > maxColumns && typeof sheet.insertColumnsAfter === 'function') sheet.insertColumnsAfter(maxColumns, columns - maxColumns);
+}
+
 function writeLog_(result, period, received, monthlyAdded, rawAdded, notes, monthlyStatus) {
   try {
-    const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
+    const book = signalsWorkbook_();
     const sheet = ensureHeader_(book, SIGNALS.logSheet, LOG_HEADERS);
     sheet.appendRow([new Date(), result, period, received, monthlyAdded, rawAdded, notes, monthlyStatus || '']);
   } catch (ignored) {
@@ -785,7 +910,7 @@ function parseJson_(value) {
 }
 
 function refreshTaiwanCompanyNames() {
-  const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
+  const book = signalsWorkbook_();
   const feed = book.getSheetByName(SIGNALS.feedSheet);
   if (!feed || feed.getLastRow() < 5) throw new Error('SiteFeed has no issuer rows to enrich.');
   const sources = [
