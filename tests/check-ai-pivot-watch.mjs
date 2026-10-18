@@ -162,6 +162,10 @@ assert.equal(classifyAiEvidence(externalQuote, 'AI-powered'), 'third-party-menti
 const genericBoilerplate = 'AI may improve business operations, products, services, and customer experiences across the industry.';
 assert.equal(analyzeText(genericBoilerplate).length, 0, 'generic AI boilerplate without a concrete issuer action is withheld');
 assert.equal(classifyAiEvidence(genericBoilerplate, 'AI'), 'low-confidence-mention');
+const unrelatedAcquisitionAfterAiStrategy = 'The issuer announced an AI strategy and acquired a regional software company with 40,000 existing customers.';
+assert.equal(classifyAiEvidence(unrelatedAcquisitionAfterAiStrategy, 'AI strategy'), 'low-confidence-mention', 'an unrelated acquisition in a separate coordinated clause cannot establish AI-linked operating activity');
+assert.equal(analyzeText(unrelatedAcquisitionAfterAiStrategy).length, 0, 'an AI strategy mention must not borrow an unrelated acquisition verb and customer base');
+assert.ok(analyzeText('The company launched an AI-powered analytics service for customers and acquired a regional software business.').length, 'a concrete AI service launch remains eligible beside an unrelated acquisition');
 const specificPlan = 'The issuer plans to build an AI data center and provide compute capacity to customers next year.';
 assert.equal(classifyAiEvidence(specificPlan, 'AI'), 'planned-operating-disclosure');
 assert.ok(analyzeText(specificPlan).some(hit => hit.evidenceClass === 'planned-operating-disclosure'), 'specific issuer plans remain visible but separately classified from completed operations');
@@ -207,10 +211,12 @@ const filings = [
   {cik: '0000000456', company: 'Unmapped Private Co.', form: '8-K'}
 ];
 const mappedFilings = attachListedIssuer(filings, mapping);
-assert.equal(mappedFilings.length, 1);
+assert.equal(mappedFilings.length, 2, 'filers outside the current ticker map remain in the filing universe');
 assert.equal(mappedFilings[0].ticker, 'EXMP');
 assert.equal(mappedFilings[0].exchange, 'Nasdaq');
 assert.equal(mappedFilings[0].mappedCompany, 'Example Inc.');
+assert.equal(mappedFilings[1].ticker, null);
+assert.equal(mappedFilings[1].issuerCoverage, 'No match in the current SEC ticker and exchange association file; issuer is identified by daily-index name and CIK.');
 const priorHits = analyzeText(deltaFixture.prior);
 const currentHits = analyzeText(deltaFixture.current);
 assert.equal(priorHits.length, currentHits.length, 'fixture should preserve the raw AI keyword count');
@@ -271,6 +277,7 @@ try {
   assert.equal(archivedAgain.archived.length, 1, 'a fully rechecked archive remains archived when no qualifying AI evidence remains');
   assert.equal(archivedAgain.archived[0].reviewStatus, 'archived after full filing recheck');
 
+  let incompleteIndexCalls = 0;
   globalThis.fetch = async url => {
     const value = String(url);
     if (value === 'https://www.sec.gov/files/company_tickers_exchange.json') {
@@ -291,6 +298,65 @@ try {
   assert.equal(scanResult.lastSuccessfulScan.completedAt, '2026-10-19T15:00:00.000Z');
   assert.equal(scanResult.lastSuccessfulScan.readableIndexDays, 1);
   assert.deepEqual(scanResult.lastSuccessfulScan.unavailableIndexDays, []);
+  assert.equal(scanResult.filingUniverse.eligibleFilingsInLookback, 0);
+  assert.equal(scanResult.filingUniverse.perScanFilingCap, 250);
+
+  const scanIndex = [
+    'CIK|Company Name|Form Type|Date Filed|Filename',
+    '--------------------------------------------------------------------------------',
+    '456|Unmapped Public Issuer A|8-K|20261016|edgar/data/456/000000045626000001/0000000456-26-000001.txt',
+    '789|Unmapped Public Issuer B|8-K|20261016|edgar/data/789/000000078926000001/0000000789-26-000001.txt',
+    '123|Mapped Public Issuer|8-K|20261016|edgar/data/123/000000012326000005/0000000123-26-000005.txt',
+  ].join('\n');
+  globalThis.fetch = async url => {
+    const value = String(url);
+    if (value === 'https://www.sec.gov/files/company_tickers_exchange.json') {
+      return new Response(JSON.stringify({fields: ['cik', 'name', 'ticker', 'exchange'], data: [[123, 'Mapped Public Issuer', 'MAP', 'Nasdaq']]}));
+    }
+    if (value.includes('/Archives/edgar/daily-index/')) return new Response(scanIndex);
+    if (value === 'https://www.sec.gov/Archives/edgar/data/456/000000045626000001/0000000456-26-000001.txt') {
+      return new Response('<DOCUMENT><TYPE>8-K<TEXT>The company launched an AI-enabled analytics service for customers.</TEXT></DOCUMENT>');
+    }
+    if (value === 'https://www.sec.gov/Archives/edgar/data/123/000000012326000005/0000000123-26-000005.txt') return new Response('', {status: 404});
+    if (value === 'https://data.sec.gov/submissions/CIK0000000456.json' || value === 'https://data.sec.gov/api/xbrl/companyfacts/CIK0000000456.json') {
+      return new Response('', {status: 404});
+    }
+    throw new Error(`Unexpected SEC mock URL during broad-universe scan: ${value}`);
+  };
+  const broadScan = await scan({
+    now: '2026-10-19T15:00:00Z', lookbackDays: 3, maxFilingsToScreen: 2,
+    userAgent: 'Research contact analyst@example.com',
+    feed: {leads: [], archivedLeads: [], checkedAccessions: []},
+  });
+  assert.equal(broadScan.filingUniverse.eligibleFilingsInLookback, 3, 'eligible filings are drawn from the complete index, including CIKs missing from the ticker map');
+  assert.equal(broadScan.filingUniverse.issuersMatchedToTickerExchangeFile, 1);
+  assert.equal(broadScan.filingUniverse.unmatchedIssuersInLookback, 2);
+  assert.equal(broadScan.filingUniverse.filingsSelectedForScreen, 2);
+  assert.equal(broadScan.filingUniverse.filingsDeferredByPerScanCap, 1);
+  assert.equal(broadScan.leads.length, 1);
+  assert.equal(broadScan.leads[0].cik, '0000000456');
+  assert.equal(broadScan.leads[0].ticker, null);
+  assert.match(broadScan.leads[0].issuerCoverage, /No match in the current SEC ticker and exchange association file/);
+  assert.ok(broadScan.filingUniverse.unmatchedFilers.some(filer => filer.cik === '0000000789' && filer.company === 'Unmapped Public Issuer B'), 'unmatched filers are explicitly listed with their daily-index CIK and name');
+
+  globalThis.fetch = async url => {
+    const value = String(url);
+    if (value === 'https://www.sec.gov/files/company_tickers_exchange.json') {
+      return new Response(JSON.stringify({fields: ['cik', 'name', 'ticker', 'exchange'], data: [[123, 'Example Inc.', 'EXMP', 'Nasdaq']]}));
+    }
+    if (value.includes('/Archives/edgar/daily-index/')) {
+      incompleteIndexCalls++;
+      return incompleteIndexCalls === 1
+        ? new Response('CIK|Company Name|Form Type|Date Filed|Filename\n--------------------------------------------------------------------------------\n')
+        : new Response('', {status: 404});
+    }
+    throw new Error(`Unexpected SEC mock URL during incomplete-index scan: ${value}`);
+  };
+  await assert.rejects(scan({
+    now: '2026-10-20T15:00:00Z', lookbackDays: 4,
+    userAgent: 'Research contact analyst@example.com',
+    feed: {leads: [], archivedLeads: [], checkedAccessions: []},
+  }), /daily-index coverage is incomplete.*existing feed was left unchanged/, 'a missing expected business-day index must abort before feed state can be replaced');
 } finally {
   globalThis.fetch = oldFetch;
 }

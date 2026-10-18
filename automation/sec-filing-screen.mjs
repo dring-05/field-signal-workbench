@@ -10,6 +10,8 @@ const SEC = 'https://www.sec.gov';
 const DATA = 'https://data.sec.gov';
 const TICKER_EXCHANGE_URL = `${SEC}/files/company_tickers_exchange.json`;
 const ELIGIBLE_FORMS = new Set(['8-K', '10-K', '10-Q', '6-K', '20-F']);
+const MAX_FILINGS_TO_SCREEN_PER_SCAN = 250;
+const MAX_UNMATCHED_FILERS_REPORTED = 1000;
 const AI_PATTERNS = [
   /\bartificial intelligence\b/gi,
   /\bgenerative\s+AI\b/gi,
@@ -44,7 +46,7 @@ const EXTERNAL_AI_OFFERING = /\b(?:customer[- ]facing|commercially available|sol
 const THIRD_PARTY_ATTRIBUTION = /\b(?:according to|as reported by|quoted by|citing|the report by|a report from|the article by|our (?:customer|supplier|vendor|partner|competitor)|(?:customer|supplier|vendor|partner|competitor)'s)\b/i;
 const THIRD_PARTY_ACTION = /\b(?:customer|supplier|vendor|partner|competitor|analyst|consultant|industry|third[- ]party)\b.{0,100}\b(?:launched|uses?|used|provides?|offers?|developed|announced|plans?|expects?|claims?|invested|deployed)\b/i;
 const COMPLETED_OPERATING_ACTION = /\b(?:launched|introduced|deployed|developed|built|opened|commissioned|operates?|provided|provides|offer(?:s|ed|ing)?|sell(?:s|ing)?|sold|generated|recognized|secured|signed|acquired|invested|licensed|manufactures?|produces?|integrated|released|began|started|commenced|commercialized|contracted|received|installed|delivered|is using|are using|uses)\b/i;
-const PLANNED_OPERATING_ACTION = /\b(?:plans?\s+to|expects?\s+to|intends?\s+to|will\s+(?:launch|deploy|develop|build|open|provide|sell|produce|operate|commercialize|integrate|begin|start|commence)|is\s+planned\s+to|are\s+planned\s+to|is\s+developing|are\s+developing|proposed\s+to|seeks?\s+to)\b/i;
+const PLANNED_OPERATING_ACTION = /\b(?:plans?\s+to|expects?\s+to|intends?\s+to|will\s+(?:launch|deploy|develop|build|open|provide|sell|produce|operate|commercialize|integrate|begin|start|commence)|is\s+(?:planned\s+to|launching|developing)|are\s+(?:planned\s+to|launching|developing)|proposed\s+to|seeks?\s+to)\b/i;
 const SEC_TIME_ZONE = 'America/New_York';
 const OPERATING_FACTS = {
   'us-gaap': {
@@ -135,15 +137,17 @@ export function classifyAiEvidence(text, term = '', {fullText = text, index = nu
   if (THIRD_PARTY_ATTRIBUTION.test(source) || THIRD_PARTY_ACTION.test(source)) return 'third-party-mention';
   if (isNegatedAiActivity(source, term)) return 'negative-or-not-current';
   if (isInternalOnlyAiUse(source, term)) return 'internal-tool-use';
-  const hasIssuerSubject = /\b(?:we|our company|the company|the issuer)\b/i.test(source);
   const hasCommercialOutcome = /\b(?:customers?|revenue|sales|products?|services?|contracts?|purchase orders?|backlog|capacity|facilit(?:y|ies)|data cent(?:er|re)|compute|production|deliveries)\b/i.test(source);
-  if (hasIssuerSubject && hasCommercialOutcome && COMPLETED_OPERATING_ACTION.test(source)) return 'operating-disclosure';
+  // The AI term, commercial outcome, and action must survive in the same
+  // AI-bearing clause. This allows issuer-authored passive wording such as
+  // "capacity leasing for customers will begin" while preventing an
+  // unrelated acquisition in a neighboring clause from supplying the verb.
+  if (hasCommercialOutcome && COMPLETED_OPERATING_ACTION.test(source)) return 'operating-disclosure';
   if (AI_CYBER_RISK.test(source) || AI_LEGAL_RISK.test(source)) return 'risk-boilerplate';
   if (AI_GOVERNANCE.test(source)) return 'governance-or-oversight';
   if (AI_VENDOR_TOOL.test(source)) return 'third-party-tool-use';
   if (DISPOSED_AI_ASSET.test(source)) return 'disposed-or-former-asset';
-  if (COMPLETED_OPERATING_ACTION.test(source)) return 'operating-disclosure';
-  if (PLANNED_OPERATING_ACTION.test(source)) return 'planned-operating-disclosure';
+  if (hasCommercialOutcome && PLANNED_OPERATING_ACTION.test(source)) return 'planned-operating-disclosure';
   return 'low-confidence-mention';
 }
 
@@ -211,7 +215,22 @@ function evidenceSentence(text, term = '') {
 
 function evidenceClause(sentence, term = '') {
   const value = String(sentence ?? '');
-  const clauses = value.split(/;|\b(?:but|though|however|although|whereas|while|except|unless)\b/i);
+  // Keep an AI statement from borrowing an unrelated issuer action elsewhere
+  // in the same sentence, such as announcing an AI strategy and then buying
+  // an unrelated business. Coordinated phrases like "products and services"
+  // remain usable. Split "and/then" only when it starts another action clause.
+  const actionStart = /^(?:(?:(?:the company|the issuer|we|it)\s+)?(?:(?:will|plans?\s+to|expects?\s+to|intends?\s+to)\s+)?(?:launch(?:ed|es|ing)?|introduc(?:ed|es|ing)|deploy(?:ed|s|ing)?|develop(?:ed|s|ing)?|build|built|open(?:ed|s|ing)?|commission(?:ed|s|ing)?|operat(?:ed|es|ing)|provid(?:ed|es|e|ing)|offer(?:ed|s|ing)?|sell|sells|sold|generat(?:ed|es|ing)|recogniz(?:ed|es|ing)|secur(?:ed|es|ing)|sign(?:ed|s|ing)|acquir(?:ed|es|ing)|invest(?:ed|s|ing)|licens(?:ed|es|ing)|manufactur(?:ed|es|ing)|produc(?:ed|es|ing)|integrat(?:ed|es|ing)|releas(?:ed|es|ing)|start(?:ed|s|ing)?|began|commenc(?:ed|es|ing)|commercializ(?:ed|es|ing)|contract(?:ed|s|ing)|receiv(?:ed|es|ing)|install(?:ed|s|ing)|deliver(?:ed|s|ing)|us(?:e|es|ed|ing)))\b/i;
+  const separators = /;|,?\s*\b(?:but|though|however|although|whereas|while|except|unless)\b\s*|,?\s*\b(?:then|and)\b\s*/gi;
+  const clauses = [];
+  let clauseStart = 0;
+  for (const separator of value.matchAll(separators)) {
+    const nextClauseStart = separator.index + separator[0].length;
+    const isActionCoordination = /\b(?:then|and)\b/i.test(separator[0]);
+    if (isActionCoordination && !actionStart.test(value.slice(nextClauseStart))) continue;
+    clauses.push(value.slice(clauseStart, separator.index));
+    clauseStart = nextClauseStart;
+  }
+  clauses.push(value.slice(clauseStart));
   return clauses.find(clause => !term || clause.toLowerCase().includes(String(term).toLowerCase()))?.trim() ?? value;
 }
 
@@ -384,15 +403,22 @@ export function attachListedIssuer(rows, tickerRows) {
     if (!byCik.has(item.cik)) byCik.set(item.cik, []);
     byCik.get(item.cik).push(item);
   }
-  return rows.flatMap(row => {
+  return rows.map(row => {
     const matches = byCik.get(String(row.cik).padStart(10, '0'));
-    if (!matches?.length) return [];
-    return [{
+    if (!matches?.length) return {
+      ...row,
+      ticker: null,
+      exchange: null,
+      mappedCompany: null,
+      issuerCoverage: 'No match in the current SEC ticker and exchange association file; issuer is identified by daily-index name and CIK.',
+    };
+    return {
       ...row,
       ticker: [...new Set(matches.map(item => item.ticker))].join(', '),
       exchange: [...new Set(matches.map(item => item.exchange).filter(Boolean))].join(', '),
       mappedCompany: matches[0].name,
-    }];
+      issuerCoverage: 'Matched to the current SEC ticker and exchange association file.',
+    };
   });
 }
 
@@ -817,7 +843,6 @@ export async function scan(options) {
   const tickerResponse = await secFetch(TICKER_EXCHANGE_URL, userAgent);
   if (tickerResponse.status !== 200) throw new Error('SEC ticker and exchange map could not be loaded');
   const tickerRows = parseTickerExchange(JSON.parse(tickerResponse.body));
-  const listedCiks = new Set(tickerRows.map(item => item.cik));
   const seen = new Set((options.feed.checkedAccessions ?? []).map(normalizeAccession).filter(Boolean));
   const filings = new Map();
   const unavailableIndexDays = [];
@@ -841,7 +866,6 @@ export async function scan(options) {
       readableIndexDays++;
       indexCoverage.push({date: dayText, status: 'readable'});
       for (const row of rows) {
-        if (seen.has(row.accession)) continue;
         filings.set(row.accession, row);
       }
     } catch (error) {
@@ -850,15 +874,32 @@ export async function scan(options) {
     }
   }
   if (!readableIndexDays) throw new Error('No SEC daily indexes were readable in the scan window; the existing feed was left unchanged.');
+  if (unavailableIndexDays.length) {
+    throw new Error(`SEC daily-index coverage is incomplete for ${unavailableIndexDays.join(', ')}; the existing feed was left unchanged.`);
+  }
 
   const candidates = [];
   const checked = [...seen];
   const submissionsCache = new Map();
   const companyFactsCache = new Map();
-  const sorted = attachListedIssuer(
-    [...filings.values()].filter(row => listedCiks.has(row.cik)),
-    tickerRows,
-  ).sort((a, b) => a.filed.localeCompare(b.filed) || a.accession.localeCompare(b.accession));
+  const indexedFilings = [...filings.values()].sort((a, b) => a.filed.localeCompare(b.filed) || a.accession.localeCompare(b.accession));
+  const mappedFilings = attachListedIssuer(indexedFilings, tickerRows);
+  const mappedByCikForCoverage = new Map(tickerRows.map(item => [item.cik, item]));
+  const unmatchedFilers = new Map();
+  for (const row of indexedFilings) {
+    if (mappedByCikForCoverage.has(row.cik)) continue;
+    if (!unmatchedFilers.has(row.cik)) unmatchedFilers.set(row.cik, {cik: row.cik, company: row.company, filingCount: 0, forms: new Set(), filingDates: new Set()});
+    const filer = unmatchedFilers.get(row.cik);
+    filer.filingCount++;
+    filer.forms.add(row.form);
+    filer.filingDates.add(row.filed);
+  }
+  const unseenFilings = mappedFilings.filter(row => !seen.has(row.accession));
+  const requestedLimit = Number.isInteger(options.maxFilingsToScreen) ? options.maxFilingsToScreen : MAX_FILINGS_TO_SCREEN_PER_SCAN;
+  const screeningLimit = Math.max(1, Math.min(MAX_FILINGS_TO_SCREEN_PER_SCAN, requestedLimit));
+  // Work oldest-first so a bounded scan can pick up deferred filings on a
+  // later run while they remain in the lookback window.
+  const sorted = unseenFilings.slice(0, screeningLimit);
   for (const row of sorted) {
     const primaryResponse = await secFetch(fullSubmissionUrl(row), userAgent);
     if (primaryResponse.status === 404) continue;
@@ -916,6 +957,7 @@ export async function scan(options) {
       mappedCompany: row.mappedCompany,
       ticker: row.ticker,
       exchange: row.exchange,
+      issuerCoverage: row.issuerCoverage,
       form: row.form,
       filingDate: row.filed,
       accession: row.accession,
@@ -976,10 +1018,17 @@ export async function scan(options) {
     }
   }
   const checkedAccessions = [...new Set(checked)].slice(-15000);
+  const unmatchedFilings = [...unmatchedFilers.values()]
+    .sort((a, b) => a.company.localeCompare(b.company) || a.cik.localeCompare(b.cik));
+  const unmatchedFilerRecords = unmatchedFilings.slice(0, MAX_UNMATCHED_FILERS_REPORTED).map(filer => ({
+    ...filer,
+    forms: [...filer.forms].sort(),
+    filingDates: [...filer.filingDates].sort(),
+  }));
   return {
     schemaVersion: 1,
     generatedAt: now.toISOString(),
-    coverage: 'SEC filers in the SEC company-ticker-exchange association file with recent Forms 8-K, 10-K, 10-Q, 6-K, or 20-F. The SEC says its association file may not be complete or fully accurate. This is not a global listed-company database; many non-US issuers and non-SEC exchanges are outside scope.',
+    coverage: 'Recent SEC reporting issuers with Forms 8-K, 10-K, 10-Q, 6-K, or 20-F found in complete SEC daily indexes. Current tickers and exchanges are attached where the SEC association file has a match; unmatched issuers remain identified by the daily-index company name and CIK. This excludes issuers that do not file with the SEC and non-SEC filing systems.',
     scanWindowStart: addCalendarDays(easternToday, -options.lookbackDays),
     scanWindowEnd: easternToday,
     lastSuccessfulScan: {
@@ -989,6 +1038,20 @@ export async function scan(options) {
     },
     unavailableIndexDays,
     indexCoverage: {timeZone: SEC_TIME_ZONE, checkedDays: indexCoverage},
+    filingUniverse: {
+      source: 'SEC EDGAR daily master indexes, joined to the SEC company ticker and exchange association file by CIK where available',
+      eligibleFilingsInLookback: indexedFilings.length,
+      eligibleIssuersInLookback: new Set(indexedFilings.map(row => row.cik)).size,
+      issuersMatchedToTickerExchangeFile: new Set(indexedFilings.filter(row => mappedByCikForCoverage.has(row.cik)).map(row => row.cik)).size,
+      unmatchedIssuersInLookback: unmatchedFilers.size,
+      unmatchedFilers: unmatchedFilerRecords,
+      unmatchedFilersOmittedFromList: Math.max(0, unmatchedFilings.length - unmatchedFilerRecords.length),
+      filingsSelectedForScreen: sorted.length,
+      filingsDeferredByPerScanCap: Math.max(0, unseenFilings.length - sorted.length),
+      deferredPolicy: 'Deferred filings remain eligible on subsequent scans while they remain inside the configured lookback. A volume backlog larger than the lookback window can age out and is visible in these counts.',
+      perScanFilingCap: screeningLimit,
+      unmatchedFilingsSelectedForScreen: sorted.filter(row => !row.ticker).length,
+    },
     sources: ['https://www.sec.gov/Archives/edgar/daily-index/', 'https://data.sec.gov/submissions/', TICKER_EXCHANGE_URL],
     leads,
     archivedLeads,
@@ -1010,7 +1073,7 @@ export function selfTest() {
   if (!isNameChangeLead('Item 5.03. See attached name change from Old Co to New Co.', '8-K')) throw new Error('exhibit name-change language self-test failed');
   const mapping = parseTickerExchange({fields: ['cik', 'name', 'ticker', 'exchange'], data: [[123, 'Example Inc.', 'EXMP', 'Nasdaq']]});
   const listed = attachListedIssuer(parsed, mapping);
-  if (listed.length !== 0) throw new Error('unmapped issuer filter self-test failed');
+  if (listed.length !== parsed.length || listed.some(item => item.ticker !== null)) throw new Error('unmatched issuer preservation self-test failed');
   const mapped = attachListedIssuer([{...parsed[0], cik: '0000000123'}], mapping);
   if (mapped.length !== 1 || mapped[0].ticker !== 'EXMP' || mapped[0].exchange !== 'Nasdaq') throw new Error('ticker/exchange enrichment self-test failed');
   const ai = analyzeText('The company plans to launch an artificial intelligence data center business for customers.');

@@ -29,12 +29,17 @@ const TAIWAN_PUBLIC_FEED_SYNC = {
   headerRow: 4,
   expectedRowsMinimum: 500,
   maxRows: 3000,
-  columns: 33,
+  columns: 38,
   reportMonthIndex: 5,
   revenueIndex: 6,
   differenceIndexes: [8, 9, 10],
   yearAgoRevenueIndex: 28,
-  statusIndex: 23
+  statusIndex: 23,
+  denominatorRatioIndex: 33,
+  denominatorStatusIndex: 34,
+  outlierStatusIndex: 35,
+  marketLatestIndex: 36,
+  freshnessIndex: 37
 };
 
 function taiwanPublicFeedIds_() {
@@ -64,12 +69,19 @@ function syncTaiwanPublicFeed() {
   const headers = values[config.headerRow - 1];
   if (headers[2] !== 'Company code' || headers[3] !== 'Company name' ||
       headers[5] !== 'Report month' || headers[10] !== 'Revenue YoY Δ3 (pp/month³)' ||
-      headers[28] !== 'Revenue year-ago month') {
+      headers[28] !== 'Revenue year-ago month' ||
+      headers[33] !== 'Year-ago base / current revenue %' ||
+      headers[37] !== 'Freshness status') {
     throw new Error('SiteFeed schema check failed. Public feed left unchanged.');
   }
   const rows = values.map(row => row.slice(0, config.columns));
   let maxPeriod = '';
   let maxPeriodOrdinal = -Infinity;
+  const maxByMarket = new Map();
+  const marketOrdinal = value => {
+    const match = String(value || '').match(/^(\d{4})-(\d{2})$/);
+    return match ? Number(match[1]) * 12 + Number(match[2]) - 1 : -Infinity;
+  };
   let suppressed = 0;
   let issuerRows = 0;
   for (let i = config.headerRow; i < rows.length; i++) {
@@ -77,19 +89,49 @@ function syncTaiwanPublicFeed() {
     if (!row[2] || !row[config.reportMonthIndex]) continue;
     issuerRows++;
     const period = String(row[config.reportMonthIndex]).trim();
-    const parsedDate = new Date(period);
-    const periodOrdinal = Number.isNaN(parsedDate.getTime()) ? -Infinity :
-      parsedDate.getFullYear() * 12 + parsedDate.getMonth();
+    const periodOrdinal = marketOrdinal(period);
     if (periodOrdinal > maxPeriodOrdinal) {
       maxPeriodOrdinal = periodOrdinal;
       maxPeriod = period;
     }
-    const current = Number(String(row[config.revenueIndex]).replace(/,/g, ''));
-    const base = Number(String(row[config.yearAgoRevenueIndex]).replace(/,/g, ''));
-    if (Number.isFinite(current) && current > 0 &&
-        (!Number.isFinite(base) || base <= 0 || base < current * 0.001)) {
+    const market = String(row[0] || '').trim();
+    if (periodOrdinal > (maxByMarket.get(market)?.ordinal ?? -Infinity)) maxByMarket.set(market, {period, ordinal: periodOrdinal});
+  }
+  for (let i = config.headerRow; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row[2] || !row[config.reportMonthIndex]) continue;
+    const currentText = String(row[config.revenueIndex] || '').replace(/,/g, '').trim();
+    const baseText = String(row[config.yearAgoRevenueIndex] || '').replace(/,/g, '').trim();
+    const current = currentText ? Number(currentText) : NaN;
+    const base = baseText ? Number(baseText) : NaN;
+    const ratioPct = Number.isFinite(current) && current > 0 && Number.isFinite(base) ? base / current * 100 : '';
+    const denominatorStatus = !Number.isFinite(current) || current <= 0 || !Number.isFinite(base)
+      ? 'Missing or invalid comparison base'
+      : base <= 0 ? 'Zero or negative comparison base'
+      : ratioPct < 1 ? 'Low base below 1% of current revenue' : 'Usable';
+    const yoyText = String(row[7] || '').replace(/,/g, '').trim();
+    const yoy = yoyText ? Number(yoyText) : NaN;
+    const outlierStatus = !Number.isFinite(yoy) ? 'Not available'
+      : Math.abs(yoy) >= 500 ? 'Review outlier: absolute reported YoY growth at least 500%' : 'None';
+    const market = String(row[0] || '').trim();
+    const marketLatest = maxByMarket.get(market)?.period || '';
+    const currentOrdinal = marketOrdinal(String(row[config.reportMonthIndex]).trim());
+    const marketLatestOrdinal = marketOrdinal(marketLatest);
+    const freshness = String(row[config.freshnessIndex] || '').startsWith('Source refresh failed')
+      ? row[config.freshnessIndex]
+      : marketLatestOrdinal < maxPeriodOrdinal
+      ? `Stale partition; this market through ${marketLatest}, feed maximum ${maxPeriod}`
+      : currentOrdinal < marketLatestOrdinal
+      ? `Issuer report lags its market partition by ${marketLatestOrdinal - currentOrdinal} month(s)`
+      : 'Current';
+    row[config.denominatorRatioIndex] = ratioPct;
+    row[config.denominatorStatusIndex] = denominatorStatus;
+    row[config.outlierStatusIndex] = outlierStatus;
+    row[config.marketLatestIndex] = marketLatest;
+    row[config.freshnessIndex] = freshness;
+    if (denominatorStatus !== 'Usable') {
       config.differenceIndexes.forEach(index => row[index] = '');
-      const note = 'Public feed: revenue trend differences suppressed because the year-ago base is zero, negative, or below 0.1% of current revenue.';
+      const note = 'Public feed: revenue trend differences suppressed because the comparison base is missing, nonpositive, or below 1% of current revenue.';
       row[config.statusIndex] = row[config.statusIndex] ? row[config.statusIndex] + '; ' + note : note;
       suppressed++;
     }

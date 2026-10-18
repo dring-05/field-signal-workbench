@@ -10,17 +10,25 @@ assert.ok(helperSource, 'Taiwan acceleration sort helpers must remain available 
 const sortContext = {};
 vm.runInNewContext(`${helperSource.replace(/function renderTaiwanRows\(query\)$/, '')}\nglobalThis.sortHelpers = {taiwanAccelerationValue, compareTaiwanAcceleration};`, sortContext);
 const {taiwanAccelerationValue, compareTaiwanAcceleration} = sortContext.sortHelpers;
-const zero = {'Revenue YoY Δ1 (pp/month)': '0', 'Revenue YoY %': '900'};
-const rising = {'Revenue YoY Δ1 (pp/month)': '5', 'Revenue YoY %': '20'};
-const missing = {'Revenue YoY Δ1 (pp/month)': '', 'Revenue YoY %': '300'};
+const quality = {'Revenue denominator quality': 'Usable', 'Revenue growth outlier status': 'None', 'Freshness status': 'Current'};
+const zero = {...quality, 'Revenue YoY Δ1 (pp/month)': '0', 'Revenue YoY %': '90'};
+const rising = {...quality, 'Revenue YoY Δ1 (pp/month)': '5', 'Revenue YoY %': '20'};
+const missing = {...quality, 'Revenue YoY Δ1 (pp/month)': '', 'Revenue YoY %': '300'};
 assert.equal(taiwanAccelerationValue(zero), 0, 'a real zero first difference must stay zero');
 assert.ok(compareTaiwanAcceleration(rising, zero) < 0, 'sort should rank the larger first difference first');
 assert.ok(compareTaiwanAcceleration(zero, missing) < 0, 'rows without Δ1 should sort after rows with a reported Δ1');
+assert.equal(taiwanAccelerationValue({...rising, 'Revenue denominator quality': 'Low base below 1% of current revenue'}), null, 'low-base derivatives must be excluded from default ranking');
+assert.equal(taiwanAccelerationValue({...rising, 'Revenue growth outlier status': 'Review outlier: absolute reported YoY growth at least 500%'}), null, 'extreme YoY growth must be excluded from default ranking');
+assert.equal(taiwanAccelerationValue({...rising, 'Freshness status': 'Stale partition'}), null, 'stale observations must be excluded from default ranking');
+const legacy = {'Revenue': '1815362', 'Revenue year-ago month': '20000', 'Revenue YoY %': '90', 'Revenue YoY Δ1 (pp/month)': '5'};
+assert.equal(taiwanAccelerationValue(legacy), 5, 'the 33-column published feed must remain usable while the quality schema is pending');
+assert.equal(taiwanAccelerationValue({...legacy, 'Revenue year-ago month': '53', 'Revenue YoY %': '3425111.32'}), null, 'legacy rows with a comparison base below 1% must be excluded');
+assert.equal(taiwanAccelerationValue({...legacy, 'Revenue YoY %': '500'}), null, 'legacy rows with extreme reported YoY growth must be excluded');
 assert.ok(appSource.includes("base '+esc(taiwanMetric(r['Revenue year-ago month']))+' TWD k"), 'show the prior-year revenue base beside YoY growth');
 
-const sourceHeaders = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL', 'English company name or official abbreviation', 'Mandarin pronunciation lookup', 'Revenue prior month', 'Revenue year-ago month', 'Revenue MoM %', 'Revenue YTD', 'Revenue prior-year YTD', 'Revenue YTD growth %'];
-assert.equal(sourceHeaders.length, 33);
-const row = ['Listed (TWSE)', 'TW|2330|台積電', '2330', '台積電', 'Semiconductors', '2026-09', 1, 20, 0, 1, 2, 4, '', '', '', '', '', '', '', '', '', '', '', 'status', 'https://example.test', 'TSMC', 'https://translate.google.com', 1, 2, 3, 4, 5, 6];
+const sourceHeaders = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL', 'English company name or official abbreviation', 'Mandarin pronunciation lookup', 'Revenue prior month', 'Revenue year-ago month', 'Revenue MoM %', 'Revenue YTD', 'Revenue prior-year YTD', 'Revenue YTD growth %', 'Year-ago base / current revenue %', 'Revenue denominator quality', 'Revenue growth outlier status', 'Market latest report month', 'Freshness status'];
+assert.equal(sourceHeaders.length, 38);
+const row = ['Listed (TWSE)', 'TW|2330|台積電', '2330', '台積電', 'Semiconductors', '2026-09', 100, 20, 0, 1, 2, 4, '', '', '', '', '', '', '', '', '', '', '', 'status', 'https://example.test', 'TSMC', 'https://translate.google.com', 90, 50, 3, 400, 350, 6, 50, 'Usable', 'None', '2026-09', 'Current'];
 const validRows = [sourceHeaders, ...Array.from({length: 4}, () => row)];
 let activeBook = null;
 const testScriptProperties = {};
@@ -39,7 +47,7 @@ const makeBook = (values, lastRow = values.length + 3) => ({
 });
 activeBook = makeBook(validRows);
 const result = context.validate();
-assert.deepEqual(JSON.parse(JSON.stringify(result)), {result: 'ready to publish', tab: 'SiteFeed', rows: 4, columns: 33, note: 'Publish only the SiteFeed tab as CSV. Keep all other tabs private.'});
+assert.deepEqual(JSON.parse(JSON.stringify(result)), {result: 'ready to publish', tab: 'SiteFeed', rows: 4, columns: 38, note: 'Publish only the SiteFeed tab as CSV. Keep all other tabs private.'});
 
 const alteredHeaders = [...sourceHeaders];
 alteredHeaders[19] = 'Unapproved source field';
@@ -73,7 +81,7 @@ const sourceTab = {
 let publishedValues = null;
 const destinationTab = {
   getMaxRows: () => 3000,
-  getMaxColumns: () => 33,
+  getMaxColumns: () => 38,
   getLastRow: () => publishedValues ? publishedValues.length : 1,
   getRange: () => ({
     setValues: values => { publishedValues = values; },
@@ -100,6 +108,8 @@ assert.equal(syncResult.issuerRows, 2);
 assert.equal(syncResult.lowBaseRowsSuppressed, 1);
 assert.equal(publishedValues[5][8], '', 'suppress acceleration for a tiny year-ago base in the public copy');
 assert.equal(publishedValues[5][7], '3425111.32', 'retain the source-reported YoY percentage with its base visible');
-assert.ok(publishedValues[5][23].includes('below 0.1%'), 'mark the reason beside the issuer row');
+assert.ok(publishedValues[5][23].includes('below 1%'), 'mark the reason beside the issuer row');
+assert.equal(publishedValues[5][34], 'Low base below 1% of current revenue');
+assert.match(publishedValues[5][35], /at least 500%/);
 assert.match(await readFile(new URL('../worker/index.js', import.meta.url), 'utf8'), /pub\?gid=1&single=true&output=csv/, 'Worker must read the newly published LiveSiteFeed tab');
 console.log('Taiwan public feed validation and zero-safe acceleration sort checks passed');

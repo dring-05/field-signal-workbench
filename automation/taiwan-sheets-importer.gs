@@ -38,7 +38,7 @@ function signalsWorkbook_() {
 const RAW_HEADERS = ['Market', 'Data area', 'Endpoint', 'Company code', 'Company name', 'Report period', 'Retrieved at', 'Raw source record', 'Source URL', 'Record signature'];
 const MARGIN_AUDIT_HEADERS = ['Market', 'Company code', 'Company name', 'Report period', 'Source endpoint', 'Retrieved at', 'Source URL', 'Source signature', 'Margin dependency signatures', 'Calculation signature', 'Source basis', 'Revenue reported YTD', 'Gross profit reported YTD', 'Operating income reported YTD', 'Prior-quarter revenue YTD', 'Prior-quarter gross profit YTD', 'Prior-quarter operating income YTD', 'Revenue standalone quarter', 'Gross profit standalone quarter', 'Operating income standalone quarter', 'Gross margin %', 'Operating margin %', 'Gross margin YoY change (pp)', 'Operating margin YoY change (pp)', 'Calculation status', 'Raw source record'];
 const LOG_HEADERS = ['Run time', 'Result', 'Monthly source period', 'Rows received', 'Rows added or revised', 'Raw records added or revised', 'Notes', 'Monthly feed status'];
-const FEED_HEADERS = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL', 'English company name or official abbreviation', 'Mandarin pronunciation lookup', 'Revenue prior month', 'Revenue year-ago month', 'Revenue MoM %', 'Revenue YTD', 'Revenue prior-year YTD', 'Revenue YTD growth %'];
+const FEED_HEADERS = ['Market', 'Issuer series key', 'Company code', 'Company name', 'Industry', 'Report month', 'Revenue', 'Revenue YoY %', 'Revenue YoY Δ1 (pp/month)', 'Revenue YoY Δ2 (pp/month²)', 'Revenue YoY Δ3 (pp/month³)', 'Consecutive monthly observations', 'Gross margin %', 'Gross margin YoY change (pp)', 'Gross margin Δ1 (pp/quarter)', 'Gross margin Δ2 (pp/quarter²)', 'Gross margin Δ3 (pp/quarter³)', 'Operating margin %', 'Operating margin YoY change (pp)', 'Operating margin Δ1 (pp/quarter)', 'Operating margin Δ2 (pp/quarter²)', 'Operating margin Δ3 (pp/quarter³)', 'Latest statement date', 'Data status', 'Monthly source URL', 'English company name or official abbreviation', 'Mandarin pronunciation lookup', 'Revenue prior month', 'Revenue year-ago month', 'Revenue MoM %', 'Revenue YTD', 'Revenue prior-year YTD', 'Revenue YTD growth %', 'Year-ago base / current revenue %', 'Revenue denominator quality', 'Revenue growth outlier status', 'Market latest report month', 'Freshness status'];
 
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Taiwan Signals')
@@ -84,7 +84,7 @@ function refreshTaiwanSignals() {
     reportMonth = normalized.reduce((max, r) => r.period > max ? r.period : max, '');
     monthlyAdded = appendMonthlyRevisions_(book.getSheetByName(SIGNALS.monthlySheet), normalized);
     rawAdded = appendRawStatementRevisions_(book, notes);
-    rebuildSiteFeed_(book);
+    rebuildSiteFeed_(book, monthlyFeed.sources);
     const result = notes.length ? 'Partial success' : 'Success';
     writeLog_(result, reportMonth, received, monthlyAdded, rawAdded, notes.join(' '), sourceStatus.join('; '));
     return {result, reportMonth, received, monthlyAdded, rawAdded, runtimeSeconds: Math.round((new Date() - started) / 1000), notes};
@@ -418,13 +418,13 @@ function monthlyEconomicSignature_(market, code, name, industry, period, values)
     String(industry || '').trim(), normalizeMonthlyPeriod_(period), ...numbers].join('|');
 }
 
-function rebuildSiteFeed_(book) {
+function rebuildSiteFeed_(book, sourceStatuses) {
   const monthly = book.getSheetByName(SIGNALS.monthlySheet);
   const feed = book.getSheetByName(SIGNALS.feedSheet);
   if (feed.getMaxColumns && feed.getMaxColumns() < FEED_HEADERS.length) feed.insertColumnsAfter(feed.getMaxColumns(), FEED_HEADERS.length - feed.getMaxColumns());
   // Keep the public schema in sync with the row builder. Older sheets may have
-  // stopped at 27 headers even though the revenue comparison fields were added
-  // later. Refreshing the header on every rebuild makes those fields addressable
+  // stopped at older schemas. Refreshing the header on every rebuild makes
+  // the appended quality and freshness fields addressable
   // by name for both the CSV export and the dashboard.
   feed.getRange(4, 1, 1, FEED_HEADERS.length).setValues([FEED_HEADERS]);
   const values = monthly.getLastRow() > 4 ? monthly.getRange(5, 1, monthly.getLastRow() - 4, 17).getValues() : [];
@@ -468,6 +468,15 @@ function rebuildSiteFeed_(book) {
     byIssuer.get(issuerKey).rows.push(row);
   });
   const marginMap = marginSignalsMap_(book);
+  const marketLatestPeriods = new Map();
+  let feedLatestPeriod = '';
+  latestByMonth.forEach(({row}) => {
+    const market = String(row[0] || '');
+    const period = String(row[4] || '');
+    if (!marketLatestPeriods.has(market) || period > marketLatestPeriods.get(market)) marketLatestPeriods.set(market, period);
+    if (period > feedLatestPeriod) feedLatestPeriod = period;
+  });
+  const sourceStatusByMarket = new Map((sourceStatuses || []).map(item => [normalizeMonthlyMarket_(item.market), item]));
   const output = [];
   byIssuer.forEach(({code, mergeVerified, rows: history}, issuerKey) => {
     history.sort((a, b) => a[4] < b[4] ? -1 : a[4] > b[4] ? 1 : 0);
@@ -499,12 +508,27 @@ function rebuildSiteFeed_(book) {
     }
     const status = [
       diffs.d1 !== '' && diffs.d2 !== '' && diffs.d3 !== '' ? 'Revenue Δ1/Δ2/Δ3 available' : `Revenue trend history: ${continuous}/4 consecutive monthly YoY observations`,
-      monthlyYoYBaseIsTiny_(current[5], current[7]) ? 'YoY percentage kept as reported; year-ago revenue is zero, negative, or below 0.1% of current-month revenue, so trend derivatives are suppressed' : '',
+      monthlyYoYBaseIsTiny_(current[5], current[7]) ? 'YoY percentage kept as reported; comparison base is missing, nonpositive, or below 1% of current-month revenue, so trend derivatives are suppressed' : '',
       mergeVerified ? '' : 'Issuer code appears with different names across sources or dates; histories are split until the issuer identity is verified',
       margin.identityMismatch ? 'Quarterly issuer identity did not match monthly feed; margin series left blank' : '',
       margin.status
     ].filter(Boolean).join('; ');
-    output.push([current[0], issuerKey, current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14], '', '', number_(current[6]), number_(current[7]), number_(current[8]), number_(current[10]), number_(current[11]), number_(current[12])]);
+    const denominator = revenueDenominatorQuality_(current[5], current[7]);
+    const outlier = revenueGrowthOutlierStatus_(current[9]);
+    const marketLatest = marketLatestPeriods.get(String(current[0])) || '';
+    const sourceStatus = sourceStatusByMarket.get(String(current[0]));
+    let freshness = 'Current by available report periods; source refresh not checked';
+    if (sourceStatuses) {
+      if (sourceStatus && sourceStatus.status !== 'success') freshness = `Source refresh failed; latest stored month ${marketLatest || 'unknown'}`;
+      else if (marketLatest && marketLatest < feedLatestPeriod) freshness = `Stale partition; this market through ${marketLatest}, feed maximum ${feedLatestPeriod}`;
+      else if (current[4] < marketLatest) freshness = `Issuer report lags its market partition by ${monthDistance_(current[4], marketLatest)} month(s)`;
+      else freshness = 'Current';
+    } else if (marketLatest && marketLatest < feedLatestPeriod) {
+      freshness = `Stale partition; this market through ${marketLatest}, feed maximum ${feedLatestPeriod}`;
+    } else if (current[4] < marketLatest) {
+      freshness = `Issuer report lags its market partition by ${monthDistance_(current[4], marketLatest)} month(s)`;
+    }
+    output.push([current[0], issuerKey, current[1], current[2], current[3], current[4], number_(current[5]), number_(current[9]), diffs.d1, diffs.d2, diffs.d3, continuous, margin.gross, margin.grossYoY, margin.grossD1, margin.grossD2, margin.grossD3, margin.operating, margin.operatingYoY, margin.operatingD1, margin.operatingD2, margin.operatingD3, margin.statementDate, status, current[14], '', '', number_(current[6]), number_(current[7]), number_(current[8]), number_(current[10]), number_(current[11]), number_(current[12]), denominator.ratioPct, denominator.status, outlier, marketLatest, freshness]);
   });
   output.sort((a, b) => (Number(b[7]) || -Infinity) - (Number(a[7]) || -Infinity));
   if (!output.length) throw new Error('The Taiwan source history produced no feed rows; the existing SiteFeed was left unchanged.');
@@ -750,12 +774,28 @@ function contiguousMonthlyObservations_(periods, values, index) {
 }
 
 function monthlyYoYBaseIsTiny_(currentRevenue, yearAgoRevenue) {
-  if (yearAgoRevenue === '' || yearAgoRevenue == null) return false;
+  if (yearAgoRevenue === '' || yearAgoRevenue == null) return true;
   const current = Number(currentRevenue);
   const base = Number(yearAgoRevenue);
-  if (!Number.isFinite(current) || !Number.isFinite(base)) return false;
-  if (base <= 0) return current > 0;
-  return current > 0 && base / current < 0.001;
+  if (!Number.isFinite(current) || !Number.isFinite(base)) return true;
+  if (current <= 0 || base <= 0) return true;
+  return base / current < 0.01;
+}
+
+function revenueDenominatorQuality_(currentRevenue, yearAgoRevenue) {
+  const current = Number(currentRevenue);
+  const base = yearAgoRevenue === '' || yearAgoRevenue == null ? NaN : Number(yearAgoRevenue);
+  const ratioPct = Number.isFinite(current) && current > 0 && Number.isFinite(base) ? base / current * 100 : '';
+  if (!Number.isFinite(current) || current <= 0 || !Number.isFinite(base)) return {ratioPct, status: 'Missing or invalid comparison base'};
+  if (base <= 0) return {ratioPct, status: 'Zero or negative comparison base'};
+  if (ratioPct < 1) return {ratioPct, status: 'Low base below 1% of current revenue'};
+  return {ratioPct, status: 'Usable'};
+}
+
+function revenueGrowthOutlierStatus_(reportedYoY) {
+  const value = Number(reportedYoY);
+  if (reportedYoY === '' || reportedYoY == null || !Number.isFinite(value)) return 'Not available';
+  return Math.abs(value) >= 500 ? 'Review outlier: absolute reported YoY growth at least 500%' : 'None';
 }
 
 function normalizeMonthly_(raw, sourceUrl, sourceMarket) {

@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const source = await readFile(new URL('../automation/taiwan-sheets-importer.gs', import.meta.url), 'utf8');
 const context = {};
-vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, quarterlyStatementMarkets: QUARTERLY_STATEMENT_MARKETS, quarterlyStatementIndustries: QUARTERLY_STATEMENT_INDUSTRIES, statementSourceUrl_, quarterlyStatementMarket_, quarterlyMarginIdentity_, appendRawStatementRevisions_, marginDependencySignatures_, issuerIdentityKey_, monthlyMarketPriority_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, contiguousMonthlyObservations_, monthlyYoYBaseIsTiny_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMarginAudit_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, normalizeMonthlyPeriod_, monthDistance_, mopsHistoryDataKey_, taiwanMopsBackfillMonths_, writeLog_};`, context, {timeout: 1000});
+vm.runInNewContext(`${source}\nglobalThis.helpers = {signals: SIGNALS, feedHeaders: FEED_HEADERS, quarterlyStatementMarkets: QUARTERLY_STATEMENT_MARKETS, quarterlyStatementIndustries: QUARTERLY_STATEMENT_INDUSTRIES, statementSourceUrl_, quarterlyStatementMarket_, quarterlyMarginIdentity_, appendRawStatementRevisions_, marginDependencySignatures_, issuerIdentityKey_, monthlyMarketPriority_, quarterPeriod_, quarterIndex_, finiteDifferencesAtEnd_, contiguousMonthlyObservations_, monthlyYoYBaseIsTiny_, revenueDenominatorQuality_, revenueGrowthOutlierStatus_, yoyMarginSeries_, differencesForQuarterSeries_, marginSignalsMap_, rebuildSiteFeed_, appendMarginAudit_, appendMonthlyRevisions_, fetchMonthlyRows_, normalizeMonthly_, normalizeMonthlyMarket_, normalizeMonthlyPeriod_, monthDistance_, mopsHistoryDataKey_, taiwanMopsBackfillMonths_, writeLog_};`, context, {timeout: 1000});
 const h = context.helpers;
 context.Utilities = {formatDate: () => '2026-10'};
 let activeSpreadsheet = {getId: () => 'personal-workbook'};
@@ -157,8 +157,14 @@ assert.deepEqual({...h.finiteDifferencesAtEnd_([10, 12], 2)}, {d1: 2, d2: '', d3
 assert.deepEqual({...h.finiteDifferencesAtEnd_([10, 12, 16], 3)}, {d1: 4, d2: 2, d3: ''});
 assert.deepEqual({...h.finiteDifferencesAtEnd_([10, 12, 16, 22], 4)}, {d1: 6, d2: 2, d3: 0});
 assert.equal(h.monthlyYoYBaseIsTiny_(1815362, 53), true, 'a 53k TWD comparison base is materially small relative to 1.8bn TWD current revenue');
-assert.equal(h.monthlyYoYBaseIsTiny_(1000, 1), false, 'a base at exactly 0.1% of revenue remains eligible for trend derivatives');
+assert.equal(h.monthlyYoYBaseIsTiny_(1000, 5), true, 'a base below 1% of current revenue is excluded from trend derivatives');
+assert.equal(h.monthlyYoYBaseIsTiny_(1000, 10), false, 'a base at exactly 1% of revenue remains eligible for trend derivatives');
 assert.equal(h.monthlyYoYBaseIsTiny_(1000, 0), true, 'a zero comparison base cannot support meaningful growth derivatives');
+assert.equal(h.monthlyYoYBaseIsTiny_(1000, ''), true, 'a missing comparison base cannot support derivatives');
+assert.equal(h.revenueDenominatorQuality_(1000, 5).status, 'Low base below 1% of current revenue');
+assert.equal(h.revenueDenominatorQuality_(1000, 10).status, 'Usable');
+assert.match(h.revenueGrowthOutlierStatus_(500), /at least 500%/);
+assert.equal(h.revenueGrowthOutlierStatus_(499), 'None');
 const tinyBaseSource = {'公司代號':'4113', '公司名稱':'聯上', '產業別':'建材營造', '資料年月':'11509', '營業收入-當月營收':'1,815,362', '營業收入-去年當月營收':'53', '營業收入-去年同月增減(%)':'3,425,111.32'};
 const normalizedTinyBase = h.normalizeMonthly_(tinyBaseSource, 'https://example.test/mops', 'OTC (TPEx)');
 assert.equal(normalizedTinyBase.yoy, 3425111.32, 'the unusual source YoY value remains visible without being capped or rewritten');
@@ -192,13 +198,17 @@ const marginAuditSheet = {getLastRow: () => 4, getRange: () => ({getDisplayValue
 const feedSheet = {getLastRow: () => 4, getRange: (row) => ({setValues: rows => {if (row === 4) generatedHeaders = rows[0]; else generated = rows}})};
 const book = {getSheetByName: name => ({'Taiwan Monthly': monthlySheet, 'Raw Statements': rawSheet, SiteFeed: feedSheet, 'Margin Signals': marginAuditSheet}[name])};
 h.rebuildSiteFeed_(book);
-assert.deepEqual(Array.from(generatedHeaders), Array.from(h.feedHeaders), 'every feed rebuild must write the complete 33-column header, including revenue comparison fields');
+assert.deepEqual(Array.from(generatedHeaders), Array.from(h.feedHeaders), 'every feed rebuild must write the complete quality and freshness schema');
 assert.equal(generated.length, 1);
-assert.equal(generated[0].length, 33);
+assert.equal(generated[0].length, 38);
 assert.deepEqual(Array.from(generated[0].slice(8, 11)), [6, 2, 0]);
 assert.deepEqual(Array.from(generated[0].slice(27, 33)), [93, 83, 10, 1003, 903, 11.1], 'the public feed should carry the reported monthly and YTD revenue comparison bases');
 assert.match(generated[0][23], /Revenue Δ1\/Δ2\/Δ3 available/);
 assert.equal(generated[0][1], 'TW|1234|exampleco');
+assert.equal(generated[0][34], 'Usable');
+assert.equal(generated[0][35], 'None');
+assert.equal(generated[0][36], '2026-09');
+assert.match(generated[0][37], /^Current/);
 
 // Sheets returns a real Date for date-formatted YYYY-MM cells. The actual
 // Taiwan workbook stores month cells that way, so test the full feed path.
@@ -237,21 +247,38 @@ const tinyBaseBook = {getSheetByName: name => ({'Taiwan Monthly': tinyBaseSheet,
 h.rebuildSiteFeed_(tinyBaseBook);
 assert.equal(tinyBaseGenerated[0][7], 3425111.32, 'preserve the exact reported percentage in SiteFeed');
 assert.deepEqual(Array.from(tinyBaseGenerated[0].slice(8, 11)), ['', '', ''], 'suppress derivatives built from a near-zero comparison base');
-assert.match(tinyBaseGenerated[0][23], /year-ago revenue is zero, negative, or below 0.1%/);
+assert.match(tinyBaseGenerated[0][23], /below 1%/);
+assert.equal(tinyBaseGenerated[0][34], 'Low base below 1% of current revenue');
+assert.match(tinyBaseGenerated[0][35], /at least 500%/);
+
+const subOnePercentRows = dateBackfillRows.map((row, i) => {
+  const copy = row.slice();
+  copy[1] = '5678'; copy[2] = 'Low Base Co.'; copy[5] = i === 3 ? 1000 : 100 + i;
+  copy[7] = i === 3 ? 5 : 50; copy[9] = i === 3 ? 19900 : [10, 12, 16, 22][i];
+  return copy;
+});
+let subOnePercentGenerated = [];
+const subOnePercentSheet = {getLastRow: () => 4 + subOnePercentRows.length, getRange: () => ({getValues: () => subOnePercentRows})};
+const subOnePercentFeed = {getLastRow: () => 4, getRange: () => ({setValues: rows => {subOnePercentGenerated = rows;}})};
+const subOnePercentBook = {getSheetByName: name => ({'Taiwan Monthly': subOnePercentSheet, 'Raw Statements': rawSheet, SiteFeed: subOnePercentFeed, 'Margin Signals': marginAuditSheet}[name])};
+h.rebuildSiteFeed_(subOnePercentBook);
+assert.equal(subOnePercentGenerated[0][7], 19900, 'preserve a reported extreme growth rate for review');
+assert.deepEqual(Array.from(subOnePercentGenerated[0].slice(8, 11)), ['', '', ''], 'a base below 1% suppresses derivatives even when it is above the former 0.1% cutoff');
+assert.equal(subOnePercentGenerated[0][34], 'Low base below 1% of current revenue');
 
 const multiMarketMonthlyRows = [];
 for (const [market, yields, name] of [['Listed (TWSE)', [1, 2, 4, 7], 'Example Co.'], ['OTC (TPEx)', [10, 14, 19, 25], 'Other Issuer Ltd.'], ['Publicly issued (MOPS)', [20, 30, 40, 50], 'Example Co.']]) {
   yields.forEach((yoyValue, i) => {
     const row = Array(17).fill('');
     row[0] = market; row[1] = '1234'; row[2] = name; row[3] = 'General'; row[4] = ['2026-06', '2026-07', '2026-08', '2026-09'][i];
-    row[5] = 100 + i; row[9] = yoyValue; row[14] = `https://example.test/${market}`; row[16] = '{}';
+    row[5] = 100 + i; row[7] = 50; row[9] = yoyValue; row[14] = `https://example.test/${market}`; row[16] = '{}';
     multiMarketMonthlyRows.push(row);
   });
 }
 // An issuer found only in the public-issuer feed must remain visible.
 const publicOnly = Array(17).fill('');
 publicOnly[0] = 'Publicly issued (MOPS)'; publicOnly[1] = '9999'; publicOnly[2] = 'Unlisted Public Co.'; publicOnly[3] = 'General'; publicOnly[4] = '2026-09';
-publicOnly[5] = 50; publicOnly[9] = 5; publicOnly[14] = 'https://example.test/public'; publicOnly[16] = '{}';
+publicOnly[5] = 50; publicOnly[7] = 25; publicOnly[9] = 5; publicOnly[14] = 'https://example.test/public'; publicOnly[16] = '{}';
 multiMarketMonthlyRows.push(publicOnly);
 let multiMarketGenerated = [];
 const multiMarketSheet = {getLastRow: () => 4 + multiMarketMonthlyRows.length, getRange: () => ({getValues: () => multiMarketMonthlyRows})};
@@ -267,6 +294,22 @@ assert.match(canonicalListed[23], /different names/);
 const separateIssuer = multiMarketGenerated.find(row => row[2] === '1234' && row[0] === 'OTC (TPEx)');
 assert.equal(separateIssuer[8], 6, 'different names sharing a code must not be merged');
 assert.equal(multiMarketGenerated.find(row => row[2] === '9999')[0], 'Publicly issued (MOPS)', 'retain a public-only company when no exchange-specific row exists');
+
+const stalePartitionRows = multiMarketMonthlyRows.map(row => row.slice()).filter(row => row[0] !== 'OTC (TPEx)' || row[4] !== '2026-09');
+let stalePartitionGenerated = [];
+const stalePartitionSheet = {getLastRow: () => 4 + stalePartitionRows.length, getRange: () => ({getValues: () => stalePartitionRows})};
+const stalePartitionFeed = {getLastRow: () => 4, getRange: (row, col) => ({setValues: values => {if (row === 5 && col === 1) stalePartitionGenerated = values;}})};
+const stalePartitionBook = {getSheetByName: name => ({'Taiwan Monthly': stalePartitionSheet, 'Raw Statements': rawSheet, SiteFeed: stalePartitionFeed, 'Margin Signals': marginAuditSheet}[name])};
+h.rebuildSiteFeed_(stalePartitionBook);
+const staleOtc = stalePartitionGenerated.find(row => row[0] === 'OTC (TPEx)');
+assert.equal(staleOtc[36], '2026-08');
+assert.match(staleOtc[37], /Stale partition.*2026-08.*2026-09/);
+
+let failedRefreshGenerated = [];
+const failedRefreshFeed = {getLastRow: () => 4, getRange: (row, col) => ({setValues: values => {if (row === 5 && col === 1) failedRefreshGenerated = values;}})};
+const failedRefreshBook = {getSheetByName: name => ({'Taiwan Monthly': dateBackfillSheet, 'Raw Statements': rawSheet, SiteFeed: failedRefreshFeed, 'Margin Signals': marginAuditSheet}[name])};
+h.rebuildSiteFeed_(failedRefreshBook, [{market: 'Publicly issued (MOPS)', status: 'failed'}]);
+assert.match(failedRefreshGenerated[0][37], /^Source refresh failed/);
 
 const cumulativeInputs = [
   [2024, 1, 100, 40, 10], [2024, 2, 230, 91, 24], [2024, 3, 390, 150, 42], [2024, 4, 580, 232, 64],
