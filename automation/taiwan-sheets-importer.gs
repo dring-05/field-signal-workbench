@@ -29,7 +29,9 @@ function setupTaiwanSignals() {
   ensureHeader_(book, SIGNALS.logSheet, LOG_HEADERS);
   const triggers = ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'refreshTaiwanSignals');
   if (!triggers.length) ScriptApp.newTrigger('refreshTaiwanSignals').timeBased().everyDays(1).atHour(7).inTimezone('America/New_York').create();
-  writeLog_('Setup complete', '', 0, 0, 0, 'Daily refresh trigger set for about 07:00 America/New_York. Run refreshTaiwanSignals once to authorize and test the official sources.');
+  const archiveTriggers = ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'refreshRecentTaiwanMopsArchive');
+  if (!archiveTriggers.length) ScriptApp.newTrigger('refreshRecentTaiwanMopsArchive').timeBased().everyDays(1).atHour(10).inTimezone('Asia/Taipei').create();
+  writeLog_('Setup complete', '', 0, 0, 0, 'Daily snapshot refresh is set for about 07:00 America/New_York. Daily MOPS archive refresh is set for about 10:00 Asia/Taipei. Run refreshTaiwanSignals and refreshRecentTaiwanMopsArchive once to authorize and test the official sources.');
 }
 
 function refreshTaiwanSignals() {
@@ -63,18 +65,46 @@ function refreshTaiwanSignals() {
 }
 
 function previewTaiwanMopsHistory() {
-  const reports = fetchTaiwanMopsHistory_();
+  const months = recentTaiwanMopsHistoryMonths_();
+  const reports = fetchTaiwanMopsHistory_(months);
   const summary = reports.map(report => ({market: report.market, month: report.month, rows: report.records.length, url: report.url}));
   console.log(JSON.stringify({result: 'validated preview only', reports: summary, totalRows: reports.reduce((sum, report) => sum + report.records.length, 0)}));
   return summary;
 }
 
 function importTaiwanMopsHistory() {
+  const months = recentTaiwanMopsHistoryMonths_();
+  const reports = fetchTaiwanMopsHistory_(months);
+  return importTaiwanMopsReports_(reports);
+}
+
+function refreshRecentTaiwanMopsArchive() {
+  // Fetch and validate the complete rolling window before opening the workbook
+  // or writing monthly rows. A missing or malformed report therefore leaves
+  // the existing history and public feed unchanged.
+  const months = recentTaiwanMopsHistoryMonths_();
+  const reports = fetchTaiwanMopsHistory_(months);
+  return importTaiwanMopsReports_(reports);
+}
+
+function recentTaiwanMopsHistoryMonths_(now) {
+  const current = Utilities.formatDate(now || new Date(), 'Asia/Taipei', 'yyyy-MM');
+  const match = current.match(/^(\d{4})-(\d{2})$/);
+  if (!match) throw new Error('Could not determine the current Taiwan calendar month.');
+  const currentMonthIndex = Number(match[1]) * 12 + Number(match[2]) - 1;
+  return [2, 1].map(offset => {
+    const index = currentMonthIndex - offset;
+    const year = Math.floor(index / 12);
+    const month = index % 12 + 1;
+    return String(year).padStart(4, '0') + '-' + String(month).padStart(2, '0');
+  });
+}
+
+function importTaiwanMopsReports_(reports) {
   const started = new Date();
   const book = SpreadsheetApp.openById(SIGNALS.spreadsheetId);
   const sheet = book.getSheetByName(SIGNALS.monthlySheet);
   if (!sheet) throw new Error('Taiwan Monthly sheet is missing.');
-  const reports = fetchTaiwanMopsHistory_();
   const existing = sheet.getLastRow() > 4 ? sheet.getRange(5, 1, sheet.getLastRow() - 4, 17).getValues() : [];
   const seen = new Set();
   existing.forEach(row => seen.add(mopsHistoryDataKey_(row[0], row[1], row[2], row[4], row.slice(5, 13))));
@@ -110,20 +140,22 @@ function importTaiwanMopsHistory() {
   return {result: 'success', reports: reports.length, received: totalRows, added: additions.length, unchanged, months};
 }
 
-function fetchTaiwanMopsHistory_() {
+function fetchTaiwanMopsHistory_(months) {
+  months = months || recentTaiwanMopsHistoryMonths_();
+  if (!Array.isArray(months) || !months.length || months.some(month => !/^\d{4}-(0[1-9]|1[0-2])$/.test(month))) throw new Error('MOPS history months must be a non-empty list of YYYY-MM periods.');
   const groups = [
     {path: 'sii', market: 'Listed (TWSE)', title: /上市公司/},
     {path: 'otc', market: 'OTC (TPEx)', title: /上櫃公司/},
     {path: 'rotc', market: 'Emerging (MOPS)', title: /興櫃公司/},
     {path: 'pub', market: 'Publicly issued (MOPS)', title: /公開發行公司/}
   ];
-  const months = ['2026-06', '2026-07', '2026-08', '2026-09'];
   const reports = [];
   groups.forEach(group => months.forEach(month => {
     const parts = month.split('-').map(Number);
     const rocYear = parts[0] - 1911;
     const monthNumber = parts[1];
     const url = 'https://mopsov.twse.com.tw/nas/t21/' + group.path + '/t21sc03_' + rocYear + '_' + monthNumber + '_0.html';
+    if (reports.length) Utilities.sleep(1000);
     const response = UrlFetchApp.fetch(url, {muteHttpExceptions: true, followRedirects: true});
     const status = response.getResponseCode();
     if (status < 200 || status >= 300) throw new Error('MOPS history request failed with HTTP ' + status + ': ' + url);
@@ -255,8 +287,15 @@ function appendRawStatementRevisions_(book, notes) {
     endpoints.push({area: 'Quarterly balance sheet', endpoint: 't187ap07_X_' + suffix});
   });
   endpoints.push({area: 'Director and supervisor ownership', endpoint: 't187ap11_P'});
-  const prior = raw.getLastRow() > 4 ? raw.getRange(5, 10, raw.getLastRow() - 4, 1).getDisplayValues().flat() : [];
-  const signatures = new Set(prior.filter(Boolean));
+  const prior = raw.getLastRow() > 4 ? raw.getRange(5, 2, raw.getLastRow() - 4, 7).getValues() : [];
+  const signatures = new Set();
+  prior.forEach(row => {
+    const endpoint = String(row[1] || '').trim();
+    const code = String(row[2] || '').trim();
+    const period = String(row[4] || '').trim();
+    const rawRecord = parseJson_(row[6]);
+    if (endpoint && code && period) signatures.add([endpoint, code, period, stableRawRecordJson_(rawRecord)].join('|'));
+  });
   const additions = [];
   endpoints.forEach(item => {
     const url = SIGNALS.sourceBase + item.endpoint;
@@ -266,7 +305,7 @@ function appendRawStatementRevisions_(book, notes) {
         const name = textField_(record, ['公司名稱', '公司簡稱', 'CompanyName', 'CompanyNameEnglish']);
         const period = item.area.indexOf('Quarterly') === 0 ? quarterPeriod_(record) : reportPeriod_(textField_(record, ['資料年月', '年月', '年度', '報告年度', 'ReportPeriod', 'Date']));
         const rawJson = JSON.stringify(record);
-        const signature = [item.endpoint, code, period, rawJson].join('|');
+        const signature = [item.endpoint, code, period, stableRawRecordJson_(record)].join('|');
         if (signatures.has(signature)) return;
         signatures.add(signature);
         additions.push([SIGNALS.market, item.area, item.endpoint, code, name, period, new Date(), rawJson, url, signature]);
@@ -288,21 +327,33 @@ function appendMonthlyRevisions_(sheet, rows) {
     // Google Sheets stores YYYY-MM values as date serials. Normalize the
     // stored value before comparing it with the API's normalized YYYY-MM.
     const period = normalizeMonthlyPeriod_(row[4]);
-    const raw = String(row[16]);
-    signatures.add(market + '|' + code + '|' + period + '|' + raw);
+    signatures.add(monthlyEconomicSignature_(market, code, row[2], row[3], period, row.slice(5, 13)));
     // Before source-market labels were added, the append-only signature omitted market.
-    if (String(row[0]).trim() === 'Taiwan public issuers') signatures.add(code + '|' + period + '|' + raw);
+    if (String(row[0]).trim() === 'Taiwan public issuers') {
+      signatures.add(monthlyEconomicSignature_('', code, row[2], row[3], period, row.slice(5, 13)));
+    }
   });
   const additions = [];
   rows.forEach(r => {
     const rawJson = JSON.stringify(r.raw);
-    const signature = normalizeMonthlyMarket_(r.market) + '|' + r.code + '|' + r.period + '|' + rawJson;
+    const signature = monthlyEconomicSignature_(r.market, r.code, r.name, r.industry, r.period,
+      [r.current, r.prior, r.yearAgo, r.mom, r.yoy, r.ytd, r.priorYtd, r.ytdGrowth]);
     if (signatures.has(signature)) return;
     signatures.add(signature);
     additions.push([r.market, r.code, r.name, r.industry, r.period, r.current, r.prior, r.yearAgo, r.mom, r.yoy, r.ytd, r.priorYtd, r.ytdGrowth, 'TWD thousands, as published', r.sourceUrl, new Date(), rawJson]);
   });
   if (additions.length) sheet.getRange(sheet.getLastRow() + 1, 1, additions.length, 17).setValues(additions);
   return additions.length;
+}
+
+function monthlyEconomicSignature_(market, code, name, industry, period, values) {
+  const numbers = values.map(value => {
+    if (value === '' || value == null) return '';
+    const number = Number(String(value).replace(/[%,\s]/g, ''));
+    return Number.isFinite(number) ? String(number) : String(value).trim();
+  });
+  return [normalizeMonthlyMarket_(market), String(code || '').trim(), normalizeIssuerName_(name),
+    String(industry || '').trim(), normalizeMonthlyPeriod_(period), ...numbers].join('|');
 }
 
 function rebuildSiteFeed_(book) {
@@ -716,6 +767,16 @@ function monthDistance_(a, b) {
 
 function normalizeKey_(key) {
   return String(key).toLowerCase().replace(/[\s\p{P}\p{S}_]/gu, '');
+}
+
+function stableRawRecordJson_(record) {
+  const volatileKeys = new Set(['出表日期', '更新日期', '更新時間', '資料更新時間', '發布時間', '資料時間',
+    'retrievedat', 'updatedat', 'exportdate', 'updatedate', 'publisheddate']);
+  const stable = {};
+  Object.keys(record || {}).sort().forEach(key => {
+    if (!volatileKeys.has(normalizeKey_(key))) stable[key] = record[key];
+  });
+  return JSON.stringify(stable);
 }
 
 function parseJson_(value) {

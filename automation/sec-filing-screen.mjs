@@ -27,7 +27,13 @@ const EXPLICIT_RISK_LIST = /\b(?:risks?\s+and\s+uncertainties|uncertainties\s+an
 const RISK_SECTION_START = /\b(?:item\s+1a\s*[.:]?\s*)?(?:risk factors|risks related to)\b/gi;
 const ITEM_SECTION_HEADING = /\bitem\s+(?:\d{1,2}[a-z]?|[ivx]{1,4})\s*[.:]/gi;
 const BIOGRAPHY_CONTEXT = /\b(?:biograph(?:y|ical)|professional background|career history|previously served|formerly served|prior to joining|before joining|appointed to the board|director nominee|board nominee|served as.{0,100}\b(?:at|for)\b|experience\s+(?:with|at)\s+.{1,100}\bspans?\s+over\s+.{1,30}\b(?:years?|decades?)|held\s+(?:a number of\s+)?leadership positions|career\s+(?:at|with)\s+.{1,100}\bover\s+.{1,30}\b(?:years?|decades?))\b/i;
+const BIOGRAPHY_ROLE_CONTEXT = /\b(?:serves?|served|appointed)\s+as\b.{0,100}\b(?:chief|president|director|officer|executive|CEO|CFO|CTO|COO)\b/i;
 const COMMODITY_AI_DEMAND = /\b(?:critical minerals?|silver|antimony|copper|lithium|nickel|cobalt|rare earths?|semiconductors?|chips?)\b[\s\S]{0,160}\b(?:support(?:s|ing)?|needed to|supply(?:ing|ies)?|meet(?:ing)?|benefit(?:s|ing)? from|driven by|fuel(?:ing|s)?)\b[\s\S]{0,120}\b(?:artificial intelligence|AI)\b/i;
+const AI_GLOSSARY = /\b(?:artificial intelligence|generative AI|machine learning|AI)\s+(?:is|means|refers to|describes|includes)\b|\b(?:defined|used)\s+(?:herein\s+)?to\s+mean\b/i;
+const THIRD_PARTY_ATTRIBUTION = /\b(?:according to|as reported by|quoted by|citing|the report by|a report from|the article by|our (?:customer|supplier|vendor|partner|competitor)|(?:customer|supplier|vendor|partner|competitor)'s)\b/i;
+const THIRD_PARTY_ACTION = /\b(?:customer|supplier|vendor|partner|competitor|analyst|consultant|industry|third[- ]party)\b.{0,100}\b(?:launched|uses?|used|provides?|offers?|developed|announced|plans?|expects?|claims?|invested|deployed)\b/i;
+const COMPLETED_OPERATING_ACTION = /\b(?:launched|introduced|deployed|developed|built|opened|commissioned|operates?|provided|provides|offer(?:s|ed|ing)?|sell(?:s|ing)?|sold|generated|recognized|secured|signed|acquired|invested|licensed|manufactures?|produces?|integrated|released|began|started|commenced|commercialized|contracted|received|installed|delivered|is using|are using|uses)\b/i;
+const PLANNED_OPERATING_ACTION = /\b(?:plans?\s+to|expects?\s+to|intends?\s+to|will\s+(?:launch|deploy|develop|build|open|provide|sell|produce|operate|commercialize|integrate|begin|start|commence)|is\s+planned\s+to|are\s+planned\s+to|is\s+developing|are\s+developing|proposed\s+to|seeks?\s+to)\b/i;
 const SEC_TIME_ZONE = 'America/New_York';
 const OPERATING_FACTS = {
   'us-gaap': {
@@ -95,34 +101,58 @@ export function analyzeText(text) {
       const end = Math.min(normalized.length, match.index + match[0].length + 220);
       const context = normalized.slice(start, end);
       const before = normalized.slice(Math.max(0, match.index - 1200), match.index);
-      const issuerContext = normalized.slice(Math.max(0, match.index - 700), Math.min(normalized.length, match.index + 700));
       const sentence = sentenceAt(normalized, match.index, match[0].length);
-      if (!OPERATIONAL_CONTEXT.test(context) || insideRiskSection(normalized, match.index) || RISK_HEADING.test(before.slice(-500)) || EXPLICIT_RISK_LIST.test(sentence) || BIOGRAPHY_CONTEXT.test(issuerContext) || COMMODITY_AI_DEMAND.test(sentence)) continue;
-      hits.push({ term: match[0], context: context.trim(), sentence });
+      const evidenceClass = classifyAiEvidence(sentence, match[0], {fullText: normalized, index: match.index, priorText: before.slice(-500)});
+      if (evidenceClass !== 'operating-disclosure' && evidenceClass !== 'planned-operating-disclosure') continue;
+      if (!OPERATIONAL_CONTEXT.test(context)) continue;
+      hits.push({ term: match[0], context: context.trim(), sentence, evidenceClass });
       if (hits.length >= 30) return hits;
     }
   }
   return hits;
 }
 
+/** Classify an AI passage before it can become a changed-disclosure lead. */
+export function classifyAiEvidence(text, term = '', {fullText = text, index = null, priorText = ''} = {}) {
+  const sentence = evidenceSentence(text, term);
+  const source = String(sentence ?? '');
+  if ((Number.isInteger(index) && insideRiskSection(String(fullText ?? ''), index)) || RISK_HEADING.test(priorText) || EXPLICIT_RISK_LIST.test(source)) return 'risk-boilerplate';
+  if (isBiographySentence(source)) return 'biography';
+  if (COMMODITY_AI_DEMAND.test(source)) return 'industry-demand-mention';
+  if (AI_GLOSSARY.test(source)) return 'glossary-or-definition';
+  if (THIRD_PARTY_ATTRIBUTION.test(source) || THIRD_PARTY_ACTION.test(source)) return 'third-party-mention';
+  if (COMPLETED_OPERATING_ACTION.test(source)) return 'operating-disclosure';
+  if (PLANNED_OPERATING_ACTION.test(source)) return 'planned-operating-disclosure';
+  return 'low-confidence-mention';
+}
+
 function sentenceAt(text, index, length) {
-  const left = Math.max(text.lastIndexOf('.', index), text.lastIndexOf('!', index), text.lastIndexOf('?', index), text.lastIndexOf(';', index)) + 1;
-  const ends = ['.', '!', '?', ';'].map(mark => text.indexOf(mark, index + length)).filter(position => position >= 0);
-  const right = ends.length ? Math.min(...ends) : text.length;
+  const isBoundary = match => {
+    if (match[0] !== '.') return true;
+    const preceding = text.slice(Math.max(0, match.index - 8), match.index + 1);
+    return !/\b(?:Inc|Corp|Co|Ltd|LLC|PLC|LP|Mr|Ms|Dr|St)\.$/i.test(preceding);
+  };
+  const boundaries = [...text.matchAll(/[.!?;]/g)].filter(isBoundary).map(match => match.index);
+  const left = (boundaries.filter(position => position < index).at(-1) ?? -1) + 1;
+  const right = boundaries.find(position => position >= index + length) ?? text.length;
   return text.slice(left, right).trim();
 }
 
-export function isLikelyBiographyEvidence(text) {
-  return BIOGRAPHY_CONTEXT.test(String(text ?? ''));
+function evidenceSentence(text, term = '') {
+  const value = String(text ?? '');
+  if (term) {
+    const index = value.toLowerCase().indexOf(String(term).toLowerCase());
+    if (index >= 0) return sentenceAt(value, index, String(term).length);
+  }
+  return value;
 }
 
-export function cleanStoredEvidence(evidence) {
-  return (Array.isArray(evidence) ? evidence : []).filter(hit => {
-    const text = String(hit?.text ?? '');
-    return !isLikelyBiographyEvidence(text)
-      && !EXPLICIT_RISK_LIST.test(text)
-      && !COMMODITY_AI_DEMAND.test(text);
-  });
+function isBiographySentence(text) {
+  return BIOGRAPHY_CONTEXT.test(String(text ?? '')) || BIOGRAPHY_ROLE_CONTEXT.test(String(text ?? ''));
+}
+
+export function isLikelyBiographyEvidence(text, term = '') {
+  return isBiographySentence(evidenceSentence(text, term));
 }
 
 const EVIDENCE_STOPWORDS = new Set([
@@ -144,10 +174,12 @@ function evidenceTokens(hit) {
 
 /** Find a substantive new AI-business phrase, even when the total hit count is unchanged. */
 export function novelAiEvidence(currentHits, priorHits) {
-  if (!currentHits?.length || priorHits === null) return [];
-  if (!priorHits.length) return currentHits;
-  const prior = priorHits.map(evidenceTokens).filter(tokens => tokens.size >= 4);
-  return currentHits.filter(hit => {
+  const substantiveCurrent = (currentHits ?? []).filter(isOperatingEvidence);
+  const substantivePrior = priorHits === null ? null : (priorHits ?? []).filter(isOperatingEvidence);
+  if (!substantiveCurrent.length || substantivePrior === null) return [];
+  if (!substantivePrior.length) return substantiveCurrent;
+  const prior = substantivePrior.map(evidenceTokens).filter(tokens => tokens.size >= 4);
+  return substantiveCurrent.filter(hit => {
     const tokens = evidenceTokens(hit);
     if (tokens.size < 4) return false;
     let bestSimilarity = 0;
@@ -161,6 +193,10 @@ export function novelAiEvidence(currentHits, priorHits) {
     }
     return mostNovel >= 3 && bestSimilarity < 0.55;
   });
+}
+
+function isOperatingEvidence(hit) {
+  return hit?.evidenceClass === 'operating-disclosure' || hit?.evidenceClass === 'planned-operating-disclosure';
 }
 
 export function isNameChangeLead(text, form) {
@@ -411,18 +447,26 @@ async function submissionsForCik(cik, userAgent, cache) {
 }
 
 export function aiDeltaLabel(currentHits, priorHits) {
+  currentHits = (currentHits ?? []).filter(isOperatingEvidence);
+  priorHits = priorHits === null ? null : (priorHits ?? []).filter(isOperatingEvidence);
   if (!currentHits.length) return '';
-  if (priorHits === null) return 'AI-language lead; prior filing comparison unavailable';
-  if (priorHits.length === 0) return 'AI language first detected versus prior same-form filing';
+  if (priorHits === null) return 'AI operating-disclosure lead; prior filing comparison unavailable';
+  if (priorHits.length === 0) return 'AI operating disclosure first detected versus prior same-form filing';
   const newPhrases = novelAiEvidence(currentHits, priorHits);
-  if (newPhrases.length) return `New AI-business wording versus prior same-form filing (${newPhrases.length} distinct phrase${newPhrases.length === 1 ? '' : 's'})`;
-  if (currentHits.length >= Math.max(3, priorHits.length * 2)) return `AI-language mentions increased (${priorHits.length} to ${currentHits.length}) versus prior same-form filing`;
+  if (newPhrases.length) return `New AI operating-disclosure wording versus prior same-form filing (${newPhrases.length} distinct phrase${newPhrases.length === 1 ? '' : 's'})`;
+  if (currentHits.length >= Math.max(3, priorHits.length * 2)) return `AI operating-disclosure mentions increased (${priorHits.length} to ${currentHits.length}) versus prior same-form filing`;
   return '';
 }
 
-/** A legal-name transition can describe an AI pivot, but cannot create a lead by itself. */
+export function hasAiBranding(name) {
+  return /\b(?:AI|artificial intelligence|machine learning|generative AI)\b/i.test(String(name ?? ''));
+}
+
+/** Retain AI-branded legal renames separately from AI-language filing leads. */
 export function aiPivotLeadType(legalNameChange, aiLabel) {
-  if (!aiLabel) return null;
+  const aiNameChange = Boolean(legalNameChange && hasAiBranding(legalNameChange.newName));
+  if (!aiLabel && !aiNameChange) return null;
+  if (aiNameChange && !aiLabel) return 'ai-name-change';
   return legalNameChange ? 'name-change-and-ai-language' : 'ai-language-change';
 }
 
@@ -436,6 +480,7 @@ function snippets(hits, max = 3) {
   }).slice(0, max).map(hit => ({
     term: hit.term,
     text: hit.context.slice(0, 360),
+    evidenceClass: hit.evidenceClass,
     documentType: hit.documentType ?? null,
     reviewCues: reviewCues(hit.sentence ?? hit.context),
   }));
@@ -489,24 +534,76 @@ export function operatingBridgeFromCompanyFacts(companyFacts, cutoffDate, cik) {
     if (units.includes('USD')) revenue.unit = 'USD';
     else return null;
   }
-  const matchingFact = (metric, concepts, periodType = 'duration') => {
+  const metricFact = (metric, concepts, selectedRevenue, periodType = 'duration') => {
     const rows = companyFactRows(companyFacts, revenue.taxonomy, concepts, cutoffDate, periodType)
-      .filter(x => (periodType === 'instant' ? !x.start && x.end === revenue.end : x.start === revenue.start && x.end === revenue.end) && x.unit === revenue.unit)
+      .filter(x => (periodType === 'instant' ? !x.start && x.end === selectedRevenue.end : x.start === selectedRevenue.start && x.end === selectedRevenue.end) && x.unit === selectedRevenue.unit)
       .sort((a, b) => a.tagPriority - b.tagPriority || b.filed.localeCompare(a.filed));
     if (!rows.length) return null;
     const chosen = rows[0];
     return {metric, value: chosen.value, taxonomy: chosen.taxonomy, tag: chosen.tag, unit: chosen.unit, periodStart: chosen.start, periodEnd: chosen.end, filed: chosen.filed, form: chosen.form, accession: chosen.accession, sourceUrl: factFilingUrl(cik, chosen.accession)};
   };
-  const facts = {};
-  for (const [metric, concepts] of Object.entries(OPERATING_FACTS[revenue.taxonomy])) facts[metric] = matchingFact(metric, concepts);
-  for (const [metric, concepts] of Object.entries(INSTANT_FACTS[revenue.taxonomy] ?? {})) facts[metric] = matchingFact(metric, concepts, 'instant');
+  const factsForPeriod = selectedRevenue => {
+    const selected = {};
+    for (const [metric, concepts] of Object.entries(OPERATING_FACTS[selectedRevenue.taxonomy])) selected[metric] = metricFact(metric, concepts, selectedRevenue);
+    for (const [metric, concepts] of Object.entries(INSTANT_FACTS[selectedRevenue.taxonomy] ?? {})) selected[metric] = metricFact(metric, concepts, selectedRevenue, 'instant');
+    return selected;
+  };
+  const facts = factsForPeriod(revenue);
   if (!facts.revenue) return null;
-  const margin = numerator => {
-    const item = facts[numerator];
-    return item && Number.isFinite(item.value) && facts.revenue.value !== 0
-      ? item.value / facts.revenue.value * 100
+  const marginFor = (periodFacts, numerator) => {
+    const item = periodFacts[numerator];
+    return item && Number.isFinite(item.value) && periodFacts.revenue?.value !== 0
+      ? item.value / periodFacts.revenue.value * 100
       : null;
   };
+  const targetDays = (Date.parse(`${revenue.end}T00:00:00Z`) - Date.parse(`${revenue.start}T00:00:00Z`)) / 86400000 + 1;
+  const priorYearRevenue = revenues.filter(candidate => {
+    if (candidate.taxonomy !== revenue.taxonomy || candidate.unit !== revenue.unit) return false;
+    const daysEarlier = (Date.parse(`${revenue.end}T00:00:00Z`) - Date.parse(`${candidate.end}T00:00:00Z`)) / 86400000;
+    return daysEarlier >= 350 && daysEarlier <= 380 && Math.abs(candidate.durationDays - targetDays) <= 7;
+  }).sort((a, b) =>
+    Number(a.tag !== revenue.tag) - Number(b.tag !== revenue.tag)
+    || Math.abs((Date.parse(`${revenue.end}T00:00:00Z`) - Date.parse(`${a.end}T00:00:00Z`)) / 86400000 - 365)
+      - Math.abs((Date.parse(`${revenue.end}T00:00:00Z`) - Date.parse(`${b.end}T00:00:00Z`)) / 86400000 - 365)
+    || Math.abs(a.durationDays - targetDays) - Math.abs(b.durationDays - targetDays)
+    || a.tagPriority - b.tagPriority
+    || b.filed.localeCompare(a.filed)
+  )[0] ?? null;
+  const priorYearFacts = priorYearRevenue ? factsForPeriod(priorYearRevenue) : null;
+  const metrics = {};
+  if (priorYearFacts?.revenue) {
+    for (const metric of Object.keys(OPERATING_FACTS[revenue.taxonomy])) {
+      const current = facts[metric];
+      const prior = priorYearFacts[metric];
+      if (!current || !prior) continue;
+      metrics[metric] = {
+        current: current.value,
+        priorYear: prior.value,
+        change: current.value - prior.value,
+        percentChange: prior.value === 0 ? null : (current.value - prior.value) / Math.abs(prior.value) * 100,
+        unit: current.unit,
+      };
+    }
+    for (const metric of Object.keys(INSTANT_FACTS[revenue.taxonomy] ?? {})) {
+      const current = facts[metric];
+      const prior = priorYearFacts[metric];
+      if (!current || !prior) continue;
+      metrics[metric] = {
+        current: current.value,
+        priorYear: prior.value,
+        change: current.value - prior.value,
+        percentChange: prior.value === 0 ? null : (current.value - prior.value) / Math.abs(prior.value) * 100,
+        unit: current.unit,
+      };
+    }
+    for (const [metric, numerator] of [['grossMarginPct', 'grossProfit'], ['operatingMarginPct', 'operatingIncome']]) {
+      const current = marginFor(facts, numerator);
+      const prior = marginFor(priorYearFacts, numerator);
+      if (Number.isFinite(current) && Number.isFinite(prior)) {
+        metrics[metric] = {current, priorYear: prior, changePercentagePoints: current - prior, unit: 'percentage points'};
+      }
+    }
+  }
   return {
     asOfDate: cutoffDate,
     periodStart: revenue.start,
@@ -514,9 +611,20 @@ export function operatingBridgeFromCompanyFacts(companyFacts, cutoffDate, cik) {
     durationDays: revenue.durationDays,
     unit: revenue.unit,
     taxonomy: revenue.taxonomy,
-    grossMarginPct: margin('grossProfit'),
-    operatingMarginPct: margin('operatingIncome'),
+    grossMarginPct: marginFor(facts, 'grossProfit'),
+    operatingMarginPct: marginFor(facts, 'operatingIncome'),
     facts,
+    priorYearComparison: priorYearFacts?.revenue ? {
+      periodStart: priorYearRevenue.start,
+      periodEnd: priorYearRevenue.end,
+      durationDays: priorYearRevenue.durationDays,
+      unit: priorYearRevenue.unit,
+      taxonomy: priorYearRevenue.taxonomy,
+      facts: priorYearFacts,
+      grossMarginPct: marginFor(priorYearFacts, 'grossProfit'),
+      operatingMarginPct: marginFor(priorYearFacts, 'operatingIncome'),
+      metrics,
+    } : null,
   };
 }
 
@@ -657,7 +765,7 @@ async function scan(options) {
       filingUrl: filingUrl(row.filename),
       leadType,
       reviewStatus: 'automated lead; human review required',
-      label: [legalNameChange ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName} (history date ${legalNameChange.effectiveDate}); filing text also meets the AI-language screen. Review the filing.` : '', aiLabel].filter(Boolean).join(' '),
+      label: [legalNameChange ? `SEC submissions record a legal name change from ${legalNameChange.oldName} to ${legalNameChange.newName} (history date ${legalNameChange.effectiveDate}). ${hasAiBranding(legalNameChange.newName) ? 'The new name includes AI-related branding. This is a naming signal, not evidence of an operating AI business.' : 'The filing also meets the AI-language screen.'}` : '', aiLabel].filter(Boolean).join(' '),
       legalNameChange: legalNameChange || null,
       nameChangeTextCorroborated: Boolean(legalNameChange),
       priorSameFormAiMentions: priorCount,
@@ -675,8 +783,11 @@ async function scan(options) {
   }
   const retained = (options.feed.leads ?? []).filter(item => {
     const evidence = Array.isArray(item.evidence) ? item.evidence : [];
-    if (evidence.length) item.evidence = cleanStoredEvidence(evidence);
-    return !evidence.length || item.evidence.length > 0 || Boolean(item.legalNameChange && item.nameChangeTextCorroborated);
+    if (evidence.length) item.evidence = evidence.filter(hit => {
+      const evidenceContext = evidenceSentence(hit.text, hit.term);
+      return !isBiographySentence(evidenceContext) && !EXPLICIT_RISK_LIST.test(evidenceContext);
+    });
+    return !evidence.length || item.evidence.length > 0;
   }).map(item => {
     const mapped = mappedByCik.get(String(item.cik ?? '').padStart(10, '0'));
     return {
@@ -695,7 +806,7 @@ async function scan(options) {
   const leads = [...unique.values()].filter(item => item.filingDate >= dateString(keepAfter)).sort((a, b) => b.filingDate.localeCompare(a.filingDate)).slice(0, 1000);
   // Gradually add filing-as-of bridges to saved leads from before this feature.
   // Cap each daily run so old feed history does not create an unbounded SEC burst.
-  const pendingBridges = leads.filter(item => !Object.hasOwn(item, 'operatingBridge') || item.operatingBridgeStatus === 'Retry pending').slice(0, 20);
+  const pendingBridges = leads.filter(item => !Object.hasOwn(item, 'operatingBridge') || item.operatingBridgeStatus === 'Retry pending' || (item.operatingBridge && !Object.hasOwn(item.operatingBridge, 'priorYearComparison'))).slice(0, 20);
   for (const item of pendingBridges) {
     try {
       item.operatingBridge = await operatingBridgeForCik(item.cik, item.filingDate, userAgent, companyFactsCache);
@@ -739,8 +850,6 @@ export function selfTest() {
   if (!ai.length) throw new Error('AI phrase screen self-test failed');
   if (analyzeText('Risk Factors: our artificial intelligence product may not succeed.').length) throw new Error('risk-section suppression self-test failed');
   if (analyzeText('Americas Gold and Silver Corp., a producer of silver and other critical minerals supporting artificial intelligence, is increasing production.').length) throw new Error('commodity demand mention should not create an AI operating lead');
-  if (cleanStoredEvidence([{text: 'The company supplies silver and critical minerals supporting artificial intelligence infrastructure.'}]).length) throw new Error('commodity demand evidence should be removed from retained leads');
-  if (cleanStoredEvidence([{text: 'The issuer is launching an AI data center business for customers.'}]).length !== 1) throw new Error('operating AI evidence should remain in retained leads');
   if (!analyzeText('The company is launching an AI data center business and will provide compute capacity to customers.').length) throw new Error('issuer AI operating business language should remain eligible');
   if (expectedIndexSkipReason('2026-10-10', '2026-10-14') !== 'weekend' || expectedIndexSkipReason('2026-10-12', '2026-10-14') !== 'SEC federal holiday' || expectedIndexSkipReason('2026-10-14', '2026-10-14')?.startsWith('current ET date') !== true) throw new Error('SEC index expected-skip calendar self-test failed');
   if (expectedIndexSkipReason('2026-10-13', '2026-10-14') !== null) throw new Error('prior SEC business day should be checked');
@@ -750,11 +859,11 @@ export function selfTest() {
   if (!analyzeText(afterRisk).length) throw new Error('risk-section boundary self-test failed');
   const docs = relevantDocuments('<DOCUMENT><TYPE>8-K\n<TEXT><p>Item 5.03</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-99.1\n<TEXT><p>AI business</p></TEXT></DOCUMENT><DOCUMENT><TYPE>EX-101.SCH\n<TEXT>AI taxonomy</TEXT></DOCUMENT>', '8-K');
   if (docs.length !== 2 || docs[1].type !== 'EX-99.1') throw new Error('relevant document extraction self-test failed');
-  if (aiDeltaLabel(ai, []) !== 'AI language first detected versus prior same-form filing') throw new Error('AI delta self-test failed');
+  if (aiDeltaLabel(ai, []) !== 'AI operating disclosure first detected versus prior same-form filing') throw new Error('AI delta self-test failed');
   const priorBusiness = analyzeText('The issuer sells an artificial intelligence customer-support product for banks. AI-powered translation services are also sold to travelers.');
   const currentBusiness = analyzeText('The issuer sells an artificial intelligence customer-support product for banks. AI-powered GPU data center capacity leasing for cloud customers will begin this year.');
   if (priorBusiness.length !== currentBusiness.length) throw new Error('new-language fixture must keep keyword counts steady');
-  if (!novelAiEvidence(currentBusiness, priorBusiness).length || !aiDeltaLabel(currentBusiness, priorBusiness).startsWith('New AI-business wording')) throw new Error('new AI-business phrase self-test failed');
+  if (!novelAiEvidence(currentBusiness, priorBusiness).length || !aiDeltaLabel(currentBusiness, priorBusiness).startsWith('New AI operating-disclosure wording')) throw new Error('new AI operating-disclosure phrase self-test failed');
   const nearDuplicate = analyzeText('The issuer expects AI-powered data center services for regional cloud customers to expand.');
   const similarPrior = analyzeText('The issuer expects AI-powered data center services for regional cloud clients to expand.');
   if (novelAiEvidence(nearDuplicate, similarPrior).length) throw new Error('near-duplicate AI wording false-positive self-test failed');

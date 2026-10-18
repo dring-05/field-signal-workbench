@@ -97,14 +97,37 @@
     }
     const format = value => new Intl.NumberFormat(undefined, {maximumFractionDigits: 2}).format(value);
     const metrics = [['Revenue', 'revenue'], ['Gross profit', 'grossProfit'], ['Operating income', 'operatingIncome'], ['Net income', 'netIncome'], ['Cash and equivalents', 'cash'], ['Current debt', 'currentDebt'], ['Long-term debt', 'longTermDebt']];
+    const prior = bridge.priorYearComparison;
+    const factSource = fact => fact?.sourceUrl
+      ? `<a href="${esc(fact.sourceUrl)}" target="_blank" rel="noreferrer">${esc(fact.form)} filed ${esc(fact.filed)} ↗</a>`
+      : fact ? `${esc(fact.form)} filed ${esc(fact.filed)}` : '';
     const rows = metrics.map(([label, key]) => {
       const fact = bridge.facts[key];
-      if (!fact) return `<tr><th>${label}</th><td>Unavailable</td><td></td></tr>`;
-      const source = fact.sourceUrl ? `<a href="${esc(fact.sourceUrl)}" target="_blank" rel="noreferrer">${esc(fact.form)} filed ${esc(fact.filed)} ↗</a>` : `${esc(fact.form)} filed ${esc(fact.filed)}`;
-      return `<tr><th>${label}</th><td>${format(fact.value)} ${esc(fact.unit)}</td><td><span class="footnote">${esc(fact.taxonomy)}:${esc(fact.tag)} · ${source}</span></td></tr>`;
+      const priorFact = prior?.facts?.[key];
+      const change = prior?.metrics?.[key];
+      const currentValue = fact ? `${format(fact.value)} ${esc(fact.unit)}` : 'Unavailable';
+      const priorValue = priorFact ? `${format(priorFact.value)} ${esc(priorFact.unit)}` : 'Unavailable';
+      let changeText = 'Unavailable';
+      if (change) {
+        const suffix = Number.isFinite(change.percentChange) ? ` (${format(change.percentChange)}% YoY)` : '';
+        changeText = `${change.change >= 0 ? '+' : ''}${format(change.change)} ${esc(change.unit)}${suffix}`;
+      }
+      const sources = [
+        fact ? `${esc(fact.taxonomy)}:${esc(fact.tag)} · ${factSource(fact)}` : '',
+        priorFact ? `${esc(priorFact.taxonomy)}:${esc(priorFact.tag)} · ${factSource(priorFact)}` : '',
+      ].filter(Boolean).join('<br>');
+      return `<tr><th>${label}</th><td>${currentValue}</td><td>${priorValue}</td><td>${changeText}</td><td><span class="footnote">${sources}</span></td></tr>`;
     }).join('');
-    const margin = (label, value) => Number.isFinite(value) ? `<p><strong>${label}:</strong> ${format(value)}% <span class="footnote">same-period profit divided by revenue</span></p>` : '';
-    return `<details class="ai-operating-bridge"><summary>Reported operating metrics</summary><p class="footnote">SEC standardized entity-level facts available by ${esc(bridge.asOfDate)}. Income statement period: ${esc(bridge.periodStart)} to ${esc(bridge.periodEnd)} (${esc(bridge.durationDays)} days). Cash and debt are balances as of period end. Values are not annualized. Taxonomy, tag, filing date, and source are shown for each metric.</p><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Reported value</th><th>Source fact</th></tr></thead><tbody>${rows}</tbody></table></div>${margin('Gross margin', bridge.grossMarginPct)}${margin('Operating margin', bridge.operatingMarginPct)}<p class="footnote">This is a filing-linked snapshot, not a trend series. CompanyFacts omits custom concepts and segment-only facts, so unavailable items need manual filing review.</p></details>`;
+    const marginRows = [['Gross margin', 'grossMarginPct'], ['Operating margin', 'operatingMarginPct']].map(([label, key]) => {
+      const current = bridge[key];
+      const previous = prior?.[key];
+      const change = prior?.metrics?.[key]?.changePercentagePoints;
+      return `<tr><th>${label}</th><td>${Number.isFinite(current) ? `${format(current)}%` : 'Unavailable'}</td><td>${Number.isFinite(previous) ? `${format(previous)}%` : 'Unavailable'}</td><td>${Number.isFinite(change) ? `${change >= 0 ? '+' : ''}${format(change)} pp` : 'Unavailable'}</td><td><span class="footnote">Calculated as profit divided by revenue for each period</span></td></tr>`;
+    }).join('');
+    const comparisonNote = prior
+      ? `Compared with ${esc(prior.periodStart)} to ${esc(prior.periodEnd)} (${esc(prior.durationDays)} days).`
+      : 'No matching year-earlier fiscal period was available in standardized facts as of this filing.';
+    return `<details class="ai-operating-bridge"><summary>Company-wide operating metrics and year-earlier comparison</summary><p class="footnote"><strong>These are company-wide metrics, not AI-segment results.</strong> SEC standardized entity-wide facts available by ${esc(bridge.asOfDate)}. Current income statement period: ${esc(bridge.periodStart)} to ${esc(bridge.periodEnd)} (${esc(bridge.durationDays)} days). ${comparisonNote} Cash and debt are balances as of each period end. Values are not annualized. Taxonomy, tag, filing date, and source are shown for available facts.</p><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Current period</th><th>Year-earlier period</th><th>Change</th><th>Source facts</th></tr></thead><tbody>${rows}${marginRows}</tbody></table></div><p class="footnote">This comparison uses standardized XBRL facts and matched fiscal-period lengths. CompanyFacts may omit custom concepts and segment-only facts. It cannot attribute company-wide growth to AI. Review the filing for AI-specific revenue, costs, assets, customers, and financing; missing facts are unavailable, not zero.</p></details>`;
   };
 
   function leadCard(item) {
@@ -116,7 +139,14 @@
     const nameReceipt = nameHistory?.oldName && nameHistory?.newName
       ? `<p><strong>SEC name history:</strong> ${esc(nameHistory.oldName)} → ${esc(nameHistory.newName)} · effective ${esc(nameHistory.effectiveDate)}${nameSource ? ` · <a href="${esc(nameSource)}" target="_blank" rel="noreferrer">SEC submissions record ↗</a>` : ''}</p>`
       : '';
-    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${nameReceipt}${item.evidence?.length ? `<details><summary>Matched filing text and nearby review cues</summary>${item.evidence.map(e => `<blockquote class="footnote">${esc(e.text)}${e.reviewCues?.length ? `<br><strong>Nearby wording to check:</strong> ${e.reviewCues.map(esc).join(', ')}. These are text matches, not verified operating facts.` : ''}</blockquote>`).join('')}</details>` : ''}${operatingBridge(item)}<p class="footnote">AI-language matches are automated leads, not a verified pivot or investment conclusion. Legal-name transitions are cross-checked against SEC submissions history. Review the full filing and prior-period evidence.</p></article>`;
+    const screenNote = item.legalNameChange && !item.currentAiMentions
+      ? 'The legal-name transition is independently recorded by the SEC. AI-related wording in a name does not establish an operating AI business.'
+      : 'AI-language matches are automated leads, not a verified pivot or investment conclusion. Legal-name transitions are cross-checked against SEC submissions history. Review the full filing and prior-period evidence.';
+    const evidenceClassLabel = evidenceClass => ({
+      'operating-disclosure': 'Issuer operating disclosure wording. Verify the underlying activity and financial impact.',
+      'planned-operating-disclosure': 'Issuer plan or expected activity. This is not evidence that operations began.',
+    }[evidenceClass] || 'AI-language match. Classification unavailable in this saved feed.');
+    return `<article class="card card-pad"><div class="industry-card-head"><div><span class="tag amber">${listing ? `${esc(listing)} · ` : ''}${esc(item.form)} · ${esc(item.filingDate)}</span><h2 style="margin:7px 0 0;font-size:16px">${esc(displayName)}</h2><p class="footnote">Filing index name: ${esc(item.company)} · CIK ${esc(item.cik)}</p></div>${href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noreferrer">Open filing ↗</a>` : ''}</div><p>${esc(item.label)}</p>${nameReceipt}${item.evidence?.length ? `<details><summary>Matched filing text and nearby review cues</summary>${item.evidence.map(e => `<blockquote class="footnote"><strong>${esc(evidenceClassLabel(e.evidenceClass))}</strong><br>${esc(e.text)}${e.reviewCues?.length ? `<br><strong>Nearby wording to check:</strong> ${e.reviewCues.map(esc).join(', ')}. These are text matches, not verified operating facts.` : ''}</blockquote>`).join('')}</details>` : ''}${operatingBridge(item)}<p class="footnote">${screenNote}</p></article>`;
   }
 
   window.AIPivotWatch = {

@@ -42,9 +42,10 @@ assert.equal(vm.runInNewContext('taiwanMonthLabel("46266")', context), '2026-09'
 assert.equal(vm.runInNewContext('taiwanMetric("689457.126")', context), '689,457.13', 'Taiwan metrics should use readable thousands separators and round display precision');
 assert.equal(vm.runInNewContext('taiwanPercent("163.3")', context), '163.3%', 'Taiwan percentage metrics should have a single percent sign');
 assert.equal(vm.runInNewContext('taiwanPercent("")', context), 'Not reported', 'Missing Taiwan percentages should not appear as a numeric zero');
-assert.match(app, /June to September 2026 MOPS archive reports are loaded/);
+assert.match(app, /One latest row per issuer/);
+assert.match(app, /latest-row snapshot, not the monthly observation history/);
 assert.match(app, /r\['Mandarin pronunciation lookup'\]/, 'Taiwan rows should read the live feed pronunciation header');
-assert.match(app, /not in real time/, 'Taiwan revenue freshness should be described as monthly, not real time');
+assert.match(app, /not real-time data/, 'Taiwan revenue freshness should be described as monthly, not real time');
 assert.match(app, /count\.textContent=`\$\{taiwanFeedRows\.length\.toLocaleString\(\)\} issuers`/, 'The Taiwan page should update its issuer count after loading');
 assert.doesNotMatch(app, /A verified multi-month revenue backfill/);
 assert.equal(vm.runInNewContext('numberValue("1,234.56", "auto")', context), 1234.56);
