@@ -1,4 +1,5 @@
-const UPSTREAM_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQBuYSomBzmtCGatM6YMOriDulTXf9WEBVSPZBKLMX5d7KrrPAlmeqs3KLQL1CKUSZ9bCHCb6P-by8X/pub?gid=0&single=true&output=csv';
+// LiveSiteFeed is the public-only tab synchronized from the private source workbook.
+const UPSTREAM_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQBuYSomBzmtCGatM6YMOriDulTXf9WEBVSPZBKLMX5d7KrrPAlmeqs3KLQL1CKUSZ9bCHCb6P-by8X/pub?gid=1&single=true&output=csv';
 
 function errorResponse(message, status = 502) {
   return new Response(message, {

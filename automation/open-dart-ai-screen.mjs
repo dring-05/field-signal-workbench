@@ -21,6 +21,7 @@ const AI_TERMS = [
 ];
 const BUSINESS_CONTEXT = /customer|commercial|revenue|product|service|business|segment|contract|facility|compute|GPU|operation|deploy|capital|manufactur|sales|사업|매출|고객|제품|서비스|계약|공급|판매|개발|시설|투자|플랫폼|데이터센터|반도체|생산|수주|양산|영업|출시|운영|구축/i;
 const RISK_CONTEXT = /risk factors|forward-looking statements|위험요인|위험 요소|미래예측정보/i;
+const AI_NEGATION = /\b(?:not|never|no longer|does not|do not|did not|has not|have not|had not|will not|cannot|without|no|not yet)\b|(?:하지\s*않|되지\s*않|있지\s*않|없(?:다|습니다|음|는|으며|고)?|아니(?:다|라고|며)?|미제공|중단)/i;
 const NAME_CHANGE_CONTEXT = /상호.{0,20}(?:변경|정정)|회사명.{0,20}(?:변경|정정)|name change|change of (?:the )?company name|changed its name/i;
 
 function safeDate(value, label) {
@@ -130,11 +131,22 @@ export function analyzeAiBusinessText(text) {
       const context = normalized.slice(Math.max(0, match.index - 230), Math.min(normalized.length, match.index + match[0].length + 230));
       const sentence = sentenceAround(normalized, match.index, match[0].length);
       if (!BUSINESS_CONTEXT.test(sentence) || RISK_CONTEXT.test(sentence)) continue;
+      if (isExplicitlyNegatedAiPassage(sentence, match[0])) continue;
       if (!hits.some(hit => hit.sentence === sentence)) hits.push({ term: match[0], sentence, context: context.trim() });
       if (hits.length >= 30) return hits;
     }
   }
   return hits;
+}
+
+function isExplicitlyNegatedAiPassage(sentence, term) {
+  const clauses = String(sentence ?? '').split(/[;,。]|\b(?:but|though|however|although|whereas|while|except|unless)\b|(?:하지만|그러나|반면|다만|단,)/i);
+  return clauses.some(clause => {
+    const value = clause.trim();
+    if (!value.toLowerCase().includes(String(term ?? '').toLowerCase())) return false;
+    const negation = value.match(AI_NEGATION);
+    return Boolean(negation && Math.abs(value.toLowerCase().indexOf(String(term).toLowerCase()) - negation.index) <= 180);
+  });
 }
 
 const tokens = hit => new Set((String(hit.sentence ?? '').toLowerCase().match(/[a-z][a-z0-9-]{2,}|[가-힣]{2,}/g) ?? [])

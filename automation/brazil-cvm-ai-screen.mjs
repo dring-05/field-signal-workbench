@@ -178,11 +178,35 @@ export function findAiEvidence(text) {
       const start = Math.max(0, match.index - 180), end = Math.min(source.length, match.index + match[0].length + 180);
       const context = source.slice(start, end);
       if (!BUSINESS_CONTEXT.test(context)) continue;
-      found.push({ term: match[0], excerpt: context.trim() });
+      const excerpt = context.trim();
+      if (isExplicitlyNegatedAiMention(source, match.index, match[0].length)) continue;
+      found.push({ term: match[0], excerpt });
       if (found.length >= 12) return found;
     }
   }
   return found;
+}
+
+/** Suppress direct English and Portuguese denials near a matching AI term. */
+function isExplicitlyNegatedAiMention(text, index, length) {
+  const start = Math.max(text.lastIndexOf('.', index), text.lastIndexOf(';', index), text.lastIndexOf('!', index), text.lastIndexOf('?', index)) + 1;
+  const endings = ['.', ';', '!', '?'].map(mark => text.indexOf(mark, index + length)).filter(position => position >= 0);
+  const end = endings.length ? Math.min(...endings) : Math.min(text.length, index + length + 360);
+  let clause = text.slice(start, end);
+  const relativeIndex = index - start;
+  const connectors = /\b(?:but|however|although|whereas|while|mas|porém|contudo|embora|enquanto|todavia)\b/gi;
+  const parts = [];
+  let cursor = 0, connector;
+  while ((connector = connectors.exec(clause))) {
+    parts.push({ text: clause.slice(cursor, connector.index), start: cursor, end: connector.index });
+    cursor = connector.index + connector[0].length;
+  }
+  parts.push({ text: clause.slice(cursor), start: cursor, end: clause.length });
+  const selected = parts.find(item => relativeIndex >= item.start && relativeIndex <= item.end) ?? { text: clause, start: 0 };
+  const part = selected.text;
+  const denial = /\b(?:not|never|no longer|does not|do not|did not|has not|have not|had not|will not|cannot|can't|doesn't|don't|didn't|hasn't|haven't|won't|without|no|não|nao|nunca|sem|jamais)\b/i;
+  const match = part.match(denial);
+  return Boolean(match && Math.abs(relativeIndex - selected.start - match.index) <= 150);
 }
 
 /** Extract text with pdftotext first and a bounded pypdf fallback. */
@@ -223,18 +247,21 @@ export function createLeads(rows, oldNames = {}, { from, to, knownProtocols = []
     if (seen.has(filingId)) continue;
     const nameChange = row.company && oldNames[key] && row.company !== oldNames[key] && NAME_AI.test(row.company);
     const metadataText = `${row.category} ${row.type} ${row.subject}`;
-    const metadataHits = findAiEvidence(metadataText);
-    const nameHit = nameChange ? [{ term: 'issuer name changed to include AI', excerpt: `${oldNames[key]} → ${row.company}` }] : [];
-    if (metadataHits.length || nameHit.length) {
+    const metadataHits = findAiEvidence(metadataText).map(hit => ({ ...hit, evidenceSource: 'filing metadata' }));
+    const documentHits = (Array.isArray(row.hits) ? row.hits : []).map(hit => ({ term: hit.term, excerpt: hit.sentence || hit.excerpt || '', evidenceSource: 'filing text' }));
+    const nameHit = nameChange ? [{ term: 'issuer name changed to include AI', excerpt: `${oldNames[key]} → ${row.company}`, evidenceSource: 'issuer-name snapshot' }] : [];
+    if (metadataHits.length || documentHits.length || nameHit.length) {
+      const wordingSource = documentHits.length && metadataHits.length ? 'filing text and metadata'
+        : documentHits.length ? 'filing text' : 'filing metadata';
       output.push({
         source: 'Brazil CVM IPE', market: 'Brazil', issuerCode: row.issuerCode,
         company: row.company || '', cnpj: row.cnpj || '', filingDate: row.delivered,
         category: row.category, form: [row.type, row.subject].filter(Boolean).join(' / '),
         filingUrl: row.url || 'https://dados.cvm.gov.br/dataset/cia_aberta-doc-ipe',
         accession: filingId,
-        leadType: nameHit.length ? 'legal-name candidate' : 'AI wording in filing metadata',
-        label: nameHit.length ? 'Issuer name changed to include AI, confirm against filing and registry' : 'AI-related wording in filing metadata, open and review original',
-        evidence: [...nameHit, ...metadataHits], reviewedByHuman: false,
+        leadType: nameHit.length ? 'legal-name candidate' : documentHits.length ? 'AI wording in filing text' : 'AI wording in filing metadata',
+        label: [nameHit.length ? 'Issuer-name snapshot changed to include AI; confirm legal change against the registry and original filing.' : '', (documentHits.length || metadataHits.length) ? `AI-related wording in ${wordingSource}; review the linked original.` : ''].filter(Boolean).join(' '),
+        evidence: [...nameHit, ...documentHits, ...metadataHits], reviewedByHuman: false,
       });
     }
     seen.add(filingId);
@@ -304,14 +331,13 @@ export async function scan({ fetchImpl = fetch, feed = {}, from, to, year = new 
       }
     }
   }
-  const screenRows = [...evidenceRows.map(row => ({ ...row, subject: row.hits.map(hit => hit.excerpt).join(' ') }))];
-  const screened = createLeads([...normalized.filter(row => !row.url), ...screenRows], nameSnapshot, { from, to, knownProtocols: [...existing] });
+  const screened = createLeads([...normalized.filter(row => !row.url), ...evidenceRows], nameSnapshot, { from, to, knownProtocols: [...existing] });
   // Add a snapshot-based name-change signal only when both snapshots are identifiable.
   const nameLeads = [];
   for (const row of normalized) {
     const key = row.cnpj || row.issuerCode, previous = nameSnapshot[key];
     if (previous && row.company && previous !== row.company && NAME_AI.test(row.company)) {
-      nameLeads.push({ source: 'Brazil CVM IPE', market: 'Brazil', issuerCode: row.issuerCode, cnpj: row.cnpj, company: row.company, filingDate: row.delivered, category: row.category, filingUrl: row.url || 'https://dados.cvm.gov.br/dataset/cia_aberta-doc-ipe', accession: `name-${key}-${row.delivered}`, leadType: 'legal-name candidate', label: 'Issuer name changed to include AI, confirm against filing and registry', evidence: [{ term: 'issuer name changed to include AI', excerpt: `${previous} → ${row.company}` }], reviewedByHuman: false });
+      nameLeads.push({ source: 'Brazil CVM IPE', market: 'Brazil', issuerCode: row.issuerCode, cnpj: row.cnpj, company: row.company, filingDate: row.delivered, category: row.category, filingUrl: row.url || 'https://dados.cvm.gov.br/dataset/cia_aberta-doc-ipe', accession: `name-${key}-${row.delivered}`, leadType: 'legal-name candidate', label: 'Issuer-name snapshot changed to include AI; confirm legal change against the registry and original filing.', evidence: [{ term: 'issuer name changed to include AI', excerpt: `${previous} → ${row.company}`, evidenceSource: 'issuer-name snapshot' }], reviewedByHuman: false });
     }
   }
   const leadMap = new Map([...screened.leads, ...nameLeads].map(lead => [lead.accession, lead]));

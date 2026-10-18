@@ -80,11 +80,18 @@ assert.equal(result.scanStats.readableDocuments, 1);
 assert.equal(result.leads.length, 1);
 assert.equal(result.leads[0].source, 'Brazil CVM IPE');
 assert.match(result.leads[0].evidence[0].excerpt, /inteligência artificial/i);
+assert.equal(result.leads[0].leadType, 'AI wording in filing text', 'readable filing excerpts are not mislabeled as metadata hits');
+assert.equal(result.leads[0].evidence[0].evidenceSource, 'filing text', 'the lead identifies its evidence as extracted filing text');
 assert.equal(result.checkedProtocols.length, 1);
 const repeated = await scan({ fetchImpl, year: 2026, from: '2026-10-12', to: '2026-10-12', feed: result, maxDocs: 10 });
 assert.equal(repeated.scanStats.selectedDocuments, 0, 'completed documents should not be re-downloaded');
 assert.equal(findAiEvidence('Artificial intelligence product for customers').length > 0, true);
-assert.equal(createLeads([{ ...rows[0], subject: 'Inteligência artificial para plataforma comercial' }], {}, { from: '2026-10-12', to: '2026-10-12' }).leads.length, 1);
+const metadataLead = createLeads([{ ...rows[0], subject: 'Inteligência artificial para plataforma comercial' }], {}, { from: '2026-10-12', to: '2026-10-12' }).leads[0];
+assert.equal(metadataLead.leadType, 'AI wording in filing metadata');
+assert.equal(metadataLead.evidence[0].evidenceSource, 'filing metadata');
+assert.equal(findAiEvidence('The company has not launched an artificial intelligence product for customers.').length, 0, 'explicit English denials do not become Brazil AI-business leads');
+assert.equal(findAiEvidence('A companhia não oferece serviços de inteligência artificial para clientes.').length, 0, 'explicit Portuguese denials do not become Brazil AI-business leads');
+assert.equal(findAiEvidence('A companhia oferece serviços comerciais de inteligência artificial para clientes.').length > 0, true, 'positive Portuguese commercial disclosures remain eligible');
 
 // The official index may not be in date order. A capped scan must select the
 // newest delivery, and issuer-name snapshots must use the latest dated row.

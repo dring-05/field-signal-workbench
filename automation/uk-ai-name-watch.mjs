@@ -41,10 +41,12 @@ export function leadFromStreamEvent(event, { from, to } = {}) {
   if (from && changeDate < from || to && changeDate > to) return null;
   return {
     source: 'Companies House company profile stream', market: 'United Kingdom',
+    leadType: 'AI-branded legal-name change',
     issuerId: companyNumber, company, previousName: previous.name, changeDate,
     companyType: data.type ?? '', companyStatus: data.company_status ?? '',
     listingStatus: 'Not verified. PLC status does not prove an exchange listing.',
     evidence: `Companies House records the previous name as “${previous.name}” through ${changeDate} and the current name as “${company}”.`,
+    evidenceSource: 'Companies House profile history',
     registryUrl: `https://find-and-update.company-information.service.gov.uk/company/${encodeURIComponent(companyNumber)}`,
     apiUrl: companyUrl(companyNumber), streamTimepoint: event.event?.timepoint ?? null,
     streamPublishedAt: event.event?.published_at ?? null, reviewedByHuman: false,

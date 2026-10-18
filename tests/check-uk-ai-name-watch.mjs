@@ -12,6 +12,8 @@ const makeEvent = ({ company = 'Example AI plc', previous = 'Example Holdings pl
 
 const lead = leadFromStreamEvent(makeEvent(), { from: '2026-10-01', to: '2026-10-31' });
 assert.equal(lead.company, 'Example AI plc');
+assert.equal(lead.leadType, 'AI-branded legal-name change');
+assert.equal(lead.evidenceSource, 'Companies House profile history');
 assert.equal(lead.previousName, 'Example Holdings plc');
 assert.equal(lead.changeDate, '2026-10-16');
 assert.equal(lead.companyType, 'plc');

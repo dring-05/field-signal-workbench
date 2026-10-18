@@ -77,6 +77,9 @@ assert.ok(novelAiEvidence(currentHits, priorHits).length > 0);
 assert.equal(confirmsNameChange(unzipTextEntries(currentZip)[0].text, { oldName: '이전이름주식회사', newName: '새로운AI주식회사' }), true);
 assert.equal(confirmsNameChange('회사 사업 현황 인공지능 서비스 출시', { oldName: 'old', newName: 'new' }), false);
 assert.equal(analyzeAiBusinessText('위험요인: 인공지능 사업은 실패할 수 있으며 매출이 없습니다.').length, 0, 'risk-only mention should not count as business evidence');
+assert.equal(analyzeAiBusinessText('당사는 인공지능 사업을 영위하지 않으며 관련 매출이 없습니다.').length, 0, 'explicit Korean denials of AI business activity do not create leads');
+assert.equal(analyzeAiBusinessText('The company does not offer AI products to customers.').length, 0, 'explicit English denials do not create OpenDART AI-business leads');
+assert.ok(analyzeAiBusinessText('당사는 고객에게 인공지능 서비스를 출시하고 공급합니다.').length > 0, 'positive Korean commercial disclosures remain eligible');
 assert.equal(filingUrl(currentReceipt), `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${currentReceipt}`);
 
 const result = await scanOpenDart({

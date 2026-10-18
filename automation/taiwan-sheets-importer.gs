@@ -627,7 +627,7 @@ function marginSignalsMap_(book) {
         item.market, companyCode, item.name, item.q, item.endpoint,
         item.retrievedAtValue || '', item.sourceUrl, item.signature,
         marginDependencySignatures_(quarterMap, item),
-        ['MARGIN_YTD_DIFF_V2', marginDependencySignatures_(quarterMap, item)].join('|'),
+        ['MARGIN_YTD_DIFF_V3', item.market, item.companyKey, item.q, marginDependencySignatures_(quarterMap, item)].join('|'),
         'Cumulative YTD, verified against MOPS financial comparison notes',
         item.revenueYtd, item.grossYtd, item.operatingYtd,
         item.priorRevenueYtd, item.priorGrossYtd, item.priorOperatingYtd,

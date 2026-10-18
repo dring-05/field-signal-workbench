@@ -23,10 +23,12 @@ assert.equal(sourceHeaders.length, 33);
 const row = ['Listed (TWSE)', 'TW|2330|台積電', '2330', '台積電', 'Semiconductors', '2026-09', 1, 20, 0, 1, 2, 4, '', '', '', '', '', '', '', '', '', '', '', 'status', 'https://example.test', 'TSMC', 'https://translate.google.com', 1, 2, 3, 4, 5, 6];
 const validRows = [sourceHeaders, ...Array.from({length: 4}, () => row)];
 let activeBook = null;
+const testScriptProperties = {};
 const context = {
-  SpreadsheetApp: {getActiveSpreadsheet: () => activeBook}
+  SpreadsheetApp: {getActiveSpreadsheet: () => activeBook},
+  PropertiesService: {getScriptProperties: () => ({getProperty: key => testScriptProperties[key] || ''})}
 };
-vm.runInNewContext(`${importerSource}\n${feedSource}\nglobalThis.validate = validateTaiwanPublicFeed; globalThis.feedHeaders = FEED_HEADERS;`, context);
+vm.runInNewContext(`${importerSource}\n${feedSource}\nglobalThis.validate = validateTaiwanPublicFeed; globalThis.feedHeaders = FEED_HEADERS; globalThis.syncTaiwanPublicFeed = syncTaiwanPublicFeed; globalThis.taiwanPublicFeedSyncConfig = TAIWAN_PUBLIC_FEED_SYNC;`, context);
 const makeBook = (values, lastRow = values.length + 3) => ({
   getSheetByName: () => ({
     getLastRow: () => lastRow,
@@ -52,4 +54,52 @@ assert.throws(() => context.validate(), /no complete issuer row/, 'require a tic
 
 activeBook = null;
 assert.throws(() => context.validate(), /Bind this script to the private Taiwan Monthly Signals workbook/, 'refuse to check a feed without the private workbook');
+
+const sourceBookId = 'source-workbook-test-id';
+const publicBookId = 'public-feed-test-id';
+const lowBaseRow = [...row];
+lowBaseRow[6] = '1815362';
+lowBaseRow[7] = '3425111.32';
+lowBaseRow[8] = '3422859.03';
+lowBaseRow[9] = '4516997.3';
+lowBaseRow[10] = '6706905.19';
+lowBaseRow[23] = 'Revenue Δ3 available';
+lowBaseRow[28] = '53';
+const sourceValues = [['Website data feed'], ['Monthly issuer data'], [], sourceHeaders, row, lowBaseRow];
+const sourceTab = {
+  getLastRow: () => sourceValues.length,
+  getRange: () => ({getDisplayValues: () => sourceValues})
+};
+let publishedValues = null;
+const destinationTab = {
+  getMaxRows: () => 3000,
+  getMaxColumns: () => 33,
+  getLastRow: () => publishedValues ? publishedValues.length : 1,
+  getRange: () => ({
+    setValues: values => { publishedValues = values; },
+    clearContent: () => { publishedValues = null; }
+  })
+};
+const sourceBook = {getId: () => sourceBookId, getSheetByName: () => sourceTab};
+const destinationBook = {getSheetByName: () => destinationTab, getUrl: () => `https://docs.google.com/spreadsheets/d/${publicBookId}/edit`};
+context.SpreadsheetApp.getActiveSpreadsheet = () => sourceBook;
+testScriptProperties.TAIWAN_SOURCE_SPREADSHEET_ID = sourceBookId;
+testScriptProperties.TAIWAN_PUBLIC_FEED_SPREADSHEET_ID = publicBookId;
+context.SpreadsheetApp.openById = id => {
+  if (id === sourceBookId) return sourceBook;
+  assert.equal(id, publicBookId, 'write only to the public-feed workbook');
+  return destinationBook;
+};
+context.SpreadsheetApp.flush = () => {};
+context.taiwanPublicFeedSyncConfig.expectedRowsMinimum = 1;
+context.taiwanPublicFeedSyncConfig.maxRows = 10;
+const syncResult = context.syncTaiwanPublicFeed();
+assert.equal(syncResult.status, 'success');
+assert.equal(syncResult.reportMonth, '2026-09');
+assert.equal(syncResult.issuerRows, 2);
+assert.equal(syncResult.lowBaseRowsSuppressed, 1);
+assert.equal(publishedValues[5][8], '', 'suppress acceleration for a tiny year-ago base in the public copy');
+assert.equal(publishedValues[5][7], '3425111.32', 'retain the source-reported YoY percentage with its base visible');
+assert.ok(publishedValues[5][23].includes('below 0.1%'), 'mark the reason beside the issuer row');
+assert.match(await readFile(new URL('../worker/index.js', import.meta.url), 'utf8'), /pub\?gid=1&single=true&output=csv/, 'Worker must read the newly published LiveSiteFeed tab');
 console.log('Taiwan public feed validation and zero-safe acceleration sort checks passed');

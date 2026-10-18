@@ -25,6 +25,7 @@ for (const [market, url] of [
   ['Hong Kong', 'https://www.hkex.com.hk/eng/market/sec_tradinfo/tradarng/etatgem.htm'],
   ['Taiwan', 'https://mops.twse.com.tw/'],
   ['South Korea', 'https://engopendart.fss.or.kr/'],
+  ['Brazil', 'https://dados.cvm.gov.br/dataset/cia_aberta-doc-ipe'],
   ['Japan', 'https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/WEEK0060.html'],
   ['India', 'https://www.nseindia.com/companies-listing/corporate-filings-announcements'],
   ['Canada', 'https://systems.securities-administrators.ca/onlinehelp/general-help/getting-started/general-public-access/'],
@@ -33,7 +34,12 @@ for (const [market, url] of [
   assert.ok(rendered.includes(market), `Missing international source market: ${market}`);
   assert.ok(rendered.includes(url), `Missing official source link for ${market}`);
 }
-assert.match(rendered, /Only the SEC is automated here/);
+assert.match(rendered, /These adapters are not scheduled or connected to this public feed/);
+assert.match(rendered, /Local adapter only\. Requires a free API key/);
+assert.match(rendered, /Local adapter only\. Requires a user-held API key/);
+assert.match(rendered, /Local prototype only\. Public annual archive, no API key/);
+assert.match(rendered, /Implementation status checked 18 Oct 2026/);
+assert.match(rendered, /No automated screen is connected for these markets/);
 const feedTarget = {innerHTML: ''};
 context.document = {querySelector: () => feedTarget};
 context.fetch = async () => ({ok: true, json: async () => ({

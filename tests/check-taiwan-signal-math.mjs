@@ -341,6 +341,8 @@ for (const [market, expectedGross] of [
   assert.ok(Math.abs(signal.gross - expectedGross) < 1e-9, `${market} should use its own source rows`);
 }
 assert.equal(marketAuditRows.length, 32, 'audit history remains separate by market and quarter');
+assert.equal(new Set(marketAuditRows.map(row => row[9])).size, marketAuditRows.length, 'margin audit calculation signatures are unique across issuer, market, and quarter');
+assert.ok(marketAuditRows.every(row => row[9].startsWith(`MARGIN_YTD_DIFF_V3|${row[0]}|`)), 'margin audit signatures include market metadata to prevent cross-market deduplication');
 const otcOnlySheet = {getLastRow: () => 4 + statementRows.length, getRange: () => ({getValues: () => statementRows.map(row => {const copy=row.slice();copy[0]='OTC (TPEx)';copy[2]='t187ap06_O_ci';return copy;})})};
 const otcOnlyBook = {getSheetByName: name => name === 'Raw Statements' ? otcOnlySheet : name === 'Margin Signals' ? {getLastRow: () => 4, getRange: () => ({getDisplayValues: () => [], setValues: () => {}})} : null};
 const otcOnlyMap = h.marginSignalsMap_(otcOnlyBook);

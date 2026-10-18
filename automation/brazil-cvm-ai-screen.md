@@ -24,7 +24,7 @@ The PDF fallback has fixture coverage for its command selection and scanner inte
 
 The feed keeps the issuer name associated with CVM code or CNPJ and can flag a later name that differs from the previous local snapshot and includes AI language. The snapshot is first established on the first successful run, so a name change predating that run is not detectable this way. A name change lead requires manual verification against the original filing and CVM registry.
 
-If an IPE index row's category, type, or subject includes an AI business phrase, the scanner can emit a metadata lead even if the document itself is not readable. It labels the lead as metadata-based and links to the original when a link is present. Text extracted from a readable source document is separately identified by its excerpt. This is an alert queue, not a full-text search index and not a record of every filing.
+If an IPE index row's category, type, or subject includes an AI business phrase, the scanner can emit a metadata lead even if the document itself is not readable. If readable document text produces the match, the lead labels its evidence as filing text. The two sources remain separate when both match. Narrow English and Portuguese denial phrases near the AI term are suppressed, but this is not Portuguese-language sentiment analysis. This is an alert queue, not a full-text search index and not a record of every filing.
 
 ## Access, licensing, and operational limits
 
