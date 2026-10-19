@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-18T19:53:27.650Z",
+  "generatedAt": "2026-10-19T20:35:39.246Z",
   "coverage": "Recent SEC reporting issuers with Forms 8-K, 10-K, 10-Q, 6-K, or 20-F found in complete SEC daily indexes. Current tickers and exchanges are attached where the SEC association file has a match; unmatched issuers remain identified by the daily-index company name and CIK. This excludes issuers that do not file with the SEC and non-SEC filing systems.",
-  "scanWindowStart": "2026-10-11",
-  "scanWindowEnd": "2026-10-18",
+  "scanWindowStart": "2026-10-12",
+  "scanWindowEnd": "2026-10-19",
   "lastSuccessfulScan": {
-    "completedAt": "2026-10-18T19:53:27.650Z",
+    "completedAt": "2026-10-19T20:35:39.246Z",
     "readableIndexDays": 4,
     "unavailableIndexDays": []
   },
@@ -13,11 +13,6 @@
   "indexCoverage": {
     "timeZone": "America/New_York",
     "checkedDays": [
-      {
-        "date": "2026-10-11",
-        "status": "expected-skip",
-        "reason": "weekend"
-      },
       {
         "date": "2026-10-12",
         "status": "expected-skip",
@@ -48,6 +43,11 @@
         "date": "2026-10-18",
         "status": "expected-skip",
         "reason": "weekend"
+      },
+      {
+        "date": "2026-10-19",
+        "status": "expected-skip",
+        "reason": "current ET date; daily index is published after the filing day closes"
       }
     ]
   },
@@ -55,8 +55,8 @@
     "source": "SEC EDGAR daily master indexes, joined to the SEC company ticker and exchange association file by CIK where available",
     "eligibleFilingsInLookback": 1295,
     "eligibleIssuersInLookback": 1082,
-    "issuersMatchedToTickerExchangeFile": 991,
-    "unmatchedIssuersInLookback": 91,
+    "issuersMatchedToTickerExchangeFile": 990,
+    "unmatchedIssuersInLookback": 92,
     "unmatchedFilers": [
       {
         "cik": "0001950976",
@@ -167,6 +167,17 @@
         ],
         "filingDates": [
           "2026-10-16"
+        ]
+      },
+      {
+        "cik": "0001929908",
+        "company": "Black Mammoth Metals Corp",
+        "filingCount": 1,
+        "forms": [
+          "6-K"
+        ],
+        "filingDates": [
+          "2026-10-14"
         ]
       },
       {
@@ -1069,11 +1080,11 @@
       }
     ],
     "unmatchedFilersOmittedFromList": 0,
-    "filingsSelectedForScreen": 103,
+    "filingsSelectedForScreen": 0,
     "filingsDeferredByPerScanCap": 0,
     "deferredPolicy": "Deferred filings remain eligible on subsequent scans while they remain inside the configured lookback. A volume backlog larger than the lookback window can age out and is visible in these counts.",
     "perScanFilingCap": 250,
-    "unmatchedFilingsSelectedForScreen": 103
+    "unmatchedFilingsSelectedForScreen": 0
   },
   "sources": [
     "https://www.sec.gov/Archives/edgar/daily-index/",
