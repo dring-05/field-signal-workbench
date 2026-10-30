@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-29T20:18:14.133Z",
+  "generatedAt": "2026-10-30T19:55:47.469Z",
   "coverage": "Recent SEC reporting issuers with Forms 8-K, 10-K, 10-Q, 6-K, or 20-F found in complete SEC daily indexes. Current tickers and exchanges are attached where the SEC association file has a match; unmatched issuers remain identified by the daily-index company name and CIK. This excludes issuers that do not file with the SEC and non-SEC filing systems.",
-  "scanWindowStart": "2026-10-22",
-  "scanWindowEnd": "2026-10-29",
+  "scanWindowStart": "2026-10-23",
+  "scanWindowEnd": "2026-10-30",
   "lastSuccessfulScan": {
-    "completedAt": "2026-10-29T20:18:14.133Z",
+    "completedAt": "2026-10-30T19:55:47.469Z",
     "readableIndexDays": 5,
     "unavailableIndexDays": []
   },
@@ -13,10 +13,6 @@
   "indexCoverage": {
     "timeZone": "America/New_York",
     "checkedDays": [
-      {
-        "date": "2026-10-22",
-        "status": "readable"
-      },
       {
         "date": "2026-10-23",
         "status": "readable"
@@ -45,6 +41,10 @@
       },
       {
         "date": "2026-10-29",
+        "status": "readable"
+      },
+      {
+        "date": "2026-10-30",
         "status": "expected-skip",
         "reason": "current ET date; daily index is published after the filing day closes"
       }
@@ -52,10 +52,10 @@
   },
   "filingUniverse": {
     "source": "SEC EDGAR daily master indexes, joined to the SEC company ticker and exchange association file by CIK where available",
-    "eligibleFilingsInLookback": 2399,
-    "eligibleIssuersInLookback": 1714,
-    "issuersMatchedToTickerExchangeFile": 1585,
-    "unmatchedIssuersInLookback": 129,
+    "eligibleFilingsInLookback": 2799,
+    "eligibleIssuersInLookback": 1939,
+    "issuersMatchedToTickerExchangeFile": 1799,
+    "unmatchedIssuersInLookback": 140,
     "unmatchedFilers": [
       {
         "cik": "0001876255",
@@ -77,6 +77,17 @@
         ],
         "filingDates": [
           "2026-10-23"
+        ]
+      },
+      {
+        "cik": "0001772918",
+        "company": "ADAMS STREET CREDIT SOLUTIONS FUND",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -104,12 +115,14 @@
       {
         "cik": "0001109448",
         "company": "ALLIANCEBERNSTEIN L.P.",
-        "filingCount": 1,
+        "filingCount": 2,
         "forms": [
+          "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
@@ -256,6 +269,17 @@
         ]
       },
       {
+        "cik": "0002153909",
+        "company": "BBCMS Mortgage Trust 2026-5C43",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0001768946",
         "company": "Biophytis SA",
         "filingCount": 1,
@@ -275,50 +299,6 @@
         ],
         "filingDates": [
           "2026-10-23"
-        ]
-      },
-      {
-        "cik": "0002050229",
-        "company": "Blackstone Infrastructure Strategies (TE) L.P.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
-        ]
-      },
-      {
-        "cik": "0002095486",
-        "company": "Blackstone Multi-Strategy Hedge Fund L.P.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
-        ]
-      },
-      {
-        "cik": "0001803498",
-        "company": "Blackstone Private Credit Fund",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
-        ]
-      },
-      {
-        "cik": "0001953940",
-        "company": "Blackstone Private Equity Strategies Fund (TE) L.P.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
         ]
       },
       {
@@ -366,17 +346,6 @@
         ]
       },
       {
-        "cik": "0002151184",
-        "company": "Bridgecrest Lending Auto Securitization Trust 2026-4",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
-        ]
-      },
-      {
         "cik": "0001630031",
         "company": "Brixmor Operating Partnership LP",
         "filingCount": 2,
@@ -386,17 +355,6 @@
         ],
         "filingDates": [
           "2026-10-26"
-        ]
-      },
-      {
-        "cik": "0001713407",
-        "company": "BROOKFIELD REAL ESTATE INCOME TRUST INC.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
         ]
       },
       {
@@ -433,6 +391,17 @@
         ]
       },
       {
+        "cik": "0000764764",
+        "company": "CATERPILLAR FINANCIAL SERVICES CORP",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0001271834",
         "company": "CCO HOLDINGS CAPITAL CORP",
         "filingCount": 1,
@@ -452,6 +421,17 @@
         ],
         "filingDates": [
           "2026-10-27"
+        ]
+      },
+      {
+        "cik": "0001693317",
+        "company": "Cheniere Corpus Christi Holdings, LLC",
+        "filingCount": 1,
+        "forms": [
+          "10-Q"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -478,14 +458,14 @@
         ]
       },
       {
-        "cik": "0000883902",
-        "company": "Cornerstone Building Brands, Inc.",
+        "cik": "0001939433",
+        "company": "Cohen & Steers Income Opportunities REIT, Inc.",
         "filingCount": 1,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22"
+          "2026-10-29"
         ]
       },
       {
@@ -519,6 +499,17 @@
         ],
         "filingDates": [
           "2026-10-27"
+        ]
+      },
+      {
+        "cik": "0001300485",
+        "company": "CubeSmart, L.P.",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -567,17 +558,6 @@
         ]
       },
       {
-        "cik": "0001753681",
-        "company": "Elite Performance Holding Corp",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-10-22"
-        ]
-      },
-      {
         "cik": "0001994341",
         "company": "Empire District Bondco, LLC",
         "filingCount": 1,
@@ -591,24 +571,22 @@
       {
         "cik": "0002032019",
         "company": "EQT Infrastructure Co LLC",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
           "2026-10-23"
         ]
       },
       {
         "cik": "0002032020",
         "company": "EQT Private Equity Co LLC",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
           "2026-10-23"
         ]
       },
@@ -617,23 +595,24 @@
         "company": "ExchangeRight Income Fund",
         "filingCount": 2,
         "forms": [
+          "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
-          "2026-10-23"
+          "2026-10-23",
+          "2026-10-29"
         ]
       },
       {
         "cik": "0001331465",
         "company": "Federal Home Loan Bank of Atlanta",
-        "filingCount": 3,
+        "filingCount": 2,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
@@ -644,9 +623,9 @@
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
           "2026-10-23",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
@@ -657,35 +636,35 @@
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
           "2026-10-23",
           "2026-10-26",
           "2026-10-27",
-          "2026-10-28"
+          "2026-10-28",
+          "2026-10-29"
         ]
       },
       {
         "cik": "0001326771",
         "company": "Federal Home Loan Bank of Cincinnati",
-        "filingCount": 2,
+        "filingCount": 3,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
         "cik": "0001331757",
         "company": "Federal Home Loan Bank of Dallas",
-        "filingCount": 2,
+        "filingCount": 3,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
@@ -696,9 +675,9 @@
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
           "2026-10-23",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
@@ -709,44 +688,45 @@
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
         "cik": "0001329842",
         "company": "Federal Home Loan Bank of New York",
-        "filingCount": 4,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22",
-          "2026-10-27"
-        ]
-      },
-      {
-        "cik": "0001330399",
-        "company": "Federal Home Loan Bank of Pittsburgh",
-        "filingCount": 3,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22",
-          "2026-10-27"
-        ]
-      },
-      {
-        "cik": "0001316944",
-        "company": "Federal Home Loan Bank of San Francisco",
         "filingCount": 2,
         "forms": [
           "8-K"
         ],
         "filingDates": [
+          "2026-10-27",
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001330399",
+        "company": "Federal Home Loan Bank of Pittsburgh",
+        "filingCount": 2,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-27",
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001316944",
+        "company": "Federal Home Loan Bank of San Francisco",
+        "filingCount": 3,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
           "2026-10-23",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
@@ -757,19 +737,20 @@
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
-          "2026-10-27"
+          "2026-10-27",
+          "2026-10-29"
         ]
       },
       {
         "cik": "0001953520",
         "company": "Fidelity Core Real Estate Fund",
-        "filingCount": 1,
+        "filingCount": 3,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-28"
+          "2026-10-28",
+          "2026-10-29"
         ]
       },
       {
@@ -786,12 +767,13 @@
       {
         "cik": "0001890107",
         "company": "First Eagle Private Credit Fund",
-        "filingCount": 1,
+        "filingCount": 2,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-23"
+          "2026-10-23",
+          "2026-10-29"
         ]
       },
       {
@@ -808,23 +790,14 @@
       {
         "cik": "0000038009",
         "company": "FORD MOTOR CREDIT CO LLC",
-        "filingCount": 1,
+        "filingCount": 2,
         "forms": [
+          "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-10-28"
-        ]
-      },
-      {
-        "cik": "0002012139",
-        "company": "Fortress Private Lending Fund",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
+          "2026-10-28",
+          "2026-10-29"
         ]
       },
       {
@@ -847,17 +820,6 @@
         ],
         "filingDates": [
           "2026-10-27"
-        ]
-      },
-      {
-        "cik": "0001467808",
-        "company": "Global Cord Blood Corp",
-        "filingCount": 1,
-        "forms": [
-          "6-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
         ]
       },
       {
@@ -916,6 +878,17 @@
         ]
       },
       {
+        "cik": "0001661306",
+        "company": "Hancock Park Corporate Income, Inc.",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0000941713",
         "company": "HIGHWOODS REALTY LTD PARTNERSHIP",
         "filingCount": 1,
@@ -950,6 +923,17 @@
         ]
       },
       {
+        "cik": "0002089975",
+        "company": "HPS Real Assets Lending Co LP",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0000083246",
         "company": "HSBC USA INC /MD/",
         "filingCount": 1,
@@ -961,6 +945,18 @@
         ]
       },
       {
+        "cik": "0000049648",
+        "company": "IDAHO POWER CO",
+        "filingCount": 2,
+        "forms": [
+          "10-Q",
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0000052485",
         "company": "INTERSTATE POWER & LIGHT CO",
         "filingCount": 1,
@@ -969,6 +965,28 @@
         ],
         "filingDates": [
           "2026-10-28"
+        ]
+      },
+      {
+        "cik": "0002108121",
+        "company": "Ionetix Corp / DE /",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001959961",
+        "company": "IPC Alternative Real Estate Income Trust, Inc.",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -994,6 +1012,28 @@
         ]
       },
       {
+        "cik": "0001930679",
+        "company": "KKR FS Income Trust",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001975736",
+        "company": "KKR FS Income Trust Select",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0001948056",
         "company": "KKR Infrastructure Conglomerate LLC",
         "filingCount": 1,
@@ -1016,6 +1056,17 @@
         ]
       },
       {
+        "cik": "0001849089",
+        "company": "Lafayette Square USA, Inc.",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0001983514",
         "company": "LGAM Private Credit LLC",
         "filingCount": 1,
@@ -1024,17 +1075,6 @@
         ],
         "filingDates": [
           "2026-10-27"
-        ]
-      },
-      {
-        "cik": "0002124913",
-        "company": "LOGOOM TECHNOLOGIES, INC.",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-10-22"
         ]
       },
       {
@@ -1071,37 +1111,26 @@
         ]
       },
       {
-        "cik": "0002008007",
-        "company": "MaxsMaking Inc.",
-        "filingCount": 1,
-        "forms": [
-          "6-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
-        ]
-      },
-      {
         "cik": "0002151670",
         "company": "Mercedes-Benz Auto Lease Trust 2026-B",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22",
           "2026-10-23"
         ]
       },
       {
-        "cik": "0001497130",
-        "company": "Nano Mobile Healthcare, Inc.",
-        "filingCount": 1,
+        "cik": "0001318742",
+        "company": "NCL CORP Ltd.",
+        "filingCount": 3,
         "forms": [
+          "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22"
+          "2026-10-29"
         ]
       },
       {
@@ -1138,6 +1167,39 @@
         ]
       },
       {
+        "cik": "0001123852",
+        "company": "NORTHERN STATES POWER CO",
+        "filingCount": 1,
+        "forms": [
+          "10-Q"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0000072909",
+        "company": "NORTHERN STATES POWER CO /WI/",
+        "filingCount": 1,
+        "forms": [
+          "10-Q"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001911066",
+        "company": "Nuveen Churchill Private Capital Income Fund",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0002085428",
         "company": "Nuveen Farmland REIT",
         "filingCount": 1,
@@ -1146,17 +1208,6 @@
         ],
         "filingDates": [
           "2026-10-23"
-        ]
-      },
-      {
-        "cik": "0001711799",
-        "company": "Nuveen Global Cities REIT, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
         ]
       },
       {
@@ -1194,15 +1245,25 @@
         ]
       },
       {
-        "cik": "0000075488",
-        "company": "PACIFIC GAS & ELECTRIC Co",
-        "filingCount": 2,
+        "cik": "0001938649",
+        "company": "Partners Group Lending Fund, LLC",
+        "filingCount": 1,
         "forms": [
-          "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-10-22"
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001566011",
+        "company": "PBF Holding Co LLC",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -1236,6 +1297,28 @@
         ],
         "filingDates": [
           "2026-10-27"
+        ]
+      },
+      {
+        "cik": "0000081018",
+        "company": "PUBLIC SERVICE CO OF COLORADO",
+        "filingCount": 1,
+        "forms": [
+          "10-Q"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001499200",
+        "company": "Sabine Pass Liquefaction, LLC",
+        "filingCount": 1,
+        "forms": [
+          "10-Q"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -1296,12 +1379,13 @@
       {
         "cik": "0002028686",
         "company": "SL Investment Fund II LLC",
-        "filingCount": 1,
+        "filingCount": 2,
         "forms": [
           "8-K"
         ],
         "filingDates": [
-          "2026-10-26"
+          "2026-10-26",
+          "2026-10-29"
         ]
       },
       {
@@ -1338,6 +1422,29 @@
         ]
       },
       {
+        "cik": "0000092521",
+        "company": "SOUTHWESTERN PUBLIC SERVICE CO",
+        "filingCount": 2,
+        "forms": [
+          "10-Q",
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
+        "cik": "0001661779",
+        "company": "StartEngine Inc.",
+        "filingCount": 1,
+        "forms": [
+          "10-Q"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0002031283",
         "company": "Stone Point Credit Income Fund",
         "filingCount": 1,
@@ -1346,17 +1453,6 @@
         ],
         "filingDates": [
           "2026-10-28"
-        ]
-      },
-      {
-        "cik": "0001868516",
-        "company": "StratCap Digital Infrastructure REIT, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-10-22"
         ]
       },
       {
@@ -1401,6 +1497,17 @@
         ],
         "filingDates": [
           "2026-10-23"
+        ]
+      },
+      {
+        "cik": "0002134688",
+        "company": "Sysco Holdings Corp",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -1483,6 +1590,17 @@
         ]
       },
       {
+        "cik": "0002044820",
+        "company": "VistaOne, L.P.",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
+        ]
+      },
+      {
         "cik": "0002086308",
         "company": "Wells Fargo Commercial Mortgage Trust 2025-C65",
         "filingCount": 1,
@@ -1491,6 +1609,17 @@
         ],
         "filingDates": [
           "2026-10-28"
+        ]
+      },
+      {
+        "cik": "0002020354",
+        "company": "West Bay BDC LLC",
+        "filingCount": 1,
+        "forms": [
+          "8-K"
+        ],
+        "filingDates": [
+          "2026-10-29"
         ]
       },
       {
@@ -1507,10 +1636,10 @@
     ],
     "unmatchedFilersOmittedFromList": 0,
     "filingsSelectedForScreen": 250,
-    "filingsDeferredByPerScanCap": 879,
+    "filingsDeferredByPerScanCap": 1507,
     "deferredPolicy": "Deferred filings remain eligible on subsequent scans while they remain inside the configured lookback. A volume backlog larger than the lookback window can age out and is visible in these counts.",
     "perScanFilingCap": 250,
-    "unmatchedFilingsSelectedForScreen": 25
+    "unmatchedFilingsSelectedForScreen": 12
   },
   "sources": [
     "https://www.sec.gov/Archives/edgar/daily-index/",
@@ -41748,6 +41877,256 @@
     "0001331754-26-000211",
     "0001331757-26-000191",
     "0001339970-26-000071",
-    "0001361658-26-000063"
+    "0001361658-26-000063",
+    "0001361658-26-000064",
+    "0001362468-26-000058",
+    "0001403161-26-000126",
+    "0001408534-26-000078",
+    "0001408534-26-000079",
+    "0001413447-26-000057",
+    "0001413447-26-000059",
+    "0001425450-26-000091",
+    "0001425450-26-000092",
+    "0001437749-26-033552",
+    "0001437749-26-033558",
+    "0001437749-26-033561",
+    "0001437749-26-033566",
+    "0001437749-26-033573",
+    "0001437749-26-033574",
+    "0001437749-26-033582",
+    "0001437749-26-033604",
+    "0001437749-26-033610",
+    "0001437749-26-033639",
+    "0001437749-26-033640",
+    "0001437749-26-033642",
+    "0001437749-26-033646",
+    "0001437749-26-033648",
+    "0001437749-26-033664",
+    "0001437749-26-033667",
+    "0001463101-26-000101",
+    "0001463101-26-000102",
+    "0001468522-26-000077",
+    "0001468522-26-000079",
+    "0001476204-26-000054",
+    "0001477294-26-000050",
+    "0001477294-26-000051",
+    "0001477932-26-006470",
+    "0001477932-26-006474",
+    "0001479094-26-000032",
+    "0001479094-26-000033",
+    "0001493152-26-048589",
+    "0001493152-26-048625",
+    "0001493152-26-048626",
+    "0001493152-26-048631",
+    "0001493152-26-048638",
+    "0001493152-26-048640",
+    "0001493152-26-048641",
+    "0001493152-26-048643",
+    "0001493152-26-048644",
+    "0001493152-26-048646",
+    "0001493152-26-048651",
+    "0001493152-26-048653",
+    "0001493152-26-048685",
+    "0001493152-26-048690",
+    "0001493152-26-048695",
+    "0001493152-26-048696",
+    "0001493152-26-048697",
+    "0001493152-26-048711",
+    "0001493152-26-048712",
+    "0001493152-26-048713",
+    "0001493152-26-048715",
+    "0001493152-26-048718",
+    "0001493152-26-048720",
+    "0001493152-26-048736",
+    "0001493152-26-048747",
+    "0001493152-26-048749",
+    "0001500217-26-000049",
+    "0001514705-26-000047",
+    "0001514705-26-000049",
+    "0001517302-26-000129",
+    "0001521945-26-000106",
+    "0001524472-26-000146",
+    "0001524472-26-000148",
+    "0001539497-26-002773",
+    "0001541119-26-000026",
+    "0001552033-26-000056",
+    "0001552033-26-000058",
+    "0001554855-26-002193",
+    "0001554855-26-002206",
+    "0001561861-26-000084",
+    "0001564708-26-000237",
+    "0001565687-26-000125",
+    "0001565687-26-000128",
+    "0001571283-26-000064",
+    "0001585689-26-000049",
+    "0001585689-26-000054",
+    "0001587523-26-000035",
+    "0001590895-26-000032",
+    "0001590895-26-000033",
+    "0001593275-26-000111",
+    "0001603923-26-000126",
+    "0001628280-26-067349",
+    "0001628280-26-067358",
+    "0001628280-26-067366",
+    "0001628280-26-067381",
+    "0001628280-26-067382",
+    "0001628280-26-067383",
+    "0001628280-26-067390",
+    "0001628280-26-067391",
+    "0001628280-26-067393",
+    "0001628280-26-067394",
+    "0001628280-26-067396",
+    "0001628280-26-067403",
+    "0001628280-26-067405",
+    "0001628280-26-067406",
+    "0001628280-26-067408",
+    "0001628280-26-067411",
+    "0001628280-26-067416",
+    "0001628280-26-067418",
+    "0001628280-26-067421",
+    "0001628280-26-067422",
+    "0001628280-26-067429",
+    "0001628280-26-067435",
+    "0001628280-26-067444",
+    "0001628280-26-067448",
+    "0001628280-26-067458",
+    "0001628280-26-067508",
+    "0001628280-26-067531",
+    "0001628280-26-067572",
+    "0001628280-26-067574",
+    "0001628280-26-067577",
+    "0001628280-26-067578",
+    "0001628280-26-067582",
+    "0001628280-26-067590",
+    "0001628280-26-067591",
+    "0001628280-26-067594",
+    "0001628280-26-067597",
+    "0001628280-26-067600",
+    "0001628280-26-067607",
+    "0001628280-26-067610",
+    "0001628280-26-067615",
+    "0001628280-26-067621",
+    "0001628280-26-067624",
+    "0001628280-26-067625",
+    "0001628280-26-067627",
+    "0001628280-26-067629",
+    "0001628280-26-067630",
+    "0001628280-26-067631",
+    "0001628280-26-067637",
+    "0001628280-26-067640",
+    "0001628280-26-067644",
+    "0001628280-26-067646",
+    "0001633917-26-000086",
+    "0001633917-26-000088",
+    "0001648257-26-000070",
+    "0001653242-26-000139",
+    "0001654954-26-009149",
+    "0001654954-26-009151",
+    "0001654954-26-009153",
+    "0001654954-26-009155",
+    "0001654954-26-009158",
+    "0001654954-26-009161",
+    "0001654954-26-009164",
+    "0001654954-26-009167",
+    "0001674632-26-000003",
+    "0001683168-26-008102",
+    "0001683168-26-008106",
+    "0001683168-26-008109",
+    "0001683168-26-008112",
+    "0001683168-26-008120",
+    "0001692951-26-000200",
+    "0001701605-26-000033",
+    "0001702510-26-000110",
+    "0001702744-26-000028",
+    "0001702744-26-000031",
+    "0001711375-26-000049",
+    "0001717547-26-000072",
+    "0001718405-26-000030",
+    "0001718939-26-000062",
+    "0001730430-26-000037",
+    "0001731122-26-001375",
+    "0001736946-26-000066",
+    "0001757073-26-000080",
+    "0001781755-26-000062",
+    "0001783879-26-000164",
+    "0001788230-26-000091",
+    "0001808805-26-000049",
+    "0001808805-26-000052",
+    "0001811972-26-000020",
+    "0001818874-26-000065",
+    "0001828316-26-000049",
+    "0001828962-26-000054",
+    "0001836981-26-000080",
+    "0001855644-26-000011",
+    "0001855644-26-000012",
+    "0001859392-26-000108",
+    "0001895262-26-000150",
+    "0001923622-26-000018",
+    "0001941536-26-000031",
+    "0001952670-26-000020",
+    "0001997711-26-000182",
+    "0001999371-26-023653",
+    "0002004711-26-000020",
+    "0002019804-26-000030",
+    "0002065337-26-000050",
+    "0002105965-26-000040",
+    "0000004904-26-000069",
+    "0000004904-26-000072",
+    "0000008670-26-000033",
+    "0000016875-26-000031",
+    "0000020212-26-000082",
+    "0000020212-26-000084",
+    "0000020212-26-000086",
+    "0000020212-26-000088",
+    "0000028823-26-000038",
+    "0000028823-26-000040",
+    "0000030625-26-000026",
+    "0000033213-26-000058",
+    "0000037996-26-000190",
+    "0000038009-26-000093",
+    "0000038725-26-000064",
+    "0000038725-26-000066",
+    "0000038725-26-000069",
+    "0000038725-26-000071",
+    "0000049826-26-000060",
+    "0000051434-26-000147",
+    "0000062996-26-000032",
+    "0000062996-26-000033",
+    "0000064040-26-000058",
+    "0000072971-26-000327",
+    "0000079879-26-000318",
+    "0000080035-26-000034",
+    "0000084748-26-000057",
+    "0000089089-26-000094",
+    "0000091142-26-000100",
+    "0000091767-26-000051",
+    "0000092230-26-000129",
+    "0000093751-26-000600",
+    "0000097216-26-000138",
+    "0000103379-26-000134",
+    "0000103379-26-000135",
+    "0000217410-26-000061",
+    "0000310522-26-000089",
+    "0000310522-26-000090",
+    "0000319201-26-000032",
+    "0000354963-26-000266",
+    "0000700923-26-000051",
+    "0000700923-26-000052",
+    "0000701347-26-000074",
+    "0000701347-26-000077",
+    "0000703351-26-000036",
+    "0000703351-26-000040",
+    "0000707179-26-000067",
+    "0000708955-26-000198",
+    "0000712537-26-000039",
+    "0000719220-26-000117",
+    "0000720005-26-000080",
+    "0000721994-26-000079",
+    "0000740260-26-000030",
+    "0000759944-26-000213",
+    "0000763744-26-000094",
+    "0000775215-26-000090",
+    "0000785161-26-000236",
+    "0000785786-26-000062"
   ]
 }
