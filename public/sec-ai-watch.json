@@ -1,22 +1,18 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-11T21:58:03.365Z",
+  "generatedAt": "2026-11-12T21:50:33.637Z",
   "coverage": "Recent SEC reporting issuers with Forms 8-K, 10-K, 10-Q, 6-K, or 20-F found in complete SEC daily indexes. Current tickers and exchanges are attached where the SEC association file has a match; unmatched issuers remain identified by the daily-index company name and CIK. This excludes issuers that do not file with the SEC and non-SEC filing systems.",
-  "scanWindowStart": "2026-11-04",
-  "scanWindowEnd": "2026-11-11",
+  "scanWindowStart": "2026-11-05",
+  "scanWindowEnd": "2026-11-12",
   "lastSuccessfulScan": {
-    "completedAt": "2026-11-11T21:58:03.365Z",
-    "readableIndexDays": 5,
+    "completedAt": "2026-11-12T21:50:33.637Z",
+    "readableIndexDays": 4,
     "unavailableIndexDays": []
   },
   "unavailableIndexDays": [],
   "indexCoverage": {
     "timeZone": "America/New_York",
     "checkedDays": [
-      {
-        "date": "2026-11-04",
-        "status": "readable"
-      },
       {
         "date": "2026-11-05",
         "status": "readable"
@@ -47,15 +43,20 @@
         "date": "2026-11-11",
         "status": "expected-skip",
         "reason": "SEC federal holiday"
+      },
+      {
+        "date": "2026-11-12",
+        "status": "expected-skip",
+        "reason": "current ET date; daily index is published after the filing day closes"
       }
     ]
   },
   "filingUniverse": {
     "source": "SEC EDGAR daily master indexes, joined to the SEC company ticker and exchange association file by CIK where available",
-    "eligibleFilingsInLookback": 5189,
-    "eligibleIssuersInLookback": 3152,
-    "issuersMatchedToTickerExchangeFile": 2953,
-    "unmatchedIssuersInLookback": 199,
+    "eligibleFilingsInLookback": 4050,
+    "eligibleIssuersInLookback": 2612,
+    "issuersMatchedToTickerExchangeFile": 2443,
+    "unmatchedIssuersInLookback": 169,
     "unmatchedFilers": [
       {
         "cik": "0001950976",
@@ -66,17 +67,6 @@
         ],
         "filingDates": [
           "2026-11-06"
-        ]
-      },
-      {
-        "cik": "0001998387",
-        "company": "5C Lending Partners Corp.",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -99,51 +89,6 @@
         ],
         "filingDates": [
           "2026-11-10"
-        ]
-      },
-      {
-        "cik": "0001721781",
-        "company": "AEP Texas Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001702494",
-        "company": "AEP Transmission Company, LLC",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0002011498",
-        "company": "AGL Private Credit Income Fund",
-        "filingCount": 2,
-        "forms": [
-          "10-Q",
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001362988",
-        "company": "Aircastle LTD",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -182,13 +127,11 @@
       {
         "cik": "0001716558",
         "company": "American Homes 4 Rent, L.P.",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
-          "10-Q",
-          "8-K"
+          "10-Q"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-05"
         ]
       },
@@ -228,13 +171,11 @@
       {
         "cik": "0002074450",
         "company": "Apollo IG Core Replacement, L.P.",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
-          "10-Q",
-          "8-K"
+          "10-Q"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-10"
         ]
       },
@@ -394,17 +335,6 @@
         ]
       },
       {
-        "cik": "0001969475",
-        "company": "Bayview Acquisition Corp",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
         "cik": "0001821946",
         "company": "BENCHMARK 2020-B19 MORTGAGE TRUST",
         "filingCount": 1,
@@ -552,13 +482,11 @@
       {
         "cik": "0001944366",
         "company": "Blue Owl Real Estate Net Lease Trust",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
-          "10-Q",
-          "8-K"
+          "10-Q"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-06"
         ]
       },
@@ -642,12 +570,11 @@
       {
         "cik": "0001978867",
         "company": "Cadeler A/S",
-        "filingCount": 5,
+        "filingCount": 3,
         "forms": [
           "6-K"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-05",
           "2026-11-09"
         ]
@@ -672,39 +599,6 @@
         ],
         "filingDates": [
           "2026-11-06"
-        ]
-      },
-      {
-        "cik": "0002144472",
-        "company": "Carlyle Credit Solutions",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001702510",
-        "company": "Carlyle Credit Solutions, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0000764764",
-        "company": "CATERPILLAR FINANCIAL SERVICES CORP",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -834,13 +728,11 @@
       {
         "cik": "0001939433",
         "company": "Cohen & Steers Income Opportunities REIT, Inc.",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
-          "10-Q",
-          "8-K"
+          "10-Q"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-10"
         ]
       },
@@ -876,39 +768,6 @@
         ],
         "filingDates": [
           "2026-11-05"
-        ]
-      },
-      {
-        "cik": "0000883902",
-        "company": "Cornerstone Building Brands, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001692951",
-        "company": "Cottonwood Communities, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0002035713",
-        "company": "Crestline Lending Solutions, LLC",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -1118,13 +977,11 @@
       {
         "cik": "0001316944",
         "company": "Federal Home Loan Bank of San Francisco",
-        "filingCount": 3,
+        "filingCount": 2,
         "forms": [
-          "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-05",
           "2026-11-10"
         ]
@@ -1173,17 +1030,6 @@
         ],
         "filingDates": [
           "2026-11-05"
-        ]
-      },
-      {
-        "cik": "0000092116",
-        "company": "Golden State Water CO",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -1263,28 +1109,6 @@
         ],
         "filingDates": [
           "2026-11-10"
-        ]
-      },
-      {
-        "cik": "0002117580",
-        "company": "HarbourVest Private Equity Secondaries Fund (TE) L.P.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0002097887",
-        "company": "HarbourVest Private Equity Secondaries Fund L.P.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -1369,26 +1193,14 @@
         ]
       },
       {
-        "cik": "0001959604",
-        "company": "Jefferies Credit Partners BDC Inc.",
-        "filingCount": 2,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
         "cik": "0001314152",
         "company": "JLL Income Property Trust, Inc.",
-        "filingCount": 3,
+        "filingCount": 2,
         "forms": [
           "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-05",
           "2026-11-10"
         ]
@@ -1450,28 +1262,6 @@
         ]
       },
       {
-        "cik": "0002012839",
-        "company": "KKR Enhanced US Direct Lending Fund-L Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001930679",
-        "company": "KKR FS Income Trust",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
         "cik": "0001849089",
         "company": "Lafayette Square USA, Inc.",
         "filingCount": 2,
@@ -1530,13 +1320,11 @@
       {
         "cik": "0000061339",
         "company": "MADISON GAS & ELECTRIC CO",
-        "filingCount": 3,
+        "filingCount": 1,
         "forms": [
-          "10-Q",
           "8-K"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-05"
         ]
       },
@@ -1635,13 +1423,11 @@
       {
         "cik": "0002033695",
         "company": "New Mountain Net Lease Trust",
-        "filingCount": 2,
+        "filingCount": 1,
         "forms": [
-          "10-Q",
-          "8-K"
+          "10-Q"
         ],
         "filingDates": [
-          "2026-11-04",
           "2026-11-06"
         ]
       },
@@ -1793,28 +1579,6 @@
         ]
       },
       {
-        "cik": "0002089126",
-        "company": "PennantPark Private Income Fund",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001865759",
-        "company": "Pharmaceutical Resource Technology, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
         "cik": "0001948368",
         "company": "Phillip Street BDC LLC",
         "filingCount": 1,
@@ -1834,28 +1598,6 @@
         ],
         "filingDates": [
           "2026-11-06"
-        ]
-      },
-      {
-        "cik": "0002026448",
-        "company": "Principal Credit Real Estate Income Trust",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001128189",
-        "company": "ProtoKinetix, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -1919,50 +1661,6 @@
         ]
       },
       {
-        "cik": "0001914496",
-        "company": "Sculptor Diversified Real Estate Income Trust, Inc.",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001929017",
-        "company": "Sealy Industrial Partners IV, LP",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001293234",
-        "company": "Select Notes Trust LT 2004-1",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
-        "cik": "0001959568",
-        "company": "Senior Credit Investments, LLC",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
         "cik": "0002102386",
         "company": "Shefford Small Business, Inc.",
         "filingCount": 1,
@@ -1993,17 +1691,6 @@
         ],
         "filingDates": [
           "2026-11-06"
-        ]
-      },
-      {
-        "cik": "0001925309",
-        "company": "Sixth Street Lending Partners",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -2041,18 +1728,6 @@
         ]
       },
       {
-        "cik": "0000092416",
-        "company": "SOUTHWEST GAS CORP",
-        "filingCount": 2,
-        "forms": [
-          "10-Q",
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
         "cik": "0002139511",
         "company": "Spin AI Inc.",
         "filingCount": 1,
@@ -2072,17 +1747,6 @@
         ],
         "filingDates": [
           "2026-11-05"
-        ]
-      },
-      {
-        "cik": "0001412502",
-        "company": "Sterling Real Estate Trust",
-        "filingCount": 1,
-        "forms": [
-          "10-Q"
-        ],
-        "filingDates": [
-          "2026-11-04"
         ]
       },
       {
@@ -2278,17 +1942,6 @@
         ]
       },
       {
-        "cik": "0001944831",
-        "company": "Willow Tree Capital Corp",
-        "filingCount": 1,
-        "forms": [
-          "8-K"
-        ],
-        "filingDates": [
-          "2026-11-04"
-        ]
-      },
-      {
         "cik": "0001282663",
         "company": "WORLD FINANCIAL NETWORK CREDIT CARD MASTER NOTE TRUST",
         "filingCount": 1,
@@ -2324,10 +1977,10 @@
     ],
     "unmatchedFilersOmittedFromList": 0,
     "filingsSelectedForScreen": 250,
-    "filingsDeferredByPerScanCap": 4939,
+    "filingsDeferredByPerScanCap": 3788,
     "deferredPolicy": "Deferred filings remain eligible on subsequent scans while they remain inside the configured lookback. A volume backlog larger than the lookback window can age out and is visible in these counts.",
     "perScanFilingCap": 250,
-    "unmatchedFilingsSelectedForScreen": 5
+    "unmatchedFilingsSelectedForScreen": 8
   },
   "sources": [
     "https://www.sec.gov/Archives/edgar/daily-index/",
@@ -2335,6 +1988,717 @@
     "https://www.sec.gov/files/company_tickers_exchange.json"
   ],
   "leads": [
+    {
+      "cik": "0000718940",
+      "company": "BCE INC",
+      "mappedCompany": "BCE INC",
+      "ticker": "BCE, BECEF, BCAEF, BCEFF, BCEIF, BCENF, BCEPF, BCEXF, BCPPF",
+      "exchange": "NYSE, OTC",
+      "issuerCoverage": "Matched to the current SEC ticker and exchange association file.",
+      "form": "6-K",
+      "filingDate": "2026-11-05",
+      "accession": "0000718940-26-000014",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/718940/0000718940-26-000014.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "full SEC filing screened; human review required",
+      "label": "AI operating disclosure first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI data centre",
+          "text": "lutions Canada Networks Inc., including the expected timing and completion of the disposition; the sources of liquidity we expect to use to meet our 2026 cash requirements and to fund the development of our Saskatchewan AI data centre; the risks associated with our financial instruments and the methods by which we manage such risks; expected financial impact",
+          "evidenceClass": "planned-operating-disclosure",
+          "documentType": "EX-99.1",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "funding or dilution wording",
+            "forward-looking wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-11-05",
+        "periodStart": "2017-01-01",
+        "periodEnd": "2017-12-31",
+        "durationDays": 365,
+        "unit": "CAD",
+        "taxonomy": "ifrs-full",
+        "grossMarginPct": null,
+        "operatingMarginPct": null,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 22719000000,
+            "taxonomy": "ifrs-full",
+            "tag": "Revenue",
+            "unit": "CAD",
+            "periodStart": "2017-01-01",
+            "periodEnd": "2017-12-31",
+            "filed": "2018-03-14",
+            "form": "40-F",
+            "accession": "0000718940-18-000012",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/718940/000071894018000012/0000718940-18-000012.txt"
+          },
+          "grossProfit": null,
+          "operatingIncome": null,
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 3050000000,
+            "taxonomy": "ifrs-full",
+            "tag": "ProfitLoss",
+            "unit": "CAD",
+            "periodStart": "2017-01-01",
+            "periodEnd": "2017-12-31",
+            "filed": "2019-03-13",
+            "form": "40-F",
+            "accession": "0000718940-19-000015",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/718940/000071894019000015/0000718940-19-000015.txt"
+          },
+          "cash": null,
+          "currentDebt": null,
+          "longTermDebt": null
+        },
+        "priorYearComparison": {
+          "periodStart": "2016-01-01",
+          "periodEnd": "2016-12-31",
+          "durationDays": 366,
+          "unit": "CAD",
+          "taxonomy": "ifrs-full",
+          "facts": {
+            "revenue": {
+              "metric": "revenue",
+              "value": 21719000000,
+              "taxonomy": "ifrs-full",
+              "tag": "Revenue",
+              "unit": "CAD",
+              "periodStart": "2016-01-01",
+              "periodEnd": "2016-12-31",
+              "filed": "2018-03-14",
+              "form": "40-F",
+              "accession": "0000718940-18-000012",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/718940/000071894018000012/0000718940-18-000012.txt"
+            },
+            "grossProfit": null,
+            "operatingIncome": null,
+            "netIncome": {
+              "metric": "netIncome",
+              "value": 3087000000,
+              "taxonomy": "ifrs-full",
+              "tag": "ProfitLoss",
+              "unit": "CAD",
+              "periodStart": "2016-01-01",
+              "periodEnd": "2016-12-31",
+              "filed": "2018-03-14",
+              "form": "40-F",
+              "accession": "0000718940-18-000012",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/718940/000071894018000012/0000718940-18-000012.txt"
+            },
+            "cash": null,
+            "currentDebt": null,
+            "longTermDebt": null
+          },
+          "grossMarginPct": null,
+          "operatingMarginPct": null,
+          "metrics": {
+            "revenue": {
+              "current": 22719000000,
+              "priorYear": 21719000000,
+              "change": 1000000000,
+              "percentChange": 4.60426354804549,
+              "unit": "CAD"
+            },
+            "netIncome": {
+              "current": 3050000000,
+              "priorYear": 3087000000,
+              "change": -37000000,
+              "percentChange": -1.198574667962423,
+              "unit": "CAD"
+            }
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "fullFilingReviewedAt": "2026-11-12T21:50:33.637Z",
+      "fullFilingClassifierVersion": "2026-10-18.3",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0000918965",
+      "company": "SCANSOURCE, INC.",
+      "mappedCompany": "SCANSOURCE, INC.",
+      "ticker": "SCSC",
+      "exchange": "Nasdaq",
+      "issuerCoverage": "Matched to the current SEC ticker and exchange association file.",
+      "form": "10-Q",
+      "filingDate": "2026-11-05",
+      "accession": "0000918965-26-000053",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/918965/0000918965-26-000053.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "full SEC filing screened; human review required",
+      "label": "AI operating disclosure first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI Solutions",
+          "text": "s and flexible routes to market. Adding MicroAge allows the Company to serve as IT solutions integrator, managed service provider and digital transformation partner for end-users. Segment technology offerings include: • AI Solutions • Cloud • Connectivity & SDN (Software-Defined Networking) • CX (Unified Communications as a Service and Contact Center as a Se",
+          "evidenceClass": "operating-disclosure",
+          "documentType": "10-Q",
+          "reviewCues": [
+            "asset, capacity, or deployment wording",
+            "funding or dilution wording"
+          ]
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-11-05",
+        "periodStart": "2026-07-01",
+        "periodEnd": "2026-09-30",
+        "durationDays": 92,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 12.152626951846317,
+        "operatingMarginPct": 1.2878600510862586,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 962294000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0000918965-26-000053",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 116944000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0000918965-26-000053",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 12393000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0000918965-26-000053",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 8691000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0000918965-26-000053",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 45866000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0000918965-26-000053",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+          },
+          "currentDebt": {
+            "metric": "currentDebt",
+            "value": 2871000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtCurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0000918965-26-000053",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+          },
+          "longTermDebt": {
+            "metric": "longTermDebt",
+            "value": 97551000,
+            "taxonomy": "us-gaap",
+            "tag": "LongTermDebtNoncurrent",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0000918965-26-000053",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+          }
+        },
+        "priorYearComparison": {
+          "periodStart": "2025-07-01",
+          "periodEnd": "2025-09-30",
+          "durationDays": 92,
+          "unit": "USD",
+          "taxonomy": "us-gaap",
+          "facts": {
+            "revenue": {
+              "metric": "revenue",
+              "value": 739650000,
+              "taxonomy": "us-gaap",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0000918965-26-000053",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+            },
+            "grossProfit": {
+              "metric": "grossProfit",
+              "value": 107473000,
+              "taxonomy": "us-gaap",
+              "tag": "GrossProfit",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0000918965-26-000053",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+            },
+            "operatingIncome": {
+              "metric": "operatingIncome",
+              "value": 25903000,
+              "taxonomy": "us-gaap",
+              "tag": "OperatingIncomeLoss",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0000918965-26-000053",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+            },
+            "netIncome": {
+              "metric": "netIncome",
+              "value": 19878000,
+              "taxonomy": "us-gaap",
+              "tag": "NetIncomeLoss",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0000918965-26-000053",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896526000053/0000918965-26-000053.txt"
+            },
+            "cash": {
+              "metric": "cash",
+              "value": 124924000,
+              "taxonomy": "us-gaap",
+              "tag": "CashAndCashEquivalentsAtCarryingValue",
+              "unit": "USD",
+              "periodStart": "",
+              "periodEnd": "2025-09-30",
+              "filed": "2025-11-06",
+              "form": "10-Q",
+              "accession": "0000918965-25-000045",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896525000045/0000918965-25-000045.txt"
+            },
+            "currentDebt": {
+              "metric": "currentDebt",
+              "value": 7866000,
+              "taxonomy": "us-gaap",
+              "tag": "LongTermDebtCurrent",
+              "unit": "USD",
+              "periodStart": "",
+              "periodEnd": "2025-09-30",
+              "filed": "2025-11-06",
+              "form": "10-Q",
+              "accession": "0000918965-25-000045",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896525000045/0000918965-25-000045.txt"
+            },
+            "longTermDebt": {
+              "metric": "longTermDebt",
+              "value": 126047000,
+              "taxonomy": "us-gaap",
+              "tag": "LongTermDebtNoncurrent",
+              "unit": "USD",
+              "periodStart": "",
+              "periodEnd": "2025-09-30",
+              "filed": "2025-11-06",
+              "form": "10-Q",
+              "accession": "0000918965-25-000045",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/918965/000091896525000045/0000918965-25-000045.txt"
+            }
+          },
+          "grossMarginPct": 14.5302507942946,
+          "operatingMarginPct": 3.5020617859798557,
+          "metrics": {
+            "revenue": {
+              "current": 962294000,
+              "priorYear": 739650000,
+              "change": 222644000,
+              "percentChange": 30.101264111404042,
+              "unit": "USD"
+            },
+            "grossProfit": {
+              "current": 116944000,
+              "priorYear": 107473000,
+              "change": 9471000,
+              "percentChange": 8.812445916648832,
+              "unit": "USD"
+            },
+            "operatingIncome": {
+              "current": 12393000,
+              "priorYear": 25903000,
+              "change": -13510000,
+              "percentChange": -52.15612091263561,
+              "unit": "USD"
+            },
+            "netIncome": {
+              "current": 8691000,
+              "priorYear": 19878000,
+              "change": -11187000,
+              "percentChange": -56.27829761545428,
+              "unit": "USD"
+            },
+            "cash": {
+              "current": 45866000,
+              "priorYear": 124924000,
+              "change": -79058000,
+              "percentChange": -63.28487720534085,
+              "unit": "USD"
+            },
+            "currentDebt": {
+              "current": 2871000,
+              "priorYear": 7866000,
+              "change": -4995000,
+              "percentChange": -63.50114416475973,
+              "unit": "USD"
+            },
+            "longTermDebt": {
+              "current": 97551000,
+              "priorYear": 126047000,
+              "change": -28496000,
+              "percentChange": -22.607440081874223,
+              "unit": "USD"
+            },
+            "grossMarginPct": {
+              "current": 12.152626951846317,
+              "priorYear": 14.5302507942946,
+              "changePercentagePoints": -2.3776238424482834,
+              "unit": "percentage points"
+            },
+            "operatingMarginPct": {
+              "current": 1.2878600510862586,
+              "priorYear": 3.5020617859798557,
+              "changePercentagePoints": -2.214201734893597,
+              "unit": "percentage points"
+            }
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "fullFilingReviewedAt": "2026-11-12T21:50:33.637Z",
+      "fullFilingClassifierVersion": "2026-10-18.3",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001078075",
+      "company": "NETSCOUT SYSTEMS INC",
+      "mappedCompany": "NETSCOUT SYSTEMS INC",
+      "ticker": "NTCT",
+      "exchange": "Nasdaq",
+      "issuerCoverage": "Matched to the current SEC ticker and exchange association file.",
+      "form": "8-K",
+      "filingDate": "2026-11-05",
+      "accession": "0001078075-26-000153",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1078075/0001078075-26-000153.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "full SEC filing screened; human review required",
+      "label": "AI operating disclosure first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-powered",
+          "text": "nnual technology and user summit focused on advances in AI-Ready Smart Data solutions, enabling customers to approach AI more strategically in their network and decision making. ▪ September: Unveiled nGenius Copilot, an AI-powered conversational extension to nGeniusONE® that provides intuitive access to NETSCOUT’s AI-Ready Smart Data, giving more users easie",
+          "evidenceClass": "operating-disclosure",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": {
+        "asOfDate": "2026-11-05",
+        "periodStart": "2026-07-01",
+        "periodEnd": "2026-09-30",
+        "durationDays": 92,
+        "unit": "USD",
+        "taxonomy": "us-gaap",
+        "grossMarginPct": 79.50581722438508,
+        "operatingMarginPct": 16.919233971690257,
+        "facts": {
+          "revenue": {
+            "metric": "revenue",
+            "value": 222185000,
+            "taxonomy": "us-gaap",
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0001078075-26-000157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+          },
+          "grossProfit": {
+            "metric": "grossProfit",
+            "value": 176650000,
+            "taxonomy": "us-gaap",
+            "tag": "GrossProfit",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0001078075-26-000157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+          },
+          "operatingIncome": {
+            "metric": "operatingIncome",
+            "value": 37592000,
+            "taxonomy": "us-gaap",
+            "tag": "OperatingIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0001078075-26-000157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+          },
+          "netIncome": {
+            "metric": "netIncome",
+            "value": 34382000,
+            "taxonomy": "us-gaap",
+            "tag": "NetIncomeLoss",
+            "unit": "USD",
+            "periodStart": "2026-07-01",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0001078075-26-000157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+          },
+          "cash": {
+            "metric": "cash",
+            "value": 438356000,
+            "taxonomy": "us-gaap",
+            "tag": "CashAndCashEquivalentsAtCarryingValue",
+            "unit": "USD",
+            "periodStart": "",
+            "periodEnd": "2026-09-30",
+            "filed": "2026-11-05",
+            "form": "10-Q",
+            "accession": "0001078075-26-000157",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+          },
+          "currentDebt": null,
+          "longTermDebt": null
+        },
+        "priorYearComparison": {
+          "periodStart": "2025-07-01",
+          "periodEnd": "2025-09-30",
+          "durationDays": 92,
+          "unit": "USD",
+          "taxonomy": "us-gaap",
+          "facts": {
+            "revenue": {
+              "metric": "revenue",
+              "value": 219017000,
+              "taxonomy": "us-gaap",
+              "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0001078075-26-000157",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+            },
+            "grossProfit": {
+              "metric": "grossProfit",
+              "value": 175407000,
+              "taxonomy": "us-gaap",
+              "tag": "GrossProfit",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0001078075-26-000157",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+            },
+            "operatingIncome": {
+              "metric": "operatingIncome",
+              "value": 32486000,
+              "taxonomy": "us-gaap",
+              "tag": "OperatingIncomeLoss",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0001078075-26-000157",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+            },
+            "netIncome": {
+              "metric": "netIncome",
+              "value": 25828000,
+              "taxonomy": "us-gaap",
+              "tag": "NetIncomeLoss",
+              "unit": "USD",
+              "periodStart": "2025-07-01",
+              "periodEnd": "2025-09-30",
+              "filed": "2026-11-05",
+              "form": "10-Q",
+              "accession": "0001078075-26-000157",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807526000157/0001078075-26-000157.txt"
+            },
+            "cash": {
+              "metric": "cash",
+              "value": 483380000,
+              "taxonomy": "us-gaap",
+              "tag": "CashAndCashEquivalentsAtCarryingValue",
+              "unit": "USD",
+              "periodStart": "",
+              "periodEnd": "2025-09-30",
+              "filed": "2025-11-06",
+              "form": "10-Q",
+              "accession": "0001078075-25-000012",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1078075/000107807525000012/0001078075-25-000012.txt"
+            },
+            "currentDebt": null,
+            "longTermDebt": null
+          },
+          "grossMarginPct": 80.08830364766204,
+          "operatingMarginPct": 14.832638562303382,
+          "metrics": {
+            "revenue": {
+              "current": 222185000,
+              "priorYear": 219017000,
+              "change": 3168000,
+              "percentChange": 1.4464630599451185,
+              "unit": "USD"
+            },
+            "grossProfit": {
+              "current": 176650000,
+              "priorYear": 175407000,
+              "change": 1243000,
+              "percentChange": 0.7086376256363771,
+              "unit": "USD"
+            },
+            "operatingIncome": {
+              "current": 37592000,
+              "priorYear": 32486000,
+              "change": 5106000,
+              "percentChange": 15.717539863325742,
+              "unit": "USD"
+            },
+            "netIncome": {
+              "current": 34382000,
+              "priorYear": 25828000,
+              "change": 8554000,
+              "percentChange": 33.119095555211395,
+              "unit": "USD"
+            },
+            "cash": {
+              "current": 438356000,
+              "priorYear": 483380000,
+              "change": -45024000,
+              "percentChange": -9.314411022384046,
+              "unit": "USD"
+            },
+            "grossMarginPct": {
+              "current": 79.50581722438508,
+              "priorYear": 80.08830364766204,
+              "changePercentagePoints": -0.5824864232769613,
+              "unit": "percentage points"
+            },
+            "operatingMarginPct": {
+              "current": 16.919233971690257,
+              "priorYear": 14.832638562303382,
+              "changePercentagePoints": 2.0865954093868755,
+              "unit": "percentage points"
+            }
+          }
+        }
+      },
+      "operatingBridgeStatus": "Available",
+      "fullFilingReviewedAt": "2026-11-12T21:50:33.637Z",
+      "fullFilingClassifierVersion": "2026-10-18.3",
+      "reviewedByHuman": false
+    },
+    {
+      "cik": "0001857047",
+      "company": "MDA Space Ltd.",
+      "mappedCompany": "MDA Space Ltd.",
+      "ticker": "MDA",
+      "exchange": "NYSE",
+      "issuerCoverage": "Matched to the current SEC ticker and exchange association file.",
+      "form": "6-K",
+      "filingDate": "2026-11-05",
+      "accession": "0001104659-26-122961",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1857047/0001104659-26-122961.txt",
+      "leadType": "ai-language-change",
+      "reviewStatus": "full SEC filing screened; human review required",
+      "label": "AI operating disclosure first detected versus prior same-form filing",
+      "legalNameChange": null,
+      "nameChangeTextCorroborated": false,
+      "priorSameFormAiMentions": 0,
+      "currentAiMentions": 1,
+      "evidence": [
+        {
+          "term": "AI-driven",
+          "text": "ed compensation awards and per share amounts) On July 8, 2026, the Company entered into a firm and irrevocable offer to acquire a majority interest in Collecte Localisation Satellites (CLS), a global leading provider of AI-driven Earth observation value-added services and satellite IoT solutions. A binding securities purchase agreement to acquire the interes",
+          "evidenceClass": "operating-disclosure",
+          "documentType": "EX-99.1",
+          "reviewCues": []
+        }
+      ],
+      "operatingBridge": null,
+      "operatingBridgeStatus": "No standardized facts available by the filing date",
+      "fullFilingReviewedAt": "2026-11-12T21:50:33.637Z",
+      "fullFilingClassifierVersion": "2026-10-18.3",
+      "reviewedByHuman": false
+    },
     {
       "cik": "0000018926",
       "company": "Lumen Technologies, Inc.",
@@ -57270,6 +57634,256 @@
     "0001104659-26-122537",
     "0001104659-26-122554",
     "0001104659-26-122555",
-    "0001104659-26-122556"
+    "0001104659-26-122556",
+    "0000002969-26-000043",
+    "0000007536-26-000150",
+    "0000014846-26-000048",
+    "0000014846-26-000049",
+    "0000014930-26-000136",
+    "0000022356-26-000213",
+    "0000024090-26-000050",
+    "0000024090-26-000051",
+    "0000024545-26-000078",
+    "0000024545-26-000079",
+    "0000026172-26-000035",
+    "0000026172-26-000037",
+    "0000027996-26-000135",
+    "0000030697-26-000179",
+    "0000033992-26-000041",
+    "0000036104-26-000058",
+    "0000036270-26-000060",
+    "0000036966-26-000199",
+    "0000055135-26-000171",
+    "0000055135-26-000173",
+    "0000059255-26-000036",
+    "0000059558-26-000070",
+    "0000059558-26-000072",
+    "0000060519-26-000045",
+    "0000063276-26-000014",
+    "0000067716-26-000082",
+    "0000070145-26-000037",
+    "0000070866-26-000038",
+    "0000070866-26-000039",
+    "0000072162-26-000045",
+    "0000076282-26-000035",
+    "0000076334-26-000170",
+    "0000076334-26-000172",
+    "0000076605-26-000111",
+    "0000085535-26-000051",
+    "0000092122-26-000069",
+    "0000092122-26-000071",
+    "0000093410-26-000200",
+    "0000096943-26-000107",
+    "0000096943-26-000109",
+    "0000099070-26-000009",
+    "0000101984-26-000139",
+    "0000101984-26-000141",
+    "0000102752-26-000076",
+    "0000105418-26-000058",
+    "0000109380-26-000127",
+    "0000202058-26-000089",
+    "0000216228-26-000076",
+    "0000313143-26-000150",
+    "0000313143-26-000152",
+    "0000314489-26-000070",
+    "0000320335-26-000233",
+    "0000703604-26-000050",
+    "0000703604-26-000051",
+    "0000707549-26-000057",
+    "0000708821-26-000114",
+    "0000708821-26-000116",
+    "0000714310-26-000049",
+    "0000716643-26-000039",
+    "0000716643-26-000041",
+    "0000718940-26-000014",
+    "0000719220-26-000122",
+    "0000720858-26-000034",
+    "0000721371-26-000042",
+    "0000721371-26-000043",
+    "0000737468-26-000124",
+    "0000746598-26-000052",
+    "0000746838-26-000039",
+    "0000750686-26-000074",
+    "0000750686-26-000076",
+    "0000753308-26-000084",
+    "0000761648-26-000031",
+    "0000761648-26-000033",
+    "0000763744-26-000110",
+    "0000763744-26-000115",
+    "0000763744-26-000118",
+    "0000765207-26-000117",
+    "0000769520-26-000054",
+    "0000792987-26-000053",
+    "0000792987-26-000055",
+    "0000805676-26-000073",
+    "0000817720-26-000104",
+    "0000817720-26-000106",
+    "0000818479-26-000285",
+    "0000818479-26-000287",
+    "0000821189-26-000226",
+    "0000821189-26-000227",
+    "0000827054-26-000061",
+    "0000827054-26-000062",
+    "0000831001-26-000056",
+    "0000832988-26-000240",
+    "0000833640-26-000156",
+    "0000835324-26-000004",
+    "0000837465-26-000025",
+    "0000837465-26-000026",
+    "0000845877-26-000136",
+    "0000851205-26-000082",
+    "0000866273-26-000088",
+    "0000866374-26-000045",
+    "0000874396-26-000051",
+    "0000874396-26-000054",
+    "0000874499-26-000003",
+    "0000879635-26-000066",
+    "0000879635-26-000068",
+    "0000883984-26-000049",
+    "0000883984-26-000050",
+    "0000887343-26-000188",
+    "0000891166-26-000096",
+    "0000891482-26-000048",
+    "0000891482-26-000050",
+    "0000894627-26-000058",
+    "0000895345-26-000479",
+    "0000895419-26-000081",
+    "0000895421-26-000293",
+    "0000898174-26-000038",
+    "0000907254-26-000050",
+    "0000907254-26-000051",
+    "0000909327-26-000085",
+    "0000909327-26-000087",
+    "0000909327-26-000089",
+    "0000909494-26-000013",
+    "0000909494-26-000014",
+    "0000912242-26-000045",
+    "0000912562-26-000170",
+    "0000912562-26-000171",
+    "0000912562-26-000173",
+    "0000913341-26-000051",
+    "0000913341-26-000052",
+    "0000916365-26-000076",
+    "0000916365-26-000079",
+    "0000918965-26-000052",
+    "0000918965-26-000053",
+    "0000921738-26-000026",
+    "0000921738-26-000028",
+    "0000931427-26-000015",
+    "0000932696-26-000076",
+    "0000932696-26-000081",
+    "0000934549-26-000042",
+    "0000934549-26-000044",
+    "0000935036-26-000033",
+    "0000935036-26-000035",
+    "0000936340-26-000166",
+    "0000936340-26-000169",
+    "0000939930-26-000045",
+    "0000939930-26-000046",
+    "0000939930-26-000047",
+    "0000946155-26-000120",
+    "0000947484-26-000159",
+    "0000950103-26-016970",
+    "0000950103-26-017021",
+    "0000950103-26-017042",
+    "0000950142-26-002954",
+    "0000950142-26-002959",
+    "0000950157-26-001215",
+    "0001000623-26-000076",
+    "0001000694-26-000021",
+    "0001000694-26-000022",
+    "0001002638-26-000097",
+    "0001002638-26-000098",
+    "0001002910-26-000030",
+    "0001004315-26-000010",
+    "0001005286-26-000049",
+    "0001007587-26-000029",
+    "0001007587-26-000031",
+    "0001013934-26-000022",
+    "0001013934-26-000025",
+    "0001016281-26-000070",
+    "0001017413-26-000049",
+    "0001017413-26-000052",
+    "0001020569-26-000081",
+    "0001020569-26-000084",
+    "0001022321-26-000028",
+    "0001022321-26-000030",
+    "0001022652-26-000016",
+    "0001023024-26-000077",
+    "0001023024-26-000078",
+    "0001023731-26-000170",
+    "0001024305-26-000074",
+    "0001024478-26-000045",
+    "0001030469-26-000047",
+    "0001031308-26-000032",
+    "0001031308-26-000034",
+    "0001032208-26-000051",
+    "0001032208-26-000054",
+    "0001034054-26-000013",
+    "0001034842-26-000061",
+    "0001034842-26-000062",
+    "0001034957-26-000080",
+    "0001037646-26-000072",
+    "0001042046-26-000033",
+    "0001043000-26-000038",
+    "0001043000-26-000040",
+    "0001047862-26-000155",
+    "0001047862-26-000157",
+    "0001050441-26-000113",
+    "0001050797-26-000162",
+    "0001051470-26-000094",
+    "0001053706-26-000046",
+    "0001053706-26-000047",
+    "0001061894-26-000025",
+    "0001061894-26-000027",
+    "0001062822-26-000124",
+    "0001062822-26-000128",
+    "0001062993-26-005753",
+    "0001062993-26-005758",
+    "0001062993-26-005760",
+    "0001062993-26-005762",
+    "0001062993-26-005764",
+    "0001062993-26-005768",
+    "0001062993-26-005772",
+    "0001063259-26-000032",
+    "0001066194-26-000017",
+    "0001068148-26-000014",
+    "0001069258-26-000085",
+    "0001069258-26-000088",
+    "0001072613-26-000851",
+    "0001078075-26-000153",
+    "0001078075-26-000157",
+    "0001079973-26-001430",
+    "0001079973-26-001432",
+    "0001084869-26-000051",
+    "0001085392-26-000020",
+    "0001086222-26-000097",
+    "0001090425-26-000027",
+    "0001090425-26-000030",
+    "0001097362-26-000032",
+    "0001097362-26-000034",
+    "0001099590-26-000029",
+    "0001104485-26-000047",
+    "0001104659-26-122813",
+    "0001104659-26-122863",
+    "0001104659-26-122923",
+    "0001104659-26-122928",
+    "0001104659-26-122935",
+    "0001104659-26-122938",
+    "0001104659-26-122940",
+    "0001104659-26-122943",
+    "0001104659-26-122944",
+    "0001104659-26-122945",
+    "0001104659-26-122947",
+    "0001104659-26-122952",
+    "0001104659-26-122960",
+    "0001104659-26-122961",
+    "0001104659-26-122964",
+    "0001104659-26-122980",
+    "0001104659-26-122986",
+    "0001104659-26-122987",
+    "0001104659-26-122988",
+    "0001104659-26-123004",
+    "0001104659-26-123011"
   ]
 }
